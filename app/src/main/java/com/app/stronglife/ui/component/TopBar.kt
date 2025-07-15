@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
+import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
@@ -54,7 +55,7 @@ fun NumberCircle(number: String) {
 
 
 @Composable
-fun TopBar(number:String, pageName:String) {
+fun TopBar(step:Int, pageNames:List<String>) {
     val density = LocalDensity.current
     val heightInDp = with(density) { 132f.toDp() }
     val paddingInDp = with(density) {80f.toDp()}
@@ -70,49 +71,40 @@ fun TopBar(number:String, pageName:String) {
             .padding(horizontal = paddingInDp, vertical = heightPaddingInDp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                NumberCircle(number)
-                Spacer(modifier = Modifier.width(15.dp))
-                Text(
-                    text = pageName,
-                    style = TextStyle(
-                        fontSize = textInSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            pageNames.forEachIndexed { index, title ->
+                if (index > 0) Spacer(modifier = Modifier.width(30.dp))
+                NumberCircleWithText(
+                    number = (index + 1).toString(),
+                    title = title,
+                    isActive = (index == pageNames.lastIndex),
+                    textSizeSp = 36f
                 )
             }
+        }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "처음으로",
-                    style = TextStyle(
-                        fontSize = textInSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "처음으로",
+                style = TextStyle(
+                    fontSize = textInSp,
+                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    modifier = Modifier
-                        .size(btnInDp),
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_homebtn),
-                    contentDescription = "처음으로 이동 버튼",
-                    tint = Color.White
-                )
-            }
-
-
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Icon(
+                modifier = Modifier.size(btnInDp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_homebtn),
+                contentDescription = "처음으로 이동 버튼",
+                tint = Color.White
+            )
         }
     }
+}
+
 
 
 @Composable
@@ -122,5 +114,5 @@ fun TopBar(number:String, pageName:String) {
     device = "spec:width=1920px,height=1080px,dpi=81"
 )
 fun TopBarPreview(){
-    TopBar("1", "섭취시점 선택")
+    TopBar(step = 3, pageNames = listOf("섭취시점 선택", "메뉴선택", "주문 확인"))
 }

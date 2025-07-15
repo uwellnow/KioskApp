@@ -13,14 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
@@ -47,11 +48,9 @@ fun TimeSelectBtn(time:String, description:String, english:String) {
             .drawBehind {
                 drawRoundRect(
                     color = lightRed,
-                    cornerRadius = CornerRadius(roundInDp.toPx()),
-                    topLeft = Offset(1f, 4f),
-                    size = this.size,
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 12f), // 테두리 두께
-                    alpha = 0.3f
+                    cornerRadius = CornerRadius(20.dp.toPx()),
+                    style = Stroke(width = 18f),
+                    alpha = 0.2f
                 )
             }
             .background(

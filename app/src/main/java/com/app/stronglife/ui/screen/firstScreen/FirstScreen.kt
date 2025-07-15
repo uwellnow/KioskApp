@@ -39,7 +39,7 @@ fun FirstScreen() {
             .fillMaxSize()
             .background(background)
     ) {
-        TopBar("1", "섭취시점 선택")
+        TopBar(step = 2, pageNames = listOf("섭취시점 선택", "메뉴선택"))
         Spacer(modifier = Modifier.width(30.dp))
         Text(
             text = "운동 전-중-후에 필요한\n보충제를 각 단계별로 구매해보세요",
@@ -47,8 +47,8 @@ fun FirstScreen() {
                 fontSize = titleInSp,
                 lineHeight = titleInSp * 1.25,
                 letterSpacing = (-2).sp,
-                fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
-                fontWeight = FontWeight.SemiBold,
+                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontWeight = FontWeight.Bold,
                 color = Color.Black
             ),
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
