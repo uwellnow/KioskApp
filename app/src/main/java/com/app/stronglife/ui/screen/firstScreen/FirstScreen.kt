@@ -63,7 +63,7 @@ fun FirstScreen() {
             ),
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         Row(
             modifier = Modifier.padding(start = paddingInDp, end = paddingInDp),
             horizontalArrangement = Arrangement.spacedBy(horInDp)

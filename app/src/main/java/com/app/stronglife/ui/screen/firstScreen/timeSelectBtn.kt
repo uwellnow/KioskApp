@@ -11,6 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +44,16 @@ fun TimeSelectBtn(time:String, description:String, english:String) {
         modifier = Modifier
             .width(widthInDp)
             .height(heightInDp)
+            .drawBehind {
+                drawRoundRect(
+                    color = lightRed,
+                    cornerRadius = CornerRadius(roundInDp.toPx()),
+                    topLeft = Offset(1f, 4f),
+                    size = this.size,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 12f), // 테두리 두께
+                    alpha = 0.3f
+                )
+            }
             .background(
                 color = Color.White,
                 shape = RoundedCornerShape(roundInDp))
