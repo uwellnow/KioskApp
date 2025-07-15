@@ -11,21 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.app.stronglife.ui.theme.StrongLifeTheme
+import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.firstScreen.firstScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            StrongLifeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            firstScreen()
         }
     }
 }
@@ -41,16 +35,10 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(
     name = "1920x1080 Landscape",
     showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=480"
+    device = "spec:width=1920px,height=1080px,dpi=81"
 )
 
 @Composable
 fun GreetingPreview() {
-    StrongLifeTheme {
-        androidx.compose.foundation.layout.Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Greeting("Android")
-        }
-    }
+    firstScreen()
 }

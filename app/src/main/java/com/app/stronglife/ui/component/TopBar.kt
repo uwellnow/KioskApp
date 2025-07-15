@@ -1,0 +1,126 @@
+package com.app.stronglife.ui.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.app.stronglife.R
+import com.app.stronglife.ui.theme.mainRed
+
+@Composable
+fun NumberCircle(number: String) {
+    val density = LocalDensity.current
+    val size = with(density) {43f.toDp()}
+    val textInSp = with(density) {32f.toSp()}
+
+    Box(
+        modifier = Modifier
+            .size(size)
+            .background(color = Color.White, shape = CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = number.toString(),
+            color = mainRed,
+            fontSize = textInSp,
+            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+
+@Composable
+fun TopBar(number:String, pageName:String) {
+    val density = LocalDensity.current
+    val heightInDp = with(density) { 132f.toDp() }
+    val paddingInDp = with(density) {80f.toDp()}
+    val textInSp = with(density) {36f.toSp()}
+    val heightPaddingInDp = with(density) {36f.toDp()}
+    val btnInDp = with(density) {43f.toDp()}
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(heightInDp)
+            .background(mainRed)
+            .padding(horizontal = paddingInDp, vertical = heightPaddingInDp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                NumberCircle(number)
+                Spacer(modifier = Modifier.width(15.dp))
+                Text(
+                    text = pageName,
+                    style = TextStyle(
+                        fontSize = textInSp,
+                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "처음으로",
+                    style = TextStyle(
+                        fontSize = textInSp,
+                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Icon(
+                    modifier = Modifier
+                        .size(btnInDp),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_homebtn),
+                    contentDescription = "처음으로 이동 버튼",
+                    tint = Color.White
+                )
+            }
+
+
+        }
+    }
+
+
+@Composable
+@Preview(
+    name = "1920x1080 Landscape",
+    showBackground = true,
+    device = "spec:width=1920px,height=1080px,dpi=81"
+)
+fun TopBarPreview(){
+    TopBar("1", "섭취시점 선택")
+}
