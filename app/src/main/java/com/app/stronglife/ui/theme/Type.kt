@@ -40,4 +40,5 @@ val Stronglife = FontFamily(
     Font(R.font.sfpro_bold, FontWeight.Bold),
     Font(R.font.sfpro_regular, FontWeight.Normal),
     Font(R.font.sfpro_semibold, FontWeight.SemiBold),
+    Font(R.font.sfpro_black, FontWeight.Black),
 )
