@@ -32,29 +32,6 @@ import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
-fun NumberCircle(number: String) {
-    val density = LocalDensity.current
-    val size = with(density) {43f.toDp()}
-    val textInSp = with(density) {32f.toSp()}
-
-    Box(
-        modifier = Modifier
-            .size(size)
-            .background(color = Color.White, shape = CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = number.toString(),
-            color = mainRed,
-            fontSize = textInSp,
-            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-
-@Composable
 fun TopBar(step:Int, pageNames:List<String>) {
     val density = LocalDensity.current
     val heightInDp = with(density) { 132f.toDp() }

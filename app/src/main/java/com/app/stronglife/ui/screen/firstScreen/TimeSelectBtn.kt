@@ -98,9 +98,3 @@ fun TimeSelectBtn(time:String, description:String, english:String) {
     }
 
 }
-
-@Composable
-@Preview
-fun TimeSelectBtnPreview() {
-    TimeSelectBtn("운동 전", "각성, 집중력 및 운동 퍼포먼스 향상에\n도움을 줄 수 있습니다", "Pre-\nworkout")
-}

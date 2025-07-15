@@ -4,13 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun MenuScreen() {
+fun ProductCard(time: String, companyLogo:) {
 
 }
 
-
-@Composable
 @Preview
-fun MenuScreenPreview() {
-    MenuScreen()
+@Composable
+fun ProductCardPreview() {
+    ProductCard()
 }
