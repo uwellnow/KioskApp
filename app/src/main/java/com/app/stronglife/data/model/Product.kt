@@ -6,6 +6,6 @@ data class Product(
     val description: String,
     val time: String,
     val nutrition: String,
-    val imageUrl1: String,
-    val imageUrl2: String,
+    val imageUrl1: Int,
+    val imageUrl2: Int,
 )

@@ -1,5 +1,6 @@
 package com.app.stronglife.mock
 
+import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
 
 val sampleProducts = listOf(
@@ -9,8 +10,8 @@ val sampleProducts = listOf(
         description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
         time = "운동 전",
         nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA",
-        imageUrl1 = "https://your-server.com/images/calobye.png",
-        imageUrl2 = "https://your-server.com/images/calobye.png"
+        imageUrl1 = R.drawable.id1company,
+        imageUrl2 = R.drawable.id1pro
     ),
     Product(
         id = 2,
@@ -19,8 +20,8 @@ val sampleProducts = listOf(
         time = "운동 중",
         nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n" +
                 "~카페인 300mg의 고함량 L-아르기닌, EAA",
-        imageUrl1 = "https://your-server.com/images/samdaepre.png",
-        imageUrl2 = "https://your-server.com/images/calobye.png"
+        imageUrl1 = R.drawable.id2company,
+        imageUrl2 = R.drawable.id2pro
     ),
     Product(
         id = 3,
@@ -29,8 +30,35 @@ val sampleProducts = listOf(
         time = "운동 후",
         nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n" +
                 "~카페인 300mg의 고함량 L-아르기닌, EAA",
-        imageUrl1 = "https://your-server.com/images/samdaepre.png",
-        imageUrl2 = "https://your-server.com/images/calobye.png"
+        imageUrl1 = R.drawable.id3company,
+        imageUrl2 = R.drawable.id3pro
+    ),
+    Product(
+        id = 1,
+        title = "칼로바이 부스터 복숭아라임맛",
+        description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
+        time = "운동 전",
+        nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA",
+        imageUrl1 = R.drawable.id1company,
+        imageUrl2 = R.drawable.id1pro
+    ),
+    Product(
+        id = 1,
+        title = "칼로바이 부스터 복숭아라임맛",
+        description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
+        time = "운동 전",
+        nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA",
+        imageUrl1 = R.drawable.id1company,
+        imageUrl2 = R.drawable.id1pro
+    ),
+    Product(
+        id = 1,
+        title = "칼로바이 부스터 복숭아라임맛",
+        description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
+        time = "운동 전",
+        nutrition = "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA",
+        imageUrl1 = R.drawable.id1company,
+        imageUrl2 = R.drawable.id1pro
     ),
 
 )

@@ -34,7 +34,7 @@ import com.app.stronglife.ui.theme.mainRed
 @Composable
 fun TopBar(step:Int, pageNames:List<String>) {
     val density = LocalDensity.current
-    val heightInDp = with(density) { 132f.toDp() }
+    val heightInDp = with(density) { 120f.toDp() }
     val paddingInDp = with(density) {80f.toDp()}
     val textInSp = with(density) {36f.toSp()}
     val heightPaddingInDp = with(density) {36f.toDp()}
@@ -51,7 +51,7 @@ fun TopBar(step:Int, pageNames:List<String>) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             pageNames.forEachIndexed { index, title ->
-                if (index > 0) Spacer(modifier = Modifier.width(30.dp))
+                if (index > 0) Spacer(modifier = Modifier.width(50.dp))
                 NumberCircleWithText(
                     number = (index + 1).toString(),
                     title = title,

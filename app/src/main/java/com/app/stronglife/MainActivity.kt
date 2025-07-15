@@ -13,13 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
+import com.app.stronglife.ui.screen.menuScreen.MenuScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            FirstScreen()
+            MenuScreen()
         }
     }
 }
