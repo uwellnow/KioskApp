@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.midGray
 
 @Composable
 fun DeleteBtn() {

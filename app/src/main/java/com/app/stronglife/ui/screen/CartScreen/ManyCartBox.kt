@@ -2,11 +2,14 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.app.stronglife.data.model.CartItem
+import com.app.stronglife.ui.theme.lightGray
 
 @Composable
 fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
@@ -26,6 +30,7 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
         modifier = Modifier
             .background(Color.White, shape = RoundedCornerShape(roundDp))
             .padding(horizontal = horPad, vertical = verPad)
+            .verticalScroll(rememberScrollState())
     ) {
         cartItems.forEachIndexed { index, item ->
             OneOfCartBox(item, viewModel)
