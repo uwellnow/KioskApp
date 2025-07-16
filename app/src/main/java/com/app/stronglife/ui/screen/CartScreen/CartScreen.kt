@@ -28,7 +28,9 @@ import kotlin.contracts.contract
 fun CartScreen(viewModel: CartViewModel, navController: NavController) {
     val cartItems by viewModel.cartItems
 
+
     val density = LocalDensity.current
+    val roundDp = with(density) {28f.toDp()}
     val titleSp = with(density) { 44f.toSp() }
     val spaceDp = with(density) { 24f.toDp() }
     val widthDp = with(density) { 1760f.toDp() }
@@ -48,9 +50,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                 .width(widthDp),
 
         ) {
-            cartItems.forEach { item ->
-                OneOfCartBox(cartItem = item, viewModel = viewModel)
-            }
+            ManyCartBox(cartItems, viewModel)
         }
 
 

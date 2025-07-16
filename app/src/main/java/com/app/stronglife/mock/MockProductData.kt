@@ -34,7 +34,7 @@ val sampleProducts = listOf(
         imageUrl2 = R.drawable.id3pro
     ),
     Product(
-        id = 1,
+        id = 4,
         title = "칼로바이 부스터 복숭아라임맛",
         description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
         time = "운동 전",
@@ -43,7 +43,7 @@ val sampleProducts = listOf(
         imageUrl2 = R.drawable.id1pro
     ),
     Product(
-        id = 1,
+        id = 5,
         title = "칼로바이 부스터 복숭아라임맛",
         description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
         time = "운동 전",
@@ -52,7 +52,7 @@ val sampleProducts = listOf(
         imageUrl2 = R.drawable.id1pro
     ),
     Product(
-        id = 1,
+        id = 6,
         title = "칼로바이 부스터 복숭아라임맛",
         description = "천연 카페인 300mg으로\n고강도 운동까지 거뜬하게",
         time = "운동 전",
