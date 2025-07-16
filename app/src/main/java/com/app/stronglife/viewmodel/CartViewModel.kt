@@ -42,7 +42,9 @@ open class CartViewModel(
         }
     }
 
-    fun clearCart() {
-        _cartItems.value = emptyList()
+    fun removeProduct(product: Product) {
+        val current = _cartItems.value.toMutableList()
+        current.removeAll { it.product.id == product.id }
+        _cartItems.value = current
     }
 }

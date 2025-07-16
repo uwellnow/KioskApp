@@ -67,6 +67,10 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        DeleteBtn()
+        DeleteBtn(
+            onDelete = {
+                viewModel.removeProduct(product)
+            }
+        )
     }
 }

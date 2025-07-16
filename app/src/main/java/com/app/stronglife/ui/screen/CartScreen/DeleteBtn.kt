@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +25,7 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.lightGray
 
 @Composable
-fun DeleteBtn() {
+fun DeleteBtn(onDelete: () -> Unit) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {113f.toDp()}
     val heighttoDp = with(density) {58f.toDp()}
@@ -39,7 +40,8 @@ fun DeleteBtn() {
                 color = Color.White,
                 shape = RoundedCornerShape(roundDp)
             )
-            .border(2.dp, lightGray, shape = RoundedCornerShape(roundDp)),
+            .border(2.dp, lightGray, shape = RoundedCornerShape(roundDp))
+            .clickable{onDelete()},
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -52,10 +54,4 @@ fun DeleteBtn() {
             )
         )
     }
-}
-
-@Preview
-@Composable
-fun DeleteBtnPreview() {
-    DeleteBtn()
 }

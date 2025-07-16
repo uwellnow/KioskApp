@@ -77,7 +77,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
         Column (
             modifier = Modifier.width(widthDp)
         ){
-            UnderBtn()
+            UnderBtn(navController)
         }
 
 
