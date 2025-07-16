@@ -11,3 +11,5 @@ val background = Color(0xFFF6F6F6)
 val superLightGray = Color (0xFFFEFEFE)
 
 val cardPayGray = Color (0xFFC6C6C6)
+
+val paySelectGray = Color (0xFFD6D6D6)

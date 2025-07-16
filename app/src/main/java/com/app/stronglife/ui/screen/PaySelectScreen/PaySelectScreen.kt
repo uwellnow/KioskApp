@@ -3,6 +3,7 @@ package com.app.stronglife.ui.screen.PaySelectScreen
 import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.mainRed
@@ -51,6 +53,7 @@ fun PaySelectScreen(navController: NavController) {
     val space3Dp = with(density) {32f.toDp()}
 
     Column (
+        modifier = Modifier.background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
@@ -108,7 +111,8 @@ fun PaySelectScreen(navController: NavController) {
                     .height(heightDp)
                     .background(color = Color.White,
                         shape = RoundedCornerShape(space3Dp))
-                    .border(2.dp, color = mainRed, shape = RoundedCornerShape(space3Dp)),
+                    .border(2.dp, color = mainRed, shape = RoundedCornerShape(space3Dp))
+                    .clickable{navController.navigate("pay")},
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){
