@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
@@ -29,7 +30,7 @@ import com.app.stronglife.ui.theme.midGray
 import java.nio.file.WatchEvent
 
 @Composable
-fun ProductDetail (image:Int, title:String, nut:String) {
+fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
@@ -38,7 +39,7 @@ fun ProductDetail (image:Int, title:String, nut:String) {
     val imagetoDp = with(density) {320f.toDp()}
     val roundtoDp = with(density) {20f.toDp()}
     val imagetoTextDp = with(density) {49f.toDp()}
-    val spacerToDp = with(density) {300f.toDp()}
+    val spacerToDp = with(density) {230f.toDp()}
 
     Column(
         modifier = Modifier
@@ -52,7 +53,7 @@ fun ProductDetail (image:Int, title:String, nut:String) {
     ) {
         Row (
             horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.padding(15.dp)
+            modifier = Modifier.padding(70.dp)
         ) {
             AsyncImage(
                 model = image,
@@ -87,7 +88,7 @@ fun ProductDetail (image:Int, title:String, nut:String) {
         }
 
         Spacer(modifier = Modifier.height(spacerToDp))
-        MenuScreenBtn()
+        MenuScreenBtn(onBackClick = onClose)
     }
 
 }
@@ -95,5 +96,5 @@ fun ProductDetail (image:Int, title:String, nut:String) {
 @Preview
 @Composable
 fun ProductDetailPreview() {
-    ProductDetail(R.drawable.id1pro, "삼대오백 프리워크아웃 포도맛", "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA")
+    ProductDetail(R.drawable.id1pro, "삼대오백 프리워크아웃 포도맛", "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA", onClose = {})
 }

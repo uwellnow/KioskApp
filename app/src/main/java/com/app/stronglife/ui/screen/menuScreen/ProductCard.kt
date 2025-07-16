@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +41,7 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.midGray
 
 @Composable
-fun ProductCard(products: List<Product>) {
+fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 20.toDp() }
@@ -85,7 +86,8 @@ fun ProductCard(products: List<Product>) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = horPadding),
+                            .padding(top = horPadding)
+                            .clickable{ onProductClick(product)}
                     ) {
                         AsyncImage(
                             model = product.imageUrl1,
@@ -145,12 +147,3 @@ fun ProductCard(products: List<Product>) {
 
 
 
-@Preview(
-    name = "1920x1080 Landscape",
-    showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81"
-)
-@Composable
-fun ProductCardPreview() {
-    ProductCard(sampleProducts)
-}

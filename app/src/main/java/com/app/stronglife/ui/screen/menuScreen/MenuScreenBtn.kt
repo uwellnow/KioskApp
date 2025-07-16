@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import android.view.RoundedCorner
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,10 @@ import com.app.stronglife.ui.theme.superLightGray
 import java.nio.file.WatchEvent
 
 @Composable
-fun MenuScreenBtn() {
+fun MenuScreenBtn(
+    onBackClick: () -> Unit = {},
+    onCartClick: () -> Unit = {}
+) {
     val density = LocalDensity.current
     val roundtoDp = with(density) { 12f.toDp() }
     val texttoSp = with(density) {28f.toSp()}
@@ -47,7 +51,8 @@ fun MenuScreenBtn() {
                 .background(
                     color = superLightGray,
                     shape = RoundedCornerShape(roundtoDp)
-                ),
+                )
+                .clickable{ onBackClick() },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -70,7 +75,8 @@ fun MenuScreenBtn() {
                 .background(
                     color = mainRed,
                     shape = RoundedCornerShape(roundtoDp)
-                ),
+                )
+                .clickable{ onCartClick()},
             contentAlignment = Alignment.Center
         ) {
             Text(
