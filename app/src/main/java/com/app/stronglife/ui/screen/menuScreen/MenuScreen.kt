@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.menuScreen
 
+import CartViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +19,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.mock.sampleProducts
 import com.app.stronglife.ui.component.TopBar
-import com.app.stronglife.viewmodel.CartViewModel
 import com.app.stronglife.viewmodel.MenuScreenViewModel
 
 @Composable
