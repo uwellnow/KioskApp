@@ -21,12 +21,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 
 @Composable
-fun FirstScreen() {
+fun FirstScreen(navController: NavController = rememberNavController()) {
     val density = LocalDensity.current
     val titleInSp = with(density) {80f.toSp()}
     val paddingInDp = with(density) {80f.toDp()}
@@ -68,9 +70,9 @@ fun FirstScreen() {
             modifier = Modifier.padding(start = paddingInDp, end = paddingInDp),
             horizontalArrangement = Arrangement.spacedBy(horInDp)
         ){
-            TimeSelectBtn("운동 전", "각성, 집중력 및 운동 퍼포먼스 향상에\n도움을 줄 수 있습니다", "Pre-\nworkout")
-            TimeSelectBtn("운동 중", "운동 지속성 향상, 피로지연\n수분/미네랄/ 에너지 보충에 도움을 줄 수 있습니다", "Intra-\nworkout")
-            TimeSelectBtn("운동 후", "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다", "Post-\nworkout")
+            TimeSelectBtn("운동 전", "각성, 집중력 및 운동 퍼포먼스 향상에\n도움을 줄 수 있습니다", "Pre-\nworkout", navController)
+            TimeSelectBtn("운동 중", "운동 지속성 향상, 피로지연\n수분/미네랄/ 에너지 보충에 도움을 줄 수 있습니다", "Intra-\nworkout", navController)
+            TimeSelectBtn("운동 후", "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다", "Post-\nworkout", navController)
         }
     }
 }

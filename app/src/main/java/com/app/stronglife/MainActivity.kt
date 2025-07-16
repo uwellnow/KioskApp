@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.app.stronglife.navigation.NavGraph
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.ui.screen.menuScreen.MenuScreen
@@ -20,7 +22,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MenuScreen()
+            val navController = rememberNavController()
+            NavGraph(navController = navController) // ← 여기서 호출
+
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.app.stronglife.ui.screen.firstScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.app.stronglife.R
+import com.app.stronglife.ui.screen.menuScreen.MenuScreen
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.lightRed
 
 @Composable
-fun TimeSelectBtn(time:String, description:String, english:String) {
+fun TimeSelectBtn(time:String, description:String, english:String, navController: NavController) {
     val density = LocalDensity.current
     val widthInDp = with(density) {568.toDp()}
     val heightInDp = with(density) {443.toDp()}
@@ -56,6 +59,7 @@ fun TimeSelectBtn(time:String, description:String, english:String) {
             .background(
                 color = Color.White,
                 shape = RoundedCornerShape(roundInDp))
+            .clickable { navController.navigate("menu") }
 
         ){
         Column(

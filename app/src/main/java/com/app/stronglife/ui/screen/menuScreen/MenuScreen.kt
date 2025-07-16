@@ -18,27 +18,31 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.mock.sampleProducts
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.viewmodel.MenuScreenViewModel
 
 @Composable
 fun MenuScreen(
-    viewModel: MenuScreenViewModel = viewModel()
+    viewModel: MenuScreenViewModel = viewModel(),
+    navController: NavController = rememberNavController()
 ) {
-    val selectedProduct by viewModel.selectedProduct
+    val previewingProduct by viewModel.previewingProduct
+
     val density = LocalDensity.current
     val spacertoDp = with(density) {80f.toDp()}
     Box {
         Column (
-            modifier = Modifier.alpha(if (selectedProduct != null) 0.3f else 1f)
+            modifier = Modifier.alpha(if (previewingProduct != null) 0.3f else 1f)
         ){
             TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"))
             Spacer(modifier = Modifier.height(spacertoDp))
             ProductCard(sampleProducts, onProductClick = viewModel::selectProduct)
         }
 
-        selectedProduct?.let { product ->
+        previewingProduct?.let { product ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -49,7 +53,9 @@ fun MenuScreen(
                     image = product.imageUrl2,
                     title = product.title,
                     nut = product.nutrition,
-                    onClose = viewModel::clearSelection
+                    onClose = viewModel::clearSelection,
+                    onAddToCart = { viewModel.addToCart(product)},
+                    onGoCart = {navController.navigate("addOrCart")}
                 )
             }
         }

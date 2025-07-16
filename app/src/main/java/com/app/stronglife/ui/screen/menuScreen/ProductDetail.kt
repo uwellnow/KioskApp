@@ -30,7 +30,7 @@ import com.app.stronglife.ui.theme.midGray
 import java.nio.file.WatchEvent
 
 @Composable
-fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit) {
+fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
@@ -88,7 +88,7 @@ fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit) {
         }
 
         Spacer(modifier = Modifier.height(spacerToDp))
-        MenuScreenBtn(onBackClick = onClose)
+        MenuScreenBtn(onBackClick = onClose, onCartClick = {onAddToCart() onGoCart()})
     }
 
 }
@@ -96,5 +96,5 @@ fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit) {
 @Preview
 @Composable
 fun ProductDetailPreview() {
-    ProductDetail(R.drawable.id1pro, "삼대오백 프리워크아웃 포도맛", "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA", onClose = {})
+    ProductDetail(R.drawable.id1pro, "삼대오백 프리워크아웃 포도맛", "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA", onClose = {}, onAddToCart = {}, onGoCart = {})
 }
