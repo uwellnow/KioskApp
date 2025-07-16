@@ -1,9 +1,8 @@
 package com.app.stronglife.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,14 +23,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
-fun TopBar(step:Int, pageNames:List<String>) {
+fun TopBar(step:Int, pageNames:List<String>, navController: NavController) {
     val density = LocalDensity.current
     val heightInDp = with(density) { 120f.toDp() }
     val paddingInDp = with(density) {80f.toDp()}
@@ -61,7 +59,8 @@ fun TopBar(step:Int, pageNames:List<String>) {
             }
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable{navController.navigate("first")}){
             Text(
                 text = "처음으로",
                 style = TextStyle(
@@ -84,12 +83,3 @@ fun TopBar(step:Int, pageNames:List<String>) {
 
 
 
-@Composable
-@Preview(
-    name = "1920x1080 Landscape",
-    showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81"
-)
-fun TopBarPreview(){
-    TopBar(step = 3, pageNames = listOf("섭취시점 선택", "메뉴선택", "주문 확인"))
-}

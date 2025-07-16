@@ -18,17 +18,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 
 @Composable
-fun FirstScreen(navController: NavController = rememberNavController()) {
+fun FirstScreen(navController: NavController) {
     val density = LocalDensity.current
     val titleInSp = with(density) {80f.toSp()}
     val paddingInDp = with(density) {80f.toDp()}
@@ -41,7 +39,7 @@ fun FirstScreen(navController: NavController = rememberNavController()) {
             .fillMaxSize()
             .background(background)
     ) {
-        TopBar(step = 1, pageNames = listOf("섭취시점 선택"))
+        TopBar(step = 1, pageNames = listOf("섭취시점 선택"), navController = navController)
         Spacer(modifier = Modifier.width(30.dp))
         Text(
             text = "운동 전-중-후에 필요한\n보충제를 각 단계별로 구매해보세요",
@@ -75,14 +73,4 @@ fun FirstScreen(navController: NavController = rememberNavController()) {
             TimeSelectBtn("운동 후", "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다", "Post-\nworkout", navController)
         }
     }
-}
-
-@Composable
-@Preview(
-    name = "1920x1080 Landscape",
-    showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81"
-)
-fun firstScreenPreview() {
-    FirstScreen()
 }

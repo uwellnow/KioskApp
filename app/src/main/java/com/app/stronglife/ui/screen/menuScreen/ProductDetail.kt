@@ -2,7 +2,6 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,14 +19,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.midGray
-import java.nio.file.WatchEvent
 
 @Composable
 fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
@@ -88,7 +84,8 @@ fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit, on
         }
 
         Spacer(modifier = Modifier.height(spacerToDp))
-        MenuScreenBtn(onBackClick = onClose, onCartClick = {onAddToCart() onGoCart()})
+        MenuScreenBtn(onBackClick = onClose, onCartClick = {onAddToCart()
+            onGoCart()})
     }
 
 }

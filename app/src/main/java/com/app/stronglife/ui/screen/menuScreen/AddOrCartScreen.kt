@@ -1,21 +1,18 @@
 package com.app.stronglife.ui.screen.menuScreen
 
 
-import android.graphics.Paint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,18 +21,14 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.viewmodel.MenuScreenViewModel
 
 @Composable
-fun AddOrCartScreen(viewModel: MenuScreenViewModel = viewModel ()) {
-
-    val cart by viewModel.cart
+fun AddOrCartScreen(navController: NavController) {
 
     val density = LocalDensity.current
     val textToSp = with(density) {40f.toSp()}
@@ -45,7 +38,7 @@ fun AddOrCartScreen(viewModel: MenuScreenViewModel = viewModel ()) {
     val imagetoTextDp = with(density) {32f.toDp()}
 
     Column {
-        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"))
+        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController)
         Row (
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
@@ -55,7 +48,8 @@ fun AddOrCartScreen(viewModel: MenuScreenViewModel = viewModel ()) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
-                    .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp)),
+                    .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
+                    .clickable{navController.navigate("menu")},
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
 
@@ -85,7 +79,8 @@ fun AddOrCartScreen(viewModel: MenuScreenViewModel = viewModel ()) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
-                    .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp)),
+                    .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
+                    .clickable{navController.navigate("cart")},
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
 
@@ -110,14 +105,4 @@ fun AddOrCartScreen(viewModel: MenuScreenViewModel = viewModel ()) {
             }
         }
     }
-}
-
-@Preview(
-    name = "1920x1080 Landscape",
-    showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81"
-)
-@Composable
-fun AddOrCartScreenPreview() {
-    AddOrCartScreen()
 }

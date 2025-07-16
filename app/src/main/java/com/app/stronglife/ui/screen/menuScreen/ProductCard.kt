@@ -1,7 +1,6 @@
 package com.app.stronglife.ui.screen.menuScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,14 +26,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
-import androidx.core.provider.FontsContractCompat.FontRequestCallback.FontRequestFailReason
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
-import com.app.stronglife.mock.sampleProducts
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.midGray

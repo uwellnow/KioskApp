@@ -1,7 +1,5 @@
 package com.app.stronglife.ui.screen.menuScreen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,10 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -37,7 +33,7 @@ fun MenuScreen(
         Column (
             modifier = Modifier.alpha(if (previewingProduct != null) 0.3f else 1f)
         ){
-            TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"))
+            TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"), navController = navController)
             Spacer(modifier = Modifier.height(spacertoDp))
             ProductCard(sampleProducts, onProductClick = viewModel::selectProduct)
         }

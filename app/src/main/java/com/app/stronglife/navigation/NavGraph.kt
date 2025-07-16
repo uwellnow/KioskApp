@@ -21,7 +21,7 @@ fun NavGraph(navController: NavHostController) {
             MenuScreen(navController = navController)
         }
         composable("addOrCart") {
-            AddOrCartScreen()
+            AddOrCartScreen(navController = navController)
         }
     }
 }
