@@ -24,10 +24,6 @@ import com.app.stronglife.ui.theme.cardPayGray
 @Composable
 fun PayScreen(navController: NavController) {
     val density = LocalDensity.current
-    val widDp = with(density) {1231f.toDp()}
-    val heightDp = with(density) {824f.toDp()}
-    val roundDp = with(density) {32f.toDp()}
-    val height1Dp = with(density) {123f.toDp()}
 
     val barbtnSpace = with(density) {81f.toDp()}
 
@@ -36,21 +32,7 @@ fun PayScreen(navController: NavController) {
     ){
         TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
         Spacer(modifier = Modifier.height(barbtnSpace))
-        Column (
-            modifier = Modifier
-                .width(widDp)
-                .height(heightDp)
-                .background(color = Color.White, shape = RoundedCornerShape(roundDp))
-                .border(2.dp, cardPayGray, RoundedCornerShape(roundDp))
-        ){
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(height1Dp)
-            ) {
 
-            }
-        }
     }
 }
 
