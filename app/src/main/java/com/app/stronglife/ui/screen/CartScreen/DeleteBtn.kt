@@ -1,8 +1,10 @@
 package com.app.stronglife.ui.screen.CartScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,7 +19,10 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
+import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.ui.theme.midGray
 
 @Composable
 fun DeleteBtn() {
@@ -34,7 +39,8 @@ fun DeleteBtn() {
             .background(
                 color = Color.White,
                 shape = RoundedCornerShape(roundDp)
-            ),
+            )
+            .border(2.dp, lightGray, shape = RoundedCornerShape(roundDp)),
         contentAlignment = Alignment.Center
     ) {
         Text(

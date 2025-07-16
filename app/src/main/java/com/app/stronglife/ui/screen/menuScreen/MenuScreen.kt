@@ -1,6 +1,7 @@
 package com.app.stronglife.ui.screen.menuScreen
 
 import CartViewModel
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.mock.sampleProducts
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.MenuScreenViewModel
 
 @Composable
@@ -33,7 +35,10 @@ fun MenuScreen(
     val spacertoDp = with(density) {80f.toDp()}
     Box {
         Column (
-            modifier = Modifier.alpha(if (product != null) 0.3f else 1f)
+            modifier = Modifier
+                .alpha(if (product != null) 0.3f else 1f)
+                .fillMaxSize()
+                .background(background)
         ){
             TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"), navController = navController)
             Spacer(modifier = Modifier.height(spacertoDp))

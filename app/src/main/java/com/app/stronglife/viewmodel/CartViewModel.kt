@@ -1,11 +1,14 @@
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.app.stronglife.data.model.CartItem
 import com.app.stronglife.data.model.Product
 
-class CartViewModel : ViewModel() {
-    private val _cartItems = mutableStateOf<List<CartItem>>(emptyList())
+open class CartViewModel(
+    initialItems: List<CartItem> = emptyList()
+) : ViewModel() {
+    protected val _cartItems = mutableStateOf(initialItems)
     val cartItems: State<List<CartItem>> = _cartItems
 
     fun addProduct(product: Product) {
@@ -18,6 +21,8 @@ class CartViewModel : ViewModel() {
         } else {
             current.add(CartItem(product, quantity = 1))
         }
+
+        Log.d("CartViewModel", "addProduct: ${product.title}")
 
         _cartItems.value = current
     }
