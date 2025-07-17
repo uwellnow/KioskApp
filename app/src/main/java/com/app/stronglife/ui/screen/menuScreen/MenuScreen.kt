@@ -48,8 +48,7 @@ fun MenuScreen(
         product?.let { product ->
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = spacertoDp),
+                    .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 ProductDetail(
