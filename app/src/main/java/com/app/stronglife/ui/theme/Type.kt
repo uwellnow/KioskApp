@@ -6,6 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 
@@ -42,3 +43,4 @@ val Stronglife = FontFamily(
     Font(R.font.sfpro_semibold, FontWeight.SemiBold),
     Font(R.font.sfpro_black, FontWeight.Black),
 )
+

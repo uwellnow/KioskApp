@@ -38,9 +38,9 @@ fun TimeSelectBtn(time:String, description:String, english:String, navController
     val startInDp = with(density) {30f.toDp()}
     val midInDp = with(density) {20f.toDp()}
     val topInDp = with(density) {45f.toDp()}
-    val timeInSp = with(density) {36f.toSp()}
-    val desInSp = with(density) {20.toSp()}
-    val engInSp = with(density) {120.toSp()}
+    val timeInSp = with(density) {36.toSp()}
+    val desInSp = with(density) {24.toSp()}
+    val engInSp = with(density) {124.toSp()}
 
     Box(
         modifier = Modifier
@@ -69,7 +69,6 @@ fun TimeSelectBtn(time:String, description:String, english:String, navController
                 style = TextStyle(
                     fontSize = timeInSp,
                     fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                    fontWeight = FontWeight.Bold,
                     color = black
                 )
             )
@@ -78,6 +77,7 @@ fun TimeSelectBtn(time:String, description:String, english:String, navController
                 text = description,
                 style = TextStyle(
                     fontSize = desInSp,
+                    lineHeight = desInSp * 1.2,
                     fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                     fontWeight = FontWeight.Normal,
                     color = lightGray
