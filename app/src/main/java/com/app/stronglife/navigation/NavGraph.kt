@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.app.stronglife.ui.screen.CartScreen.CartScreen
 import com.app.stronglife.ui.screen.EndScreen.EndScreen
+import com.app.stronglife.ui.screen.HelloScreen.HelloScreen
 import com.app.stronglife.ui.screen.PayScreen.PayOverlayCard
 import com.app.stronglife.ui.screen.PayScreen.PayScreen
 import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
@@ -21,8 +22,12 @@ fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, pro
 
     NavHost(
         navController = navController,
-        startDestination = "first"
+        startDestination = "hello"
     ) {
+
+        composable("hello") {
+            HelloScreen(navController = navController)
+        }
         composable("first") {
             FirstScreen(navController = navController)
         }
