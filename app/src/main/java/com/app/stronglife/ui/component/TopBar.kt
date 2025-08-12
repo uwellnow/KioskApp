@@ -60,7 +60,7 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable{navController.navigate("first")}){
+            modifier = Modifier.clickable{navController.navigate("hello")}){
             Text(
                 text = "처음으로",
                 style = TextStyle(
