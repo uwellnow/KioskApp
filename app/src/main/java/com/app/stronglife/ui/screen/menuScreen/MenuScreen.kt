@@ -10,35 +10,34 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
-import com.app.stronglife.viewmodel.MenuScreenViewModel
+import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
 fun MenuScreen(
-    menuViewModel: MenuScreenViewModel = viewModel(),
+    viewModel: ProductViewModel,
     cartViewModel: CartViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
-    val products by menuViewModel.products
-    val isLoading by menuViewModel.isLoading
-    val error by menuViewModel.errorMessage
-    val currentDetail by menuViewModel.currentDetail
+
+    val isLoading = viewModel.isLoading
+    val error = viewModel.errorMessage
+    val currentDetail = viewModel.currentDetail
 
     LaunchedEffect(Unit) {
-        menuViewModel.fetchProducts()
+        viewModel.fetchProducts()
     }
 
     val density = LocalDensity.current
     val spacertoDp = with(density) {80f.toDp()}
+
     Box {
         Column (
             modifier = Modifier
@@ -58,9 +57,9 @@ fun MenuScreen(
                 else -> {
                     // 가로 스크롤 전체 상품 목록
                     ProductCard(
-                        products = products,
+                        products = viewModel.products,
                         onProductClick = { product ->
-                            menuViewModel.openProductDetail(product)
+                            viewModel.openProductDetail(product)
                         }
                     )
                 }
@@ -71,7 +70,7 @@ fun MenuScreen(
                 image = product.productURL,
                 title = product.name,
                 nut = product.nutritionInfo,
-                onClose = menuViewModel::closeProductDetail,
+                onClose = viewModel::closeProductDetail,
                 onAddToCart = {
                     cartViewModel.addProduct(product) // 장바구니에 추가
                 },
@@ -83,13 +82,3 @@ fun MenuScreen(
     }
 }}
 
-
-@Composable
-@Preview(
-    name = "1920x1080 Landscape",
-    showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81"
-)
-fun MenuScreenPreview() {
-    MenuScreen()
-}

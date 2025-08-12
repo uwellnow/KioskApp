@@ -7,19 +7,33 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.app.stronglife.data.remote.PrefsManager
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.navigation.NavGraph
+import com.app.stronglife.viewmodel.ProductViewModel
+import com.app.stronglife.viewmodel.ProductViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 최초 실행 시 기기 ID 저장
+        val prefsManager = PrefsManager(this)
+        prefsManager.saveApiKeyIfNotExists()
+        val apiKey = prefsManager.getApiKey()
+
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
             val cartViewModel: CartViewModel = viewModel()
-            NavGraph(navController = navController, cartViewModel = cartViewModel)
+            val productViewModel: ProductViewModel = viewModel(
+                factory = ProductViewModelFactory(RetrofitClient.api, apiKey)
+            )
+            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel)
 
         }
     }
 }
+
 
 

@@ -36,7 +36,7 @@ import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
-fun ProductCard(viewModel: ProductViewModel, onProductClick: (Product) -> Unit) {
+fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 20.toDp() }
@@ -48,8 +48,6 @@ fun ProductCard(viewModel: ProductViewModel, onProductClick: (Product) -> Unit) 
     val textSpace = with(density) { 30f.toDp() }
 
     val scrollState = rememberScrollState()
-
-    val products = viewModel.products
 
     Row(
         modifier = Modifier
