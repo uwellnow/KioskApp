@@ -63,7 +63,10 @@ fun MenuScreen(
                         }
                     )
                 }
-        }
+            }
+
+
+    }
 
         viewModel.currentDetail?.let { product ->
             ProductDetail(
@@ -79,6 +82,5 @@ fun MenuScreen(
                 }
             )
         }
-    }
 }}
 
