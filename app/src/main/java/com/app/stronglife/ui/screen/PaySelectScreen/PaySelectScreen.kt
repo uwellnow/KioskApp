@@ -29,10 +29,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.mainRed
+import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
@@ -51,6 +53,9 @@ fun PaySelectScreen(navController: NavController) {
     val space1Dp = with(density) {102f.toDp()}
     val space2Dp = with(density) {57f.toDp()}
     val space3Dp = with(density) {32f.toDp()}
+
+    val borderRadiusPx = with(density) { space3Dp.toPx() }
+    val blurRadiusPx = with(density) { 7.dp.toPx() }
 
     Column (
         modifier = Modifier.background(background),
@@ -74,9 +79,16 @@ fun PaySelectScreen(navController: NavController) {
                 modifier = Modifier
                     .width(cardWidDp)
                     .height(heightDp)
+                    .customShadow(
+                        color = shadowGray,
+                        blurRadius = blurRadiusPx,
+                        borderRadius = borderRadiusPx,
+                        offsetX = 0f,
+                        offsetY = 0f
+                    )
                     .background(color = Color.White,
                         shape = RoundedCornerShape(space3Dp))
-                    .border(2.dp, cardPayGray, RoundedCornerShape(space3Dp)),
+                    ,
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){

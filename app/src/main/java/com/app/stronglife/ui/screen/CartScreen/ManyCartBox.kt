@@ -19,7 +19,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.stronglife.data.model.CartItem
+import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.ui.theme.lightRed
+import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.ui.theme.shadowGray
+import kotlin.math.round
 
 @Composable
 fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
@@ -27,6 +32,7 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
     val roundDp = with(density) { 28f.toDp() }
     val horPad = with(density) { 60f.toDp() }
     val verPad = with(density) { 32f.toDp() }
+
 
 
     if (cartItems.isEmpty()) {
@@ -42,6 +48,7 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
                 .background(Color.White, shape = RoundedCornerShape(roundDp))
                 .padding(horizontal = horPad, vertical = verPad)
                 .verticalScroll(rememberScrollState())
+
         ) {
             cartItems.forEachIndexed { index, item ->
                 OneOfCartBox(item, viewModel)

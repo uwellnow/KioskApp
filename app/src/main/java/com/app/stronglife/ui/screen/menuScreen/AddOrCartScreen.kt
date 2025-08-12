@@ -21,11 +21,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.ui.theme.lightRed
+import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
 fun AddOrCartScreen(navController: NavController) {
@@ -36,6 +42,8 @@ fun AddOrCartScreen(navController: NavController) {
     val imageToDp = with(density) {358.toDp()}
     val spacetoDp = with(density) {56f.toDp()}
     val imagetoTextDp = with(density) {32f.toDp()}
+    val borderRadiusPx = with(density) { imagetoTextDp.toPx() }
+    val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Column {
         TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController)
@@ -48,8 +56,16 @@ fun AddOrCartScreen(navController: NavController) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
+                    .customShadow(
+                        color = shadowGray,
+                        blurRadius = blurRadiusPx,
+                        borderRadius = borderRadiusPx,
+                        offsetX = 0f,
+                        offsetY = 0f
+                    )
                     .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
-                    .clickable{navController.navigate("menu")},
+                    .clickable{navController.navigate("menu")}
+                    ,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
 
@@ -79,8 +95,16 @@ fun AddOrCartScreen(navController: NavController) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
+                    .customShadow(
+                        color = shadowGray,
+                        blurRadius = blurRadiusPx,
+                        borderRadius = borderRadiusPx,
+                        offsetX = 0f,
+                        offsetY = 0f
+                    )
                     .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
-                    .clickable{navController.navigate("cart")},
+                    .clickable{navController.navigate("cart")}
+                    ,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
 
@@ -91,6 +115,7 @@ fun AddOrCartScreen(navController: NavController) {
                     modifier = Modifier
                         .width(imageToDp)
                         .height(imageToDp)
+
                 )
                 Spacer(modifier = Modifier.height(imagetoTextDp))
                 Text(
