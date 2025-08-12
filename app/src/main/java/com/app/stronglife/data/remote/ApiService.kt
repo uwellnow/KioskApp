@@ -5,6 +5,10 @@ import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Path
+import com.app.stronglife.data.model.KioskLogPayload
+import retrofit2.Response
+import retrofit2.http.*
+
 
 interface ApiService {
     @GET("products")
@@ -21,4 +25,11 @@ interface ApiService {
         @Path("product_id") productId: Int,
         @Header("x-api-key") apiKey: String
     ): ResponseBody
+
+
+    @POST("log/kiosk")
+    suspend fun postKioskLog(
+        @Header("x-api-key") apiKey: String,
+        @Body payload: KioskLogPayload
+    ): Response<ResponseBody> // 서버가 "string" 형태를 돌려준다 했으니 ResponseBody로 받음
 }
