@@ -1,7 +1,14 @@
 package com.app.stronglife.ui.screen.menuScreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +36,7 @@ import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.midGray
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
     val density = LocalDensity.current
@@ -41,67 +49,72 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
     val imagetoTextDp = with(density) {49f.toDp()}
     val borderRadiusPx = with(density) { roundtoDp.toPx() }
     val blurRadiusPx = with(density) { 24.dp.toPx() }
+    val spacertoDp = with(density) {30f.toDp()}
 
-    Column(
-        modifier = Modifier
-            .width(widthtoDp)
-            .height(heighttoDp)
-            .customShadow(
-                color = lightRed,
-                blurRadius = blurRadiusPx,
-                borderRadius = borderRadiusPx,
-                offsetX = 0f,
-                offsetY = 0f
-            )
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(roundtoDp)
-            )
-            ,
-
-    ) {
-        Row (
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.padding(70.dp)
+        Column(
+            modifier = Modifier
+                .width(widthtoDp)
+                .height(heighttoDp)
+                .customShadow(
+                    color = lightRed,
+                    blurRadius = blurRadiusPx,
+                    borderRadius = borderRadiusPx,
+                    offsetX = 0f,
+                    offsetY = 0f
+                )
+                .background(Color.White, RoundedCornerShape(roundtoDp))
+                .padding(spacertoDp) // 전체 여백
         ) {
-            AsyncImage(
-                model = image,
-                contentDescription = title,
-                modifier = Modifier
-                    .width(imagetoDp)
-                    .height(imagetoDp)
-            )
-            Column (
-                modifier = Modifier.padding(start = imagetoTextDp, top = imagetoTextDp*2)
-            ){
-                Text(
-                    text = title,
-                    style = TextStyle(
-                        fontSize = titletoSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                        fontWeight = FontWeight.Bold,
-                        color = black
-                    )
+            Row(
+                verticalAlignment = Alignment.Top
+            ) {
+                AsyncImage(
+                    model = image,
+                    contentDescription = title,
+                    modifier = Modifier
+                        .width(imagetoDp)
+                        .height(imagetoDp)
+                        .padding(top = imagetoTextDp)
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = nut,
-                    style = TextStyle(
-                        fontSize = nuttoSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = midGray
+                Column(
+                    modifier = Modifier.padding(start = imagetoTextDp, top = imagetoTextDp * 2)
+                ) {
+                    Text(
+                        text = title,
+                        style = TextStyle(
+                            fontSize = titletoSp,
+                            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                            fontWeight = FontWeight.Bold,
+                            color = black
+                        )
                     )
-                )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(
+                        text = nut,
+                        style = TextStyle(
+                            fontSize = nuttoSp,
+                            fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                            fontWeight = FontWeight.Normal,
+                            color = midGray
+                        )
+                    )
+                }
             }
-        }
 
-        //Spacer(modifier = Modifier.height(spacerToDp))
-        MenuScreenBtn(onBackClick = onClose,
-            onCartClick =
-                {onAddToCart()
+            // 남은 공간 차지해서 버튼을 아래로 밀기
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 하단 고정 버튼
+            MenuScreenBtn(
+                onBackClick = onClose,
+                onCartClick = {
+                    onAddToCart()
                     onClose()
-            onGoCart()})
+                    onGoCart()
+                }
+            )
     }
 
-}
+
+    }
+

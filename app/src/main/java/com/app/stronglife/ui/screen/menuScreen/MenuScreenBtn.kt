@@ -86,9 +86,3 @@ fun MenuScreenBtn(
         }
     }
 }
-
-@Preview
-@Composable
-fun MenuScreenBtnPreview() {
-    MenuScreenBtn()
-}
