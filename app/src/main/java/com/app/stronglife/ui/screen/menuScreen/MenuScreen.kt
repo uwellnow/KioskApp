@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.app.stronglife.mock.sampleProducts
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.MenuScreenViewModel
@@ -29,42 +28,60 @@ fun MenuScreen(
     cartViewModel: CartViewModel = viewModel(),
     navController: NavController = rememberNavController()
 ) {
-    val product by menuViewModel.previewingProduct
+    val products by menuViewModel.products
+    val isLoading by menuViewModel.isLoading
+    val error by menuViewModel.errorMessage
+    val currentDetail by menuViewModel.currentDetail
+
+    LaunchedEffect(Unit) {
+        menuViewModel.fetchProducts()
+    }
 
     val density = LocalDensity.current
     val spacertoDp = with(density) {80f.toDp()}
     Box {
         Column (
             modifier = Modifier
-                .alpha(if (product != null) 0.3f else 1f)
+                .alpha(if (currentDetail != null) 0.3f else 1f)
                 .fillMaxSize()
                 .background(background)
         ){
             TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"), navController = navController)
             Spacer(modifier = Modifier.height(spacertoDp))
-            ProductCard(sampleProducts, onProductClick = menuViewModel::selectProduct)
+            when {
+                isLoading -> {
+                    Text("로딩 중...")
+                }
+                error != null -> {
+                    Text("에러: $error")
+                }
+                else -> {
+                    // 가로 스크롤 전체 상품 목록
+                    ProductCard(
+                        products = products,
+                        onProductClick = { product ->
+                            menuViewModel.openProductDetail(product)
+                        }
+                    )
+                }
         }
 
-        product?.let { product ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                ProductDetail(
-                    image = product.imageUrl2,
-                    title = product.title,
-                    nut = product.nutrition,
-                    onClose = menuViewModel::clearSelection,
-                    onAddToCart = { cartViewModel.addProduct(product)},
-                    onGoCart = {navController.navigate("addOrCart")}
-                )
-            }
+        currentDetail?.let { product ->
+            ProductDetail(
+                image = product.productURL,
+                title = product.name,
+                nut = product.nutritionInfo,
+                onClose = menuViewModel::closeProductDetail,
+                onAddToCart = {
+                    cartViewModel.addProduct(product) // 장바구니에 추가
+                },
+                onGoCart = {
+                    navController.navigate("addOrCart")
+                }
+            )
         }
     }
-
-
-}
+}}
 
 
 @Composable

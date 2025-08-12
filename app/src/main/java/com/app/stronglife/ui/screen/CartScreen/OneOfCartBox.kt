@@ -33,8 +33,8 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = product.imageUrl2,
-            contentDescription = product.title,
+            model = product.productURL,
+            contentDescription = product.name,
             modifier = Modifier
                 .width(imageToDp)
                 .height(imageToDp)
@@ -46,7 +46,7 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = product.title,
+                text = product.name,
                 style = TextStyle(
                     fontSize = titleToSp,
                     fontFamily = FontFamily(Font(R.font.sfpro_bold)),

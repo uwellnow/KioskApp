@@ -1,11 +1,13 @@
 package com.app.stronglife.data.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Product(
     val id: Int,
-    val title: String,
+    val name: String,
+    val timing: String,
     val description: String,
-    val time: String,
-    val nutrition: String,
-    val imageUrl1: Int,
-    val imageUrl2: Int,
+    @SerializedName("nutrition_info") val nutritionInfo: String,
+    val companyURL: String,
+    val productURL: String
 )

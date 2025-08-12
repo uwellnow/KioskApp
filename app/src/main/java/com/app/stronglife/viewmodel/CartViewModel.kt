@@ -22,7 +22,7 @@ open class CartViewModel(
             current.add(CartItem(product, quantity = 1))
         }
 
-        Log.d("CartViewModel", "addProduct: ${product.title}")
+        Log.d("CartViewModel", "addProduct: ${product.name}")
 
         _cartItems.value = current
     }

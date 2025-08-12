@@ -33,9 +33,10 @@ import com.app.stronglife.data.model.Product
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
-fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
+fun ProductCard(viewModel: ProductViewModel, onProductClick: (Product) -> Unit) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 20.toDp() }
@@ -48,6 +49,8 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
 
     val scrollState = rememberScrollState()
 
+    val products = viewModel.products
+
     Row(
         modifier = Modifier
             .horizontalScroll(scrollState)
@@ -57,7 +60,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
             Column(
                 modifier = Modifier.padding(horizontal = 15.dp)
             ) {
-                TimeCategory(product.time)
+                TimeCategory(product.timing)
                 Box(
                     modifier = Modifier
                         .width(widthtoDp)
@@ -84,8 +87,8 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             .clickable{ onProductClick(product)}
                     ) {
                         AsyncImage(
-                            model = product.imageUrl1,
-                            contentDescription = product.title,
+                            model = product.companyURL,
+                            contentDescription = product.name,
                             modifier = Modifier
                                 .padding(start = textSpace)
                                 .width(imagePadding)
@@ -98,8 +101,8 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             AsyncImage(
-                                model = product.imageUrl2,
-                                contentDescription = product.title,
+                                model = product.productURL,
+                                contentDescription = product.name,
                                 modifier = Modifier
                                     .width(imageSize)
                                     .height(imageSize)
@@ -118,7 +121,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             )
                             Spacer(modifier = Modifier.height(textSpace))
                             Text(
-                                text = product.title,
+                                text = product.name,
                                 style = TextStyle(
                                     fontSize = titlefont,
                                     fontFamily = FontFamily(Font(R.font.sfpro_bold)),
