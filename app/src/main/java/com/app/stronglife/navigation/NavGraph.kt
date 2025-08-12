@@ -14,9 +14,10 @@ import com.app.stronglife.ui.screen.PayScreen.PayScreen
 import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
+import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel) {
+fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, productViewModel: ProductViewModel) {
 
     NavHost(
         navController = navController,
@@ -26,7 +27,7 @@ fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel) {
             FirstScreen(navController = navController)
         }
         composable("menu") {
-            MenuScreen(navController = navController, cartViewModel = cartViewModel)
+            MenuScreen(viewModel = productViewModel, navController = navController, cartViewModel = cartViewModel)
         }
         composable("addOrCart") {
             AddOrCartScreen(navController = navController)

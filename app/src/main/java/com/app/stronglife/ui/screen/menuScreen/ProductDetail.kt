@@ -26,7 +26,7 @@ import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.midGray
 
 @Composable
-fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
+fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
@@ -88,10 +88,4 @@ fun ProductDetail (image:Int, title:String, nut:String , onClose: () -> Unit, on
             onGoCart()})
     }
 
-}
-
-@Preview
-@Composable
-fun ProductDetailPreview() {
-    ProductDetail(R.drawable.id1pro, "삼대오백 프리워크아웃 포도맛", "카페인 300mg의 고함량  L-아르기닌, EAA\n~카페인 300mg의 고함량 L-아르기닌, EAA", onClose = {}, onAddToCart = {}, onGoCart = {})
 }

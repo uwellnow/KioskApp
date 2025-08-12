@@ -47,8 +47,7 @@ fun FirstScreen(navController: NavController) {
                 fontSize = titleInSp,
                 lineHeight = titleInSp * 1.25,
                 letterSpacing = (-2).sp,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.sfpro_black)),
                 color = Color.Black
             ),
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
