@@ -12,11 +12,11 @@ import android.util.Base64
 
 class ProductViewModel(
     private val apiService: ApiService,
-    private val apiKey: String
 ) : ViewModel() {
 
     var products by mutableStateOf<List<Product>>(emptyList())
         private set
+
 
     var currentDetail by mutableStateOf<Product?>(null)
         private set
@@ -40,21 +40,7 @@ class ProductViewModel(
             isLoading = true
             errorMessage = null
             try {
-                val productList = apiService.getProducts()
-
-                val updatedList = productList.map { product ->
-                    val combytes = apiService.getCompanyImage(product.id, apiKey).bytes()
-                    val probytes = apiService.getProductImage(product.id, apiKey).bytes()
-                    val combase64 = Base64.encodeToString(combytes, Base64.DEFAULT)
-                    val probase64 = Base64.encodeToString(probytes, Base64.DEFAULT)
-                    product.copy(
-                        companyURL = "data:image/png;base64,$combase64",
-                        productURL = "data:image/png;base64,$probase64"
-                    )
-                }
-
-                products = updatedList
-
+                products = apiService.getProducts()
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {

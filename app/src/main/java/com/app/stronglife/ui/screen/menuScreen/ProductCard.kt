@@ -85,7 +85,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             .clickable{ onProductClick(product)}
                     ) {
                         AsyncImage(
-                            model = product.companyURL,
+                            model = product.companyImagePath,
                             contentDescription = product.name,
                             modifier = Modifier
                                 .padding(start = textSpace)
@@ -99,7 +99,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             AsyncImage(
-                                model = product.productURL,
+                                model = product.productImagePath,
                                 contentDescription = product.name,
                                 modifier = Modifier
                                     .width(imageSize)

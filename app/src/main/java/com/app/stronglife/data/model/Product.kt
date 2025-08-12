@@ -8,6 +8,6 @@ data class Product(
     val timing: String,
     val description: String,
     @SerializedName("nutrition_info") val nutritionInfo: String,
-    val companyURL: String,
-    val productURL: String
+    @SerializedName("company_image_path") val companyImagePath: String,
+    @SerializedName("product_image_path") val productImagePath: String
 )

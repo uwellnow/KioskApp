@@ -33,7 +33,7 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = product.productURL,
+            model = product.productImagePath,
             contentDescription = product.name,
             modifier = Modifier
                 .width(imageToDp)

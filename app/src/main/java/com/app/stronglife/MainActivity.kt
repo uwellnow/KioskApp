@@ -2,6 +2,7 @@ package com.app.stronglife
 
 import CartViewModel
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,17 +18,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 최초 실행 시 기기 ID 저장
+
         val prefsManager = PrefsManager(this)
         prefsManager.saveApiKeyIfNotExists()
         val apiKey = prefsManager.getApiKey()
+        Log.d("API_KEY", apiKey)
 
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
             val cartViewModel: CartViewModel = viewModel()
             val productViewModel: ProductViewModel = viewModel(
-                factory = ProductViewModelFactory(RetrofitClient.api, apiKey)
+                factory = ProductViewModelFactory(RetrofitClient.api)
             )
             NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel)
 

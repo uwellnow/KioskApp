@@ -10,13 +10,13 @@ interface ApiService {
     @GET("products")
     suspend fun getProducts(): List<Product>
 
-    @GET("api/products/{product_id}/company-image")
+    @GET("products/{product_id}/company-image")
     suspend fun getCompanyImage(
         @Path("product_id") productId: Int,
         @Header("x-api-key") apiKey: String
     ): ResponseBody
 
-    @GET("api/products/{product_id}/product-image")
+    @GET("products/{product_id}/product-image")
     suspend fun getProductImage(
         @Path("product_id") productId: Int,
         @Header("x-api-key") apiKey: String

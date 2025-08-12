@@ -65,9 +65,9 @@ fun MenuScreen(
                 }
         }
 
-        currentDetail?.let { product ->
+        viewModel.currentDetail?.let { product ->
             ProductDetail(
-                image = product.productURL,
+                image = product.productImagePath,
                 title = product.name,
                 nut = product.nutritionInfo,
                 onClose = viewModel::closeProductDetail,
