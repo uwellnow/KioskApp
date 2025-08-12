@@ -15,51 +15,84 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.lightRed
 
+// 🎯 커스텀 그림자 Modifier
+fun Modifier.customShadow(
+    color: Color,
+    blurRadius: Float,
+    borderRadius: Float,
+    offsetX: Float,
+    offsetY: Float
+) = this.then(
+    Modifier.drawBehind {
+        drawIntoCanvas { canvas ->
+            val paint = Paint().asFrameworkPaint().apply {
+                this.color = android.graphics.Color.TRANSPARENT
+                setShadowLayer(blurRadius, offsetX, offsetY, color.toArgb())
+            }
+            canvas.nativeCanvas.drawRoundRect(
+                0f,
+                0f,
+                size.width,
+                size.height,
+                borderRadius,
+                borderRadius,
+                paint
+            )
+        }
+    }
+)
+
 @Composable
-fun TimeSelectBtn(time:String, description:String, english:String, navController: NavController) {
+fun TimeSelectBtn(time: String, description: String, english: String, navController: NavController) {
     val density = LocalDensity.current
-    val widthInDp = with(density) {568.toDp()}
-    val heightInDp = with(density) {443.toDp()}
-    val roundInDp = with(density) {20f.toDp()}
-    val startInDp = with(density) {30f.toDp()}
-    val midInDp = with(density) {20f.toDp()}
-    val topInDp = with(density) {45f.toDp()}
-    val timeInSp = with(density) {36.toSp()}
-    val desInSp = with(density) {24.toSp()}
-    val engInSp = with(density) {124.toSp()}
+
+    val widthInDp = with(density) { 568.toDp() }
+    val heightInDp = with(density) { 443.toDp() }
+    val roundInDp = with(density) { 20f.toDp() }
+    val startInDp = with(density) { 30f.toDp() }
+    val midInDp = with(density) { 20f.toDp() }
+    val topInDp = with(density) { 45f.toDp() }
+    val timeInSp = with(density) { 36.toSp() }
+    val desInSp = with(density) { 24.toSp() }
+    val engInSp = with(density) { 124.toSp() }
+
+
+    val borderRadiusPx = with(density) { roundInDp.toPx() }
+    val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Box(
         modifier = Modifier
             .width(widthInDp)
             .height(heightInDp)
-            .drawBehind {
-                drawRoundRect(
-                    color = lightRed,
-                    cornerRadius = CornerRadius(20.dp.toPx()),
-                    style = Stroke(width = 18f),
-                    alpha = 0.2f
-                )
-            }
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(roundInDp))
+            .customShadow(
+                color = lightRed,
+                blurRadius = blurRadiusPx,
+                borderRadius = borderRadiusPx,
+                offsetX = 0f,
+                offsetY = 0f
+            )
+            .background(Color.White, RoundedCornerShape(roundInDp))
             .clickable { navController.navigate("menu") }
-
-        ){
+    ) {
         Column(
             modifier = Modifier
                 .padding(start = startInDp, top = topInDp)
@@ -89,14 +122,23 @@ fun TimeSelectBtn(time:String, description:String, english:String, navController
                 style = TextStyle(
                     fontSize = engInSp,
                     lineHeight = engInSp * 0.8,
-                    letterSpacing = (-3).sp,
+                    letterSpacing = (-4).sp,
                     fontFamily = FontFamily(Font(R.font.sfpro_black)),
                     fontWeight = FontWeight.Black,
-                    color = lightRed,
-
-                    )
+                    color = lightRed
+                )
             )
         }
     }
+}
 
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
+@Composable
+fun BtnPreview() {
+    TimeSelectBtn(
+        "운동 후",
+        "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다",
+        "Post-\nworkout",
+        navController = rememberNavController()
+    )
 }
