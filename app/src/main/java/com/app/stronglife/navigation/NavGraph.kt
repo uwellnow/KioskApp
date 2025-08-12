@@ -1,6 +1,7 @@
 package com.app.stronglife.navigation
 
 import CartViewModel
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.app.stronglife.ui.screen.menuScreen.AddOrCartScreen
@@ -16,13 +17,24 @@ import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.viewmodel.ProductViewModel
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import androidx.compose.animation.*
+
 
 @Composable
 fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, productViewModel: ProductViewModel) {
 
-    NavHost(
+    @OptIn(ExperimentalAnimationApi::class)
+    AnimatedNavHost(
         navController = navController,
-        startDestination = "hello"
+        startDestination = "hello",
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
+        },
+        exitTransition = {
+            slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
+        }
     ) {
 
         composable("hello") {

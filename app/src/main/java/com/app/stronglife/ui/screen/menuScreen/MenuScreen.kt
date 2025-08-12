@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
@@ -38,7 +40,10 @@ fun MenuScreen(
     val density = LocalDensity.current
     val spacertoDp = with(density) {80f.toDp()}
 
-    Box {
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
         Column (
             modifier = Modifier
                 .alpha(if (currentDetail != null) 0.3f else 1f)
@@ -75,7 +80,7 @@ fun MenuScreen(
                 nut = product.nutritionInfo,
                 onClose = viewModel::closeProductDetail,
                 onAddToCart = {
-                    cartViewModel.addProduct(product) // 장바구니에 추가
+                    cartViewModel.addProduct(product)
                 },
                 onGoCart = {
                     navController.navigate("addOrCart")
