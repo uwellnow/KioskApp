@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.HelloScreen
 
+import CartViewModel
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -45,7 +46,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, apiKey: String) {
+fun HelloScreen(navController: NavController, cartViewModel: CartViewModel, userViewModel: UserCodeViewModel,apiKey: String) {
     Column (
         modifier = Modifier
             .fillMaxSize().clickable {navController.navigate("first")},
@@ -57,6 +58,9 @@ fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, 
         // 입력 감지 타이머
         LaunchedEffect(Unit) {
             userViewModel.sendApiKey(apiKey) // API Key 전송
+            if (cartViewModel.cartItems.value.isNotEmpty()) {
+                cartViewModel.clearCart()
+            }
         }
 
         val density = LocalDensity.current

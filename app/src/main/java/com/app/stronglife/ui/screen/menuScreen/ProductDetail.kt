@@ -49,7 +49,7 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
     val heighttoDp = with(density) {776.toDp()}
     val titletoSp = with(density) {40f.toSp()}
     val nuttoSp = with(density) {24f.toSp()}
-    val imagetoDp = with(density) {320f.toDp()}
+    val imagetoDp = with(density) {400f.toDp()}
     val roundtoDp = with(density) {20f.toDp()}
     val imagetoTextDp = with(density) {49f.toDp()}
     val blurRadiusPx = with(density) { 24.dp.toPx() }
@@ -104,7 +104,7 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = nut,
+                        text = nut.replace("\\n", "\n"),
                         style = TextStyle(
                             fontSize = nuttoSp,
                             fontFamily = FontFamily(Font(R.font.sfpro_regular)),
