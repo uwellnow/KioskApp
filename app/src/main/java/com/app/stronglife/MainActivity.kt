@@ -15,6 +15,8 @@ import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.navigation.NavGraph
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
+import com.app.stronglife.viewmodel.UserCodeViewModel
+import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,7 +40,10 @@ class MainActivity : ComponentActivity() {
             val productViewModel: ProductViewModel = viewModel(
                 factory = ProductViewModelFactory(RetrofitClient.api)
             )
-            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel, apiKey)
+            val userViewModel: UserCodeViewModel = viewModel(
+                factory = UserCodeViewModelFactory(RetrofitClient.api)
+            )
+            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel, userViewModel = userViewModel, apiKey)
 
         }
     }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,13 +27,19 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
+import com.app.stronglife.data.model.UserPurchase
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 import kotlinx.coroutines.delay
+import retrofit2.Response
+
+
 
 @Composable
-fun PayingScreen(viewModel: CartViewModel,navController: NavController) {
+fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navController: NavController) {
     val density = LocalDensity.current
     val widDp = with(density) {1231f.toDp()}
     val heightDp = with(density) {824f.toDp()}
@@ -41,7 +48,36 @@ fun PayingScreen(viewModel: CartViewModel,navController: NavController) {
     val spaceDp = with(density) {81f.toDp()}
     val space2Dp = with(density) {134f.toDp()}
 
-    val cartItems = viewModel.cartItems
+    val cartItems by viewModel.cartItems
+    val loginData = userViewModel.loginResponse.value
+
+    LaunchedEffect(Unit) {
+        val userPurchase = UserPurchase(
+            productId = cartItems.map { it.product.id },
+            productCount = cartItems.map { it.quantity },
+            userId = "asdf",
+            userCode = "asdf",
+        )
+
+        try {
+            val response = RetrofitClient.api.postPurchaseProduct(
+                apiKey = "발급받은_API_KEY",
+                body = userPurchase
+            )
+
+            if (response.isSuccessful) {
+                // 성공 시 처리
+                navController.navigate("end")
+            } else {
+                // 실패 시 처리
+                // 예: 로그 출력
+                println("결제 요청 실패: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // 네트워크 오류 처리
+        }
+    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,

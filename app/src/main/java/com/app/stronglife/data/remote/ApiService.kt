@@ -5,7 +5,6 @@ import com.app.stronglife.data.model.Product
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import okhttp3.RequestBody
-import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -42,13 +41,13 @@ interface ApiService {
     suspend fun postPurchaseProduct(
         @Header("x-api-key") apiKey: String,
         @Body body: UserPurchase
-    ) : ResponseBody
+    ) : retrofit2.Response<okhttp3.ResponseBody>
   
 
     @POST("log/kiosk")
     suspend fun postKioskLog(
         @Header("x-api-key") apiKey: String,
         @Body payload: KioskLogPayload
-    ): Response<ResponseBody> 
+    ): Response<ResponseBody>
 
 }

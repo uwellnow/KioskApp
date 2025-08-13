@@ -13,6 +13,8 @@ class UserCodeViewModel(
     private val api: ApiService
 ) : ViewModel() {
 
+
+
     var userCode = mutableStateOf("")
     var loginResponse = mutableStateOf<LoginResponse?>(null)
         private set
@@ -51,5 +53,9 @@ class UserCodeViewModel(
                 onResult(false)
             }
         }
+    }
+
+    fun setLoginResponse(response: LoginResponse) {
+        loginResponse.value = response
     }
 }

@@ -21,6 +21,8 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.data.model.User
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
@@ -28,6 +30,7 @@ fun NavGraph(
     navController: NavHostController,
     cartViewModel: CartViewModel,
     productViewModel: ProductViewModel,
+    userViewModel: UserCodeViewModel,
     apiKey: String) {
 
     @OptIn(ExperimentalAnimationApi::class)
@@ -64,10 +67,10 @@ fun NavGraph(
             PayScreen(navController = navController, apiKey)
         }
         composable("paying") {
-            PayingScreen(viewModel = cartViewModel,navController = navController)
+            PayingScreen(viewModel = cartViewModel, userViewModel = userViewModel, navController)
         }
         composable("End") {
-            EndScreen(navController = navController)
+            EndScreen(navController = navController, apiKey = apiKey)
         }
 
     }

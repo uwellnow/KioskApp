@@ -44,7 +44,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val heighttoDp = with(density) { 787f.toDp() }
     val imageSize = with(density) { 400f.toDp() }
     val desfont = with(density) { 20f.toSp() }
-    val titlefont = with(density) { 32f.toSp() }
+    val titlefont = with(density) { 30f.toSp() }
     val textSpace = with(density) { 48f.toDp() }
 
     val scrollState = rememberScrollState()

@@ -25,13 +25,18 @@ import com.app.stronglife.ui.theme.midGray
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.remote.ApiService
+import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.util.nowIso
 import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 
 @Composable
 fun EndScreen(
     navController: NavController,
-    vm: Gs805ViewModel = viewModel()
+    vm: Gs805ViewModel = viewModel(),
+    apiKey: String
 ) {
     val density = LocalDensity.current
     val widDp = with(density) { 1231f.toDp() }
@@ -43,17 +48,94 @@ fun EndScreen(
     val imageWidDp = with(density) { 381f.toDp() }
     val imageHeiDp = with(density) { 68f.toDp() }
 
+    val api = remember { RetrofitClient.api }
+
+    LaunchedEffect(Unit) {
+        val now = nowIso()
+
+        // 1. 시리얼 연결 로그
+        val serialOk = vm.startSerial()
+        sendLog(api, apiKey, KioskLogPayload(
+            errorId = 0,
+            timestamp = now,
+            errorType = if (serialOk) "FRAME" else "ERROR",
+            errorDetail = "SerialStart"
+        ))
+
+        // 2. 상태 확인 로그
+        val err = vm.queryErrorCode()
+        sendLog(api, apiKey, KioskLogPayload(
+            errorId = err.toLong(),
+            timestamp = nowIso(),
+            errorType = "FRAME",
+            errorDetail = "QueryErrorCode",
+            commandSent = "AA55020C0D", // 실제 보낸 프레임 HEX
+            response = "응답 HEX"        // vm에서 받은 응답 HEX 넣으면 좋음
+        ))
+
+        // 3. 레시피 저장 로그
+        val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
+        val okRecipe = vm.saveRecipe3(0x11, slots)
+        sendLog(api, apiKey, KioskLogPayload(
+            errorId = 0,
+            timestamp = nowIso(),
+            errorType = if (okRecipe) "FRAME" else "ERROR",
+            errorDetail = "SaveRecipe",
+            commandSent = "보낸 HEX",
+            response = "응답 HEX"
+        ))
+
+        // 4. 제조 시작 로그
+        val okMake = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
+        sendLog(api, apiKey, KioskLogPayload(
+            errorId = 0,
+            timestamp = nowIso(),
+            errorType = if (okMake) "FRAME" else "ERROR",
+            errorDetail = "MakeDrink",
+            commandSent = "보낸 HEX",
+            response = "응답 HEX"
+        ))
+    }
+
+
     // 1) 장치 이벤트 수신 → 제조 완료 시 화면 전환 (기존 그대로)
     LaunchedEffect(Unit) {
         vm.events.collectLatest { ev ->
             when (ev) {
                 is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
+                    sendLog(api, apiKey, KioskLogPayload(
+                        errorId = 0,
+                        timestamp = nowIso(),
+                        errorType = "FRAME",
+                        errorDetail = "DrinkCompleted"
+                    ))
                     delay(300)
                     navController.navigate("first")
                 }
-                is Gs805ViewModel.MachineEvent.CupDropped -> println("Cup dropped")
-                is Gs805ViewModel.MachineEvent.Offline -> println("OFFLINE cmd=0x${ev.cmd.toString(16)}")
-                is Gs805ViewModel.MachineEvent.ErrorCode -> println("ERROR CODE: ${ev.code}")
+                is Gs805ViewModel.MachineEvent.CupDropped -> {
+                    sendLog(api, apiKey, KioskLogPayload(
+                        errorId = 0,
+                        timestamp = nowIso(),
+                        errorType = "FRAME",
+                        errorDetail = "CupDropped"
+                    ))
+                }
+                is Gs805ViewModel.MachineEvent.Offline-> {
+                    sendLog(api, apiKey, KioskLogPayload(
+                        errorId = 0,
+                        timestamp = nowIso(),
+                        errorType = "ERROR",
+                        errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}"
+                    ))
+                }
+                is Gs805ViewModel.MachineEvent.ErrorCode -> {
+                    sendLog(api, apiKey, KioskLogPayload(
+                        errorId = ev.code.toLong(),
+                        timestamp = nowIso(),
+                        errorType = "ERROR",
+                        errorDetail = "ErrorCode"
+                    ))
+                }
             }
         }
     }
@@ -128,5 +210,22 @@ fun EndScreen(
                 )
             )
         }
+    }
+}
+
+private suspend fun sendLog(
+    api: ApiService,
+    apiKey: String,
+    payload: KioskLogPayload
+) {
+    runCatching {
+        val resp = api.postKioskLog(apiKey, payload)
+        if (resp.isSuccessful) {
+            println("로그 전송 성공: ${payload.errorId}")
+        } else {
+            println("로그 전송 실패: ${resp.code()} ${resp.message()}")
+        }
+    }.onFailure {
+        it.printStackTrace()
     }
 }

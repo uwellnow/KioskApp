@@ -116,7 +116,8 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
                     PhonePayCard(
                         viewModel = userCodeViewModel,
                         apiKey = apiKey,
-                    onUserFound = { isUserInfoVisible = true}
+                    onUserFound = { isUserInfoVisible = true},
+                        navController = navController
                     )
                 }
                 }

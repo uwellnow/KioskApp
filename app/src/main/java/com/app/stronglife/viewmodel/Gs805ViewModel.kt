@@ -3,6 +3,8 @@ package com.app.stronglife.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.stronglife.data.local.serial.*
+import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.remote.ApiService
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
