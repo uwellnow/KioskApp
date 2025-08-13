@@ -41,11 +41,11 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 20.toDp() }
     val widthtoDp = with(density) { 513f.toDp() }
-    val heighttoDp = with(density) { 705f.toDp() }
+    val heighttoDp = with(density) { 787f.toDp() }
     val imageSize = with(density) { 400f.toDp() }
     val desfont = with(density) { 20f.toSp() }
     val titlefont = with(density) { 32f.toSp() }
-    val textSpace = with(density) { 30f.toDp() }
+    val textSpace = with(density) { 48f.toDp() }
 
     val scrollState = rememberScrollState()
 
@@ -58,31 +58,39 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
             Column(
                 modifier = Modifier.padding(horizontal = 15.dp)
             ) {
-                TimeCategory(product.timing)
                 Box(
                     modifier = Modifier
                         .width(widthtoDp)
                         .height(heighttoDp)
-                        .shadow(2.dp, shape = RoundedCornerShape(topEnd = horPadding,
-                            bottomStart = horPadding,
-                            bottomEnd = horPadding),
-                            ambientColor = lightGray, spotColor = lightGray)
-
-                        .background(
-                            color = Color.White,
+                        .shadow(
+                            2.dp,
                             shape = RoundedCornerShape(
                                 topEnd = horPadding,
                                 bottomStart = horPadding,
                                 bottomEnd = horPadding
-                            )
+                            ),
+                            ambientColor = lightGray,
+                            spotColor = lightGray
+                        )
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(horPadding)
                         )
                 ) {
+
+                    TimeCategory(
+                        product.timing,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(30.dp)
+                    )
+
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = horPadding)
-                            .clickable{ onProductClick(product)}
+                            .clickable { onProductClick(product) }
                     ) {
                         AsyncImage(
                             model = product.companyImagePath,
@@ -118,28 +126,28 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                     color = midGray
                                 )
                             )
-                            Spacer(modifier = Modifier.height(textSpace))
-                            Text(
-                                text = product.name,
-                                style = TextStyle(
-                                    fontSize = titlefont,
-                                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                                    fontWeight = FontWeight.Bold,
-                                    color = black
-                                )
-                            )
                         }
-
                     }
 
-
+                    // 하단 고정 상품명
+                    Text(
+                        text = product.name,
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = textSpace),
+                        style = TextStyle(
+                            fontSize = titlefont,
+                            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                            fontWeight = FontWeight.Bold,
+                            color = black
+                        )
+                    )
                 }
-
-
             }
         }
     }
 }
+
 
 
 

@@ -16,10 +16,10 @@ import retrofit2.http.Path
 interface ApiService {
 
     data class ApiKeyRequest(
-        val apiKey: String
+        val api_key: String
     )
 
-    @POST("key/kiosk")
+    @POST("kiosk")
     suspend fun postApiKey(
         @Body request: ApiKeyRequest
     ): ResponseBody
