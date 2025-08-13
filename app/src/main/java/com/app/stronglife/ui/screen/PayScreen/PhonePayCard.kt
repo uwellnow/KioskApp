@@ -43,7 +43,7 @@ import java.nio.file.WatchEvent
 import kotlin.math.round
 
 @Composable
-fun PhonePayCard (viewModel: UserCodeViewModel, apiKey: String, navController: NavController) {
+fun PhonePayCard (viewModel: UserCodeViewModel, apiKey: String, onUserFound: () -> Unit) {
 
     val density = LocalDensity.current
     val widDp = with(density) {584f.toDp()}
@@ -80,11 +80,16 @@ fun PhonePayCard (viewModel: UserCodeViewModel, apiKey: String, navController: N
             val isFilled = viewModel.userCode.value.isNotEmpty()
 
             Box(
-                modifier = Modifier.background(if (isFilled) mainRed else background, shape = RoundedCornerShape(roundDp))
+                modifier = Modifier.background(if (viewModel.userCode.value.isNotEmpty()) mainRed else background, shape = RoundedCornerShape(roundDp))
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
-                        viewModel.requestLogin(apiKey)
-                        navController.navigate("paying")
+                        if (viewModel.userCode.value.isNotEmpty()) {
+                            viewModel.fetchUser(apiKey) { success ->
+                                if (success) {
+                                    onUserFound()
+                                }
+                            }
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -94,7 +99,7 @@ fun PhonePayCard (viewModel: UserCodeViewModel, apiKey: String, navController: N
                         fontSize = boxTextSp,
                         fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                         fontWeight = FontWeight.Medium,
-                        color = if (isFilled) Color.White else midGray
+                        color = if (viewModel.userCode.value.isNotEmpty()) Color.White else midGray
                     )
                 )
             }

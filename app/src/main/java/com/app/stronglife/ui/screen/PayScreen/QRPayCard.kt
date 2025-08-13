@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.app.stronglife.R
+import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.mock.sampleMembers
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
@@ -36,19 +37,11 @@ fun QRPayCard(inputId: Int, showInfo: Boolean) {
 
     val density = LocalDensity.current
     val titleSp = with(density) {36f.toSp()}
-    val t2iSpaceDp = with(density) {16f.toDp()}  // box row padding도 같이
+    val t2iSpaceDp = with(density) {16f.toDp()}
     val i2iSpaceDp = with(density) {52f.toDp()}
     val imageDp = with(density) {304f.toDp()}
 
-    val boxwidDp = with(density) {666f.toDp()}
-    val boxheightDp = with(density) {178f.toDp()}
-    val boxRoundDp = with(density) {24f.toDp()}
 
-    val boxHeiPadDp = with(density) {35f.toDp()}
-    val boxWidPadDp = with(density) {51f.toDp()}
-
-    val textRegSp = with(density) {28f.toSp()}
-    val textBolSp = with(density) {32f.toSp()}
 
     // 입력받은 id를 가지고 db에서 인덱스 찾기
     val index = sampleMembers.indexOfFirst { it.id == inputId }
@@ -78,79 +71,6 @@ fun QRPayCard(inputId: Int, showInfo: Boolean) {
         )
         Spacer(modifier = Modifier.height(i2iSpaceDp))
 
-        Column(
-            modifier = Modifier
-                .width(boxwidDp)
-                .height(boxheightDp)
-                .background(color = background, RoundedCornerShape(boxRoundDp))
-                .padding(horizontal = boxWidPadDp, vertical = boxHeiPadDp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(
-                    text = "회원 정보",
-                    modifier = Modifier
-                        .weight(1f),
-                    style = TextStyle(
-                        fontSize = textRegSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = midGray
-                    )
-                )
-
-                if (showInfo) {
-                    Text(
-                        text = sampleMembers[index].name + " 고객님"+"("+inputId+")",
-                        style = TextStyle(
-                            fontSize = textBolSp,
-                            fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
-                            fontWeight = FontWeight.SemiBold,
-                            color = black
-                        )
-                    )
-                }
-            }
-
-            Divider(modifier = Modifier.fillMaxWidth().padding(vertical = t2iSpaceDp),color = qrScanGray, thickness = 1.dp)
-
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween
-
-            ){
-                Text(
-                    text = "남은 음료 잔 수",
-                    style = TextStyle(
-                        fontSize = textRegSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = midGray
-                    )
-                )
-
-                if (showInfo) {
-                    Text(
-                        text = sampleMembers[index].remain.toString() + "잔",
-                        style = TextStyle(
-                            fontSize = textBolSp,
-                            fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
-                            fontWeight = FontWeight.SemiBold,
-                            color = mainRed
-                        )
-                    )
-                }
-
-            }
-
-        }
 
     }
 }

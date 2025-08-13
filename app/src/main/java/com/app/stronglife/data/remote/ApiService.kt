@@ -21,7 +21,7 @@ interface ApiService {
     suspend fun postUserLogin(
         @Header("x-api-key") apiKey: String,
         @Body request: UserLoginRequest
-    ) : LoginResponse
+    ) : retrofit2.Response<LoginResponse>
 
     @POST("user/purchase/product")
     suspend fun postPurchaseProduct(

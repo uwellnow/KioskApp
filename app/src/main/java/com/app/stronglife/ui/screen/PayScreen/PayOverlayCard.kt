@@ -24,13 +24,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.mock.sampleMembers
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 import kotlinx.coroutines.delay
 
 @Composable
 fun PayOverlayCard(navController: NavController, apiKey: String) {
+
+    val userCodeViewModel: UserCodeViewModel = viewModel(
+        factory = UserCodeViewModelFactory(RetrofitClient.api)
+    )
+    var isUserInfoVisible by remember { mutableStateOf(false) }
+    val loginResponse = userCodeViewModel.loginResponse.value
+
+
     val density = LocalDensity.current
     val widDp = with(density) {1231f.toDp()}
     val heightDp = with(density) {824f.toDp()}
@@ -40,9 +50,17 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
 
     var selected by remember { mutableStateOf("QR") }
 
+    LaunchedEffect(loginResponse) {
+        if (loginResponse != null) {
+            navController.navigate("paying")
+        }
+    }
+
     //Todo : scanndId 2025 하드코딩 -> 스캔된 id로
     var scannedId by remember { mutableStateOf<Int?>(2025) }
     var showInfo by remember { mutableStateOf(false) }
+
+
 
 
     //Todo : delay (X) -> qr 스캔 완료 (o)
@@ -89,10 +107,24 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
                 }
             }
             "phone" -> {
-                PhonePayCard(viewModel = viewModel(), apiKey, navController)
+                if (isUserInfoVisible) {
+                    UserBox(
+                        showInfo = userCodeViewModel.loginResponse.value != null,
+                        loginResponse = userCodeViewModel.loginResponse.value
+                    )
+                } else {
+                    PhonePayCard(
+                        viewModel = userCodeViewModel,
+                        apiKey = apiKey,
+                    onUserFound = { isUserInfoVisible = true}
+                    )
+                }
+                }
+
+                }
             }
         }
 
-    }
-}
+
+
 
