@@ -39,15 +39,21 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.mainRed
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
-fun HelloScreen(navController: NavController) {
+fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, apiKey: String) {
     Column (
         modifier = Modifier
             .fillMaxSize().clickable {navController.navigate("first")},
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
+
+        LaunchedEffect(Unit) {
+            // HelloScreen 진입 시 API 키 전송
+            userViewModel.sendApiKey(apiKey)
+        }
 
         val density = LocalDensity.current
         val widDp = with(density) {494f.toDp()}

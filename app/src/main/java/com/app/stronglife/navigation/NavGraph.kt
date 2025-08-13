@@ -46,7 +46,7 @@ fun NavGraph(
     ) {
 
         composable("hello") {
-            HelloScreen(navController = navController)
+            HelloScreen(navController = navController, userViewModel, apiKey)
         }
         composable("first") {
             FirstScreen(navController = navController)
