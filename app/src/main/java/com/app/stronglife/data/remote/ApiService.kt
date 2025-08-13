@@ -12,6 +12,10 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
+import com.app.stronglife.data.model.KioskLogPayload
+import retrofit2.Response
+import retrofit2.http.*
+
 
 interface ApiService {
 
@@ -33,9 +37,18 @@ interface ApiService {
         @Body request: UserLoginRequest
     ) : retrofit2.Response<LoginResponse>
 
+
     @POST("user/purchase/product")
     suspend fun postPurchaseProduct(
         @Header("x-api-key") apiKey: String,
         @Body body: UserPurchase
     ) : ResponseBody
+  
+
+    @POST("log/kiosk")
+    suspend fun postKioskLog(
+        @Header("x-api-key") apiKey: String,
+        @Body payload: KioskLogPayload
+    ): Response<ResponseBody> 
+
 }

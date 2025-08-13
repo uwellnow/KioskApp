@@ -2,17 +2,10 @@ package com.app.stronglife.ui.screen.EndScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,38 +15,92 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.viewmodel.Gs805ViewModel
+import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 
 @Composable
-fun EndScreen(navController: NavController) {
-
+fun EndScreen(
+    navController: NavController,
+    vm: Gs805ViewModel = viewModel()
+) {
     val density = LocalDensity.current
-    val widDp = with(density) {1231f.toDp()}
-    val heightDp = with(density) {824f.toDp()}
-    val roundDp = with(density) {32f.toDp()}
-    val textSp = with(density) {36f.toSp()}
-    val space1Dp = with(density) {81f.toDp()}
-    val space2Dp = with(density) {107f.toDp()}
+    val widDp = with(density) { 1231f.toDp() }
+    val heightDp = with(density) { 824f.toDp() }
+    val roundDp = with(density) { 32f.toDp() }
+    val textSp = with(density) { 36f.toSp() }
+    val space1Dp = with(density) { 81f.toDp() }
+    val space2Dp = with(density) { 107f.toDp() }
+    val imageWidDp = with(density) { 381f.toDp() }
+    val imageHeiDp = with(density) { 68f.toDp() }
 
-    val imageWidDp = with(density) {381f.toDp()}
-    val imageHeiDp = with(density) {68f.toDp()}
+    // 1) 장치 이벤트 수신 → 제조 완료 시 화면 전환 (기존 그대로)
+    LaunchedEffect(Unit) {
+        vm.events.collectLatest { ev ->
+            when (ev) {
+                is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
+                    delay(300)
+                    navController.navigate("first")
+                }
+                is Gs805ViewModel.MachineEvent.CupDropped -> println("Cup dropped")
+                is Gs805ViewModel.MachineEvent.Offline -> println("OFFLINE cmd=0x${ev.cmd.toString(16)}")
+                is Gs805ViewModel.MachineEvent.ErrorCode -> println("ERROR CODE: ${ev.code}")
+            }
+        }
+    }
 
+    // 2) 시작 + 테스트 시퀀스(3계열) = 한 코루틴에서 순차 실행
+    LaunchedEffect(Unit) {
+        val ok = vm.startSerial()
+        if (!ok) {
+            println("Serial not available; running in mock-ish mode")
+            // 여기선 장치가 없으니 실제 전송은 건너뜀(앱은 계속 UI 유지)
+            return@LaunchedEffect
+        }
+
+        runCatching {
+            // (a) 상태 확인 (0x0C)
+            val err = vm.queryErrorCode()
+            println("queryErrorCode() = 0x${err.toString(16)}")
+
+            // (b) 레시피 저장 (0x15, 3계열) — 예시값
+            val drinkNo = 0x11
+            val slots = listOf(
+                80 to 80, // 채널1
+                0 to 0, 0 to 0, 0 to 0,
+                0 to 0, 0 to 0, 0 to 0, 0 to 0
+            )
+            val okRecipe = vm.saveRecipe3(drinkNo, slots)
+            println("saveRecipe3() = $okRecipe")
+            check(okRecipe) { "레시피 저장 실패" }
+
+            // (c) 즉시 제조 (0x01, LocalOrCmd=0x02)
+            val okMake = vm.makeDrinkNow(drinkNo, localOrCmd = 0x02)
+            println("makeDrinkNow() = $okMake")
+            check(okMake) { "제조 시작 실패" }
+            // 이후 완료 신호는 vm.events에서 수신
+        }.onFailure { e ->
+            e.printStackTrace() // onFailure 유지
+        }
+    }
+
+    // ---------------- 기존 UI 그대로 ----------------
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         TopBar(5, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기", "결제완료"), navController)
 
         Spacer(modifier = Modifier.height(space1Dp))
-        Column (
+        Column(
             modifier = Modifier
                 .width(widDp)
                 .height(heightDp)
@@ -81,12 +128,5 @@ fun EndScreen(navController: NavController) {
                 )
             )
         }
-    }
-
-    //Todo: delay -> 음료 제조 완료 signal == true 일때 로 바꾸기
-    // if(endsignal == true)
-    LaunchedEffect(Unit) {
-        delay(2000)
-        navController.navigate("first")
     }
 }
