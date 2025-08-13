@@ -85,25 +85,31 @@ fun EndScreen(
         // 3. 레시피 저장 로그
         val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
         val okRecipe = vm.saveRecipe3(0x11, slots)
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
-            timestamp = nowIso(),
-            errorType = if (okRecipe) "FRAME" else "ERROR",
-            errorDetail = "SaveRecipe",
-            commandSent = "보낸 HEX",
-            response = "응답 HEX"
-        ))
+        if (okRecipe) {
+            kioskLogger.logFrame(
+                responseHex = "응답 HEX",
+                commandHex = "보낸 HEX"
+            )
+        } else {
+            kioskLogger.logError(
+                error = Throwable("SaveRecipe 실패"),
+                commandHex = "보낸 HEX"
+            )
+        }
 
         // 4. 제조 시작 로그
         val okMake = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
-            timestamp = nowIso(),
-            errorType = if (okMake) "FRAME" else "ERROR",
-            errorDetail = "MakeDrink",
-            commandSent = "보낸 HEX",
-            response = "응답 HEX"
-        ))
+        if (okMake) {
+            kioskLogger.logFrame(
+                responseHex = "응답 HEX",
+                commandHex = "보낸 HEX"
+            )
+        } else {
+            kioskLogger.logError(
+                error = Throwable("MakeDrink 실패"),
+                commandHex = "보낸 HEX"
+            )
+        }
     }
 
 
@@ -112,50 +118,18 @@ fun EndScreen(
         vm.events.collectLatest { ev ->
             when (ev) {
                 is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
-                        timestamp = nowIso(),
-                        errorType = "FRAME",
-                        errorDetail = "DrinkCompleted",
-                        commandSent = "보낸 HEX",
-                        response = "응답 HEX",
-                        userId = "234",
-                    ))
+                    kioskLogger.logFrame("응답 HEX", "보낸 HEX")
                     delay(300)
                     navController.navigate("first")
                 }
                 is Gs805ViewModel.MachineEvent.CupDropped -> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
-                        timestamp = nowIso(),
-                        errorType = "FRAME",
-                        errorDetail = "CupDropped",
-                        commandSent = "보낸 HEX",
-                        response = "응답 HEX",
-                        userId = "234",
-                    ))
+                    kioskLogger.logFrame("응답 HEX", "보낸 HEX")
                 }
                 is Gs805ViewModel.MachineEvent.Offline-> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
-                        timestamp = nowIso(),
-                        errorType = "ERROR",
-                        errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}",
-                        commandSent = "보낸 HEX",
-                        response = "응답 HEX",
-                        userId = "234",
-                    ))
+                    kioskLogger.logError(Throwable("Offline cmd=0x${ev.cmd.toString(16)}"), "보낸 HEX")
                 }
                 is Gs805ViewModel.MachineEvent.ErrorCode -> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = ev.code.toLong(),
-                        timestamp = nowIso(),
-                        errorType = "ERROR",
-                        errorDetail = "ErrorCode",
-                        commandSent = "보낸 HEX",
-                        response = "응답 HEX",
-                        userId = "234",
-                    ))
+                    kioskLogger.logError(Throwable("ErrorCode=${ev.code}"), "보낸 HEX")
                 }
             }
         }
