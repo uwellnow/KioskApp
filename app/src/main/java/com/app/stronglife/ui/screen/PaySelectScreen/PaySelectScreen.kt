@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -58,7 +64,8 @@ fun PaySelectScreen(navController: NavController) {
     val blurRadiusPx = with(density) { 7.dp.toPx() }
 
     Column (
-        modifier = Modifier.background(background),
+        modifier = Modifier
+            .fillMaxSize().background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
@@ -79,13 +86,23 @@ fun PaySelectScreen(navController: NavController) {
                 modifier = Modifier
                     .width(cardWidDp)
                     .height(heightDp)
-                    .customShadow(
-                        color = shadowGray,
-                        blurRadius = blurRadiusPx,
-                        borderRadius = borderRadiusPx,
-                        offsetX = 0f,
-                        offsetY = 0f
-                    )
+                    .drawBehind {
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().asFrameworkPaint().apply {
+                                color = shadowGray.toArgb()
+                                maskFilter = android.graphics.BlurMaskFilter(borderRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                            }
+                            canvas.nativeCanvas.drawRoundRect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height,
+                                blurRadiusPx,
+                                blurRadiusPx,
+                                paint
+                            )
+                        }
+                    }
                     .background(color = Color.White,
                         shape = RoundedCornerShape(space3Dp))
                     ,
