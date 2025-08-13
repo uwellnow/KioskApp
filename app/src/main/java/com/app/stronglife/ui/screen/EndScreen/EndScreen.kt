@@ -27,7 +27,9 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.data.model.KioskLogPayload
 import com.app.stronglife.data.remote.ApiService
+import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.data.remote.RetrofitClient.api
 import com.app.stronglife.util.nowIso
 import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
@@ -49,29 +51,36 @@ fun EndScreen(
     val imageHeiDp = with(density) { 68f.toDp() }
 
     val api = remember { RetrofitClient.api }
+    val scope = rememberCoroutineScope()
+
+    val kioskLogger = remember {
+        KioskLogger(
+            apiKey = apiKey,
+            service = RetrofitClient.api,
+            externalScope = scope,
+            machineId = 234,           // 실제 단말 ID
+            storeName = "매장명"         // 필요 시
+        )
+    }
+
 
     LaunchedEffect(Unit) {
         val now = nowIso()
 
         // 1. 시리얼 연결 로그
         val serialOk = vm.startSerial()
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
-            timestamp = now,
-            errorType = if (serialOk) "FRAME" else "ERROR",
-            errorDetail = "SerialStart"
-        ))
+        kioskLogger.logFrame(
+            responseHex = "응답 HEX",
+            commandHex = "보낸 HEX"
+        )
 
         // 2. 상태 확인 로그
         val err = vm.queryErrorCode()
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = err.toLong(),
-            timestamp = nowIso(),
-            errorType = "FRAME",
-            errorDetail = "QueryErrorCode",
-            commandSent = "AA55020C0D", // 실제 보낸 프레임 HEX
-            response = "응답 HEX"        // vm에서 받은 응답 HEX 넣으면 좋음
-        ))
+        if (err == 0) {
+            kioskLogger.logFrame("응답 HEX", "AA55020C0D")
+        } else {
+            kioskLogger.logError(Throwable("ErrorCode=$err"), "AA55020C0D")
+        }
 
         // 3. 레시피 저장 로그
         val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
@@ -107,7 +116,10 @@ fun EndScreen(
                         errorId = 0,
                         timestamp = nowIso(),
                         errorType = "FRAME",
-                        errorDetail = "DrinkCompleted"
+                        errorDetail = "DrinkCompleted",
+                        commandSent = "보낸 HEX",
+                        response = "응답 HEX",
+                        userId = "234",
                     ))
                     delay(300)
                     navController.navigate("first")
@@ -117,7 +129,10 @@ fun EndScreen(
                         errorId = 0,
                         timestamp = nowIso(),
                         errorType = "FRAME",
-                        errorDetail = "CupDropped"
+                        errorDetail = "CupDropped",
+                        commandSent = "보낸 HEX",
+                        response = "응답 HEX",
+                        userId = "234",
                     ))
                 }
                 is Gs805ViewModel.MachineEvent.Offline-> {
@@ -125,7 +140,10 @@ fun EndScreen(
                         errorId = 0,
                         timestamp = nowIso(),
                         errorType = "ERROR",
-                        errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}"
+                        errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}",
+                        commandSent = "보낸 HEX",
+                        response = "응답 HEX",
+                        userId = "234",
                     ))
                 }
                 is Gs805ViewModel.MachineEvent.ErrorCode -> {
@@ -133,7 +151,10 @@ fun EndScreen(
                         errorId = ev.code.toLong(),
                         timestamp = nowIso(),
                         errorType = "ERROR",
-                        errorDetail = "ErrorCode"
+                        errorDetail = "ErrorCode",
+                        commandSent = "보낸 HEX",
+                        response = "응답 HEX",
+                        userId = "234",
                     ))
                 }
             }
@@ -229,3 +250,4 @@ private suspend fun sendLog(
         it.printStackTrace()
     }
 }
+
