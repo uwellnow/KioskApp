@@ -29,7 +29,7 @@ class Gs805ViewModel : ViewModel(), SerialListener {
     // ---- 요청 대기 테이블 (CMD별로 1건만 대기 가정) ----
     private val pending = ConcurrentHashMap<Int, CompletableDeferred<ByteArray>>()
 
-    fun startSerial() = dataSource.start()
+    fun startSerial(): Boolean = dataSource.start()
     fun stopSerial() = dataSource.stop()
     fun isSerialRunning() = dataSource.isRunning()
 

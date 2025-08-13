@@ -43,70 +43,53 @@ fun EndScreen(
     val imageWidDp = with(density) { 381f.toDp() }
     val imageHeiDp = with(density) { 68f.toDp() }
 
-    // 1) 시리얼 시작 (한 번만)
-    LaunchedEffect(Unit) {
-        vm.startSerial()
-    }
-
-    // 2) 장치 이벤트 수신 → 제조 완료 시 화면 전환
+    // 1) 장치 이벤트 수신 → 제조 완료 시 화면 전환 (기존 그대로)
     LaunchedEffect(Unit) {
         vm.events.collectLatest { ev ->
             when (ev) {
-                is MachineEvent.DrinkCompleted -> {
-                    // UX 상 약간의 딜레이 후 홈으로
+                is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
                     delay(300)
                     navController.navigate("first")
                 }
-                is MachineEvent.CupDropped -> {
-                    println("Cup dropped")
-                }
-                is MachineEvent.Offline -> {
-                    println("OFFLINE for cmd=0x${ev.cmd.toString(16)}")
-                }
-                is MachineEvent.ErrorCode -> {
-                    println("ERROR CODE: ${ev.code}")
-                }
+                is Gs805ViewModel.MachineEvent.CupDropped -> println("Cup dropped")
+                is Gs805ViewModel.MachineEvent.Offline -> println("OFFLINE cmd=0x${ev.cmd.toString(16)}")
+                is Gs805ViewModel.MachineEvent.ErrorCode -> println("ERROR CODE: ${ev.code}")
             }
         }
     }
 
-    // 3) 테스트 시퀀스 (3계열): 0x0C → 0x15 → 0x01
-    //    * 나중에 인자로 받을 예정이라 지금은 하드코딩 값으로 동작 확인용
+    // 2) 시작 + 테스트 시퀀스(3계열) = 한 코루틴에서 순차 실행
     LaunchedEffect(Unit) {
+        val ok = vm.startSerial()
+        if (!ok) {
+            println("Serial not available; running in mock-ish mode")
+            // 여기선 장치가 없으니 실제 전송은 건너뜀(앱은 계속 UI 유지)
+            return@LaunchedEffect
+        }
+
         runCatching {
             // (a) 상태 확인 (0x0C)
             val err = vm.queryErrorCode()
             println("queryErrorCode() = 0x${err.toString(16)}")
 
-            // (b) 레시피 저장 (0x15, 3계열)
-            //    Drink_NO: 예시로 '차가운 1번' 0x11 사용 (0x11~0x17: 냉음료)
+            // (b) 레시피 저장 (0x15, 3계열) — 예시값
             val drinkNo = 0x11
-            //    8채널 값: (분말, 물). 단위는 장치 스펙(보통 0.1s / 유량계 있으면 g).
-            //    테스트로 1번 채널만 80/80, 나머지 0/0
             val slots = listOf(
-                80 to 80, // 1
-                0 to 0,   // 2
-                0 to 0,   // 3
-                0 to 0,   // 4
-                0 to 0,   // 5
-                0 to 0,   // 6
-                0 to 0,   // 7
-                0 to 0    // 8
+                80 to 80, // 채널1
+                0 to 0, 0 to 0, 0 to 0,
+                0 to 0, 0 to 0, 0 to 0, 0 to 0
             )
             val okRecipe = vm.saveRecipe3(drinkNo, slots)
             println("saveRecipe3() = $okRecipe")
             check(okRecipe) { "레시피 저장 실패" }
 
-            // (c) 즉시 제조 (0x01, LocalOrCmd=0x02: 명령으로 바로 제조)
+            // (c) 즉시 제조 (0x01, LocalOrCmd=0x02)
             val okMake = vm.makeDrinkNow(drinkNo, localOrCmd = 0x02)
             println("makeDrinkNow() = $okMake")
             check(okMake) { "제조 시작 실패" }
-
-            // 완료 신호는 비동기 0x0C 이벤트로 오고,
-            // 위 collectLatest에서 DrinkCompleted를 받으면 네비게이션함.
+            // 이후 완료 신호는 vm.events에서 수신
         }.onFailure { e ->
-            // onFailure 유지: 테스트 중 오류 로그만
-            e.printStackTrace()
+            e.printStackTrace() // onFailure 유지
         }
     }
 

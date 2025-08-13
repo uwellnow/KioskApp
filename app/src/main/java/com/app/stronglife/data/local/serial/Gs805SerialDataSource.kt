@@ -19,29 +19,33 @@ class Gs805SerialDataSource(
     private val framer = A55AFramer()
 
     @Synchronized
-    fun start() {
-        if (readJob?.isActive == true) return
-        opened = provider.open(cfg)
-
-        readJob = externalScope.launch(Dispatchers.IO) {
-            val input = requireNotNull(opened).input
-            val buf = ByteArray(cfg.readBufferSize)
-
-            try {
-                while (isActive) {
-                    val n = input.read(buf)
-                    if (n <= 0) throw IOException("Serial read EOF / $n")
-                    val chunk = buf.copyOfRange(0, n)
-                    val frames = framer.feed(chunk)
-                    if (frames.isNotEmpty()) {
-                        frames.forEach { listener.onFrame(it.toHex()) }
-                    } else {
-                        listener.onRaw(chunk)
+    fun start(): Boolean {
+        if (readJob?.isActive == true) return true
+        return try {
+            opened = provider.open(cfg)
+            readJob = externalScope.launch(Dispatchers.IO) {
+                val input = requireNotNull(opened).input
+                val buf = ByteArray(cfg.readBufferSize)
+                try {
+                    while (isActive) {
+                        val n = input.read(buf)
+                        if (n <= 0) throw IOException("Serial read EOF / $n")
+                        val chunk = buf.copyOfRange(0, n)
+                        val frames = framer.feed(chunk)
+                        if (frames.isNotEmpty()) {
+                            frames.forEach { listener.onFrame(it.toHex()) }
+                        } else {
+                            listener.onRaw(chunk)
+                        }
                     }
+                } catch (t: Throwable) {
+                    listener.onError(t)
                 }
-            } catch (t: Throwable) {
-                listener.onError(t)
             }
+            true
+        } catch (t: Throwable) {
+            listener.onError(t)   // 서버 로깅 등으로 흘러가게
+            false                 // ← 앱 안 죽고 ‘미연결’ 상태로 진행
         }
     }
 
