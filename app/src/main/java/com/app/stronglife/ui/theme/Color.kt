@@ -12,7 +12,7 @@ val lightGray = Color(0xFF7A7673)
 val background = Color(0xFFF6F6F6)
 
 val shadowGray = Color(0xFFDFDFDF)
-val superLightGray = Color (0xFFFEFEFE)
+val superLightGray = Color (0xFFEFEFEF)
 
 val cardPayGray = Color (0xFFC6C6C6)
 
