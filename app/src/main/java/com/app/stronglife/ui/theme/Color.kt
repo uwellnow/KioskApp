@@ -11,6 +11,7 @@ val boldGray = Color(0xFF484848)
 val lightGray = Color(0xFF7A7673)
 val background = Color(0xFFF6F6F6)
 
+val errorGray = Color (0xFF919191)
 val shadowGray = Color(0xFFDFDFDF)
 val superLightGray = Color (0xFFEFEFEF)
 
