@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.PayScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,14 +27,15 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.midGray
 
 @Composable
-fun NumberBtn(number: String) {
+fun NumberBtn(number: String, onClick: () -> Unit) {
 
     val density = LocalDensity.current
     val sizeDp = with (density) {96f.toDp()}
     val numberDp = with (density) {60f.toSp()}
 
     Box(
-        modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape),
+        modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape)
+            .clickable{onClick()},
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -47,9 +49,3 @@ fun NumberBtn(number: String) {
     }
 }
 
-@Preview
-@Composable
-fun NumberBtnPreview(){
-    NumberBtn("1")
-
-}

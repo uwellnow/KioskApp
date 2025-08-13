@@ -2,6 +2,7 @@ package com.app.stronglife.ui.screen.PayScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsProperties.InputText
 import androidx.compose.ui.text.TextStyle
@@ -34,12 +36,14 @@ import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.boldGray
 import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 import java.nio.file.WatchEvent
 import kotlin.math.round
 
 @Composable
-fun PhonePayCard () {
+fun PhonePayCard (viewModel: UserCodeViewModel, apiKey: String, navController: NavController) {
 
     val density = LocalDensity.current
     val widDp = with(density) {584f.toDp()}
@@ -59,10 +63,10 @@ fun PhonePayCard () {
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 2.dp)
+            modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
         ){
             Text(
-                text = "휴대폰 번호를 입력해주세요",
+                text = if (viewModel.userCode.value.isEmpty()) "주문번호를 입력하세요" else viewModel.userCode.value,
                 style = TextStyle(
                     fontSize = textSp,
                     fontFamily = FontFamily(Font(R.font.sfpro_regular)),
@@ -73,9 +77,15 @@ fun PhonePayCard () {
 
             Spacer(modifier = Modifier.width(spacerDp))
 
+            val isFilled = viewModel.userCode.value.isNotEmpty()
+
             Box(
-                modifier = Modifier.background(color = background, shape = RoundedCornerShape(roundDp))
-                    .size(boxWidDp, boxHeiDp),
+                modifier = Modifier.background(if (isFilled) mainRed else background, shape = RoundedCornerShape(roundDp))
+                    .size(boxWidDp, boxHeiDp)
+                    .clickable(enabled = isFilled) {
+                        viewModel.requestLogin(apiKey)
+                        navController.navigate("paying")
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -84,7 +94,7 @@ fun PhonePayCard () {
                         fontSize = boxTextSp,
                         fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                         fontWeight = FontWeight.Medium,
-                        color = midGray
+                        color = if (isFilled) Color.White else midGray
                     )
                 )
             }
@@ -95,15 +105,11 @@ fun PhonePayCard () {
 
         Spacer(modifier = Modifier.height(spacerDp))
 
-        KeyPad()
+        KeyPad(onNumberClick = { digit -> viewModel.addDigit(digit) },
+            onDeleteClick = { viewModel.removeLast() },
+            onClearClick = {viewModel.clear()})
 
 
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PhonePreview() {
-    PhonePayCard()
 }

@@ -1,6 +1,7 @@
 package com.app.stronglife.ui.screen.PayScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,9 @@ import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.boldGray
 
 @Composable
-fun KeyPad() {
+fun KeyPad(onNumberClick: (String) -> Unit,
+           onDeleteClick: () -> Unit,
+           onClearClick: () -> Unit) {
     val density = LocalDensity.current
     val colDp = with(density) {9f.toDp()}
     val rowdp = with(density) {39f.toDp()}
@@ -39,34 +42,35 @@ fun KeyPad() {
         Row (
             horizontalArrangement = Arrangement.spacedBy(rowdp)
         ){
-            NumberBtn("1")
-            NumberBtn("2")
-            NumberBtn("3")
+            NumberBtn("1"){ onNumberClick("1") }
+            NumberBtn("2"){ onNumberClick("2") }
+            NumberBtn("3"){ onNumberClick("2") }
         }
 
 
         Row (
             horizontalArrangement = Arrangement.spacedBy(rowdp)
         ){
-            NumberBtn("4")
-            NumberBtn("5")
-            NumberBtn("6")
+            NumberBtn("4"){ onNumberClick("4") }
+            NumberBtn("5"){ onNumberClick("5") }
+            NumberBtn("6"){ onNumberClick("6") }
         }
 
 
         Row (
             horizontalArrangement = Arrangement.spacedBy(rowdp)
         ){
-            NumberBtn("7")
-            NumberBtn("8")
-            NumberBtn("9")
+            NumberBtn("7"){ onNumberClick("7") }
+            NumberBtn("8"){ onNumberClick("8") }
+            NumberBtn("9"){ onNumberClick("9") }
         }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(rowdp)
         ) {
             Box(
-                modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape),
+                modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape)
+                    .clickable{onClearClick()},
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -80,10 +84,11 @@ fun KeyPad() {
                 )
             }
 
-            NumberBtn("0")
+            NumberBtn("0"){ onNumberClick("0") }
 
             Box(
-                modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape),
+                modifier = Modifier.size(sizeDp, sizeDp).background(background, shape = CircleShape)
+                    .clickable{onDeleteClick()},
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -100,9 +105,3 @@ fun KeyPad() {
     }
 }
 
-
-@Preview
-@Composable
-fun KeyPadPreview() {
-    KeyPad()
-}

@@ -21,14 +21,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.mock.sampleMembers
 import com.app.stronglife.ui.theme.cardPayGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun PayOverlayCard(navController: NavController) {
+fun PayOverlayCard(navController: NavController, apiKey: String) {
     val density = LocalDensity.current
     val widDp = with(density) {1231f.toDp()}
     val heightDp = with(density) {824f.toDp()}
@@ -44,13 +46,13 @@ fun PayOverlayCard(navController: NavController) {
 
 
     //Todo : delay (X) -> qr 스캔 완료 (o)
-    LaunchedEffect(Unit) {
-        delay(3000)
-        showInfo = true
-
-        delay(2000)
-        navController.navigate("paying")
-    }
+//    LaunchedEffect(Unit) {
+//        delay(3000)
+//        showInfo = true
+//
+//        delay(2000)
+//        navController.navigate("paying")
+//    }
 
     Column (
         modifier = Modifier
@@ -69,7 +71,7 @@ fun PayOverlayCard(navController: NavController) {
                 onClick = { selected = "QR"},
             )
             PaymentTab(
-                text = "휴대전화로 조회",
+                text = "주문번호로 조회",
                 isSelected = selected == "phone",
                 onClick = { selected = "phone"},
             )
@@ -80,10 +82,16 @@ fun PayOverlayCard(navController: NavController) {
 
         /*Todo: 바코드 스캔하면 해당 회원의 id 가져오기 -> 밑의 파라미터에 넣으면 됨
         * Todo: 3초 타이머 부분(임시 코드) <- 통신 연결 코드 넣기 */
-        scannedId?.let { scanId ->
-            QRPayCard(inputId = scanId, showInfo = showInfo)
+        when (selected) {
+            "QR" -> {
+                scannedId?.let { scanId ->
+                    QRPayCard(inputId = scanId, showInfo = showInfo)
+                }
+            }
+            "phone" -> {
+                PhonePayCard(viewModel = viewModel(), apiKey, navController)
+            }
         }
-
 
     }
 }

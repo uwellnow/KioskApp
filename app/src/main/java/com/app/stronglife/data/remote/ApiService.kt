@@ -5,6 +5,7 @@ import com.app.stronglife.data.model.Product
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import okhttp3.RequestBody
+import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -19,8 +20,8 @@ interface ApiService {
     @POST("user/login")
     suspend fun postUserLogin(
         @Header("x-api-key") apiKey: String,
-        @Body body: UserLoginRequest
-    ) : ResponseBody
+        @Body request: UserLoginRequest
+    ) : LoginResponse
 
     @POST("user/purchase/product")
     suspend fun postPurchaseProduct(

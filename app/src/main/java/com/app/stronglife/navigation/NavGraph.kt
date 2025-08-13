@@ -24,7 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
-fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, productViewModel: ProductViewModel) {
+fun NavGraph(
+    navController: NavHostController,
+    cartViewModel: CartViewModel,
+    productViewModel: ProductViewModel,
+    apiKey: String) {
 
     @OptIn(ExperimentalAnimationApi::class)
     AnimatedNavHost(
@@ -57,7 +61,7 @@ fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, pro
             PaySelectScreen(navController = navController)
         }
         composable("pay") {
-            PayScreen(navController = navController)
+            PayScreen(navController = navController, apiKey)
         }
         composable("paying") {
             PayingScreen(viewModel = cartViewModel,navController = navController)

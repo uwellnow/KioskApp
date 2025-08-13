@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
             val productViewModel: ProductViewModel = viewModel(
                 factory = ProductViewModelFactory(RetrofitClient.api)
             )
-            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel)
+            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel, apiKey)
 
         }
     }
