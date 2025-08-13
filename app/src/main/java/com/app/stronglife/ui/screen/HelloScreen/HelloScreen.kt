@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -40,6 +42,7 @@ import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, apiKey: String) {
@@ -50,9 +53,10 @@ fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, 
         verticalArrangement = Arrangement.Center
     ){
 
+
+        // 입력 감지 타이머
         LaunchedEffect(Unit) {
-            // HelloScreen 진입 시 API 키 전송
-            userViewModel.sendApiKey(apiKey)
+            userViewModel.sendApiKey(apiKey) // API Key 전송
         }
 
         val density = LocalDensity.current
@@ -61,36 +65,38 @@ fun HelloScreen(navController: NavController, userViewModel: UserCodeViewModel, 
         val textSp = with(density) {36f.toSp()}
         val spaceDp = with(density) {100f.toDp()}
 
-        val infiniteTransition = rememberInfiniteTransition(label = "")
-        val textAlpha by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 0.3f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1000),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = ""
-        )
 
-        AsyncImage(
-            model = R.drawable.hello,
-            contentDescription = "처음 보이는 화면",
-            modifier = Modifier.width(widDp).height(heiDp)
-                .alpha(textAlpha)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    navController.navigate("first")
+                },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
 
-        Spacer(modifier = Modifier.height(spaceDp))
 
-        Text(
-            text = "화면을 터치하여 주문을 시작하세요",
-            modifier = Modifier.alpha(textAlpha),
-            style = TextStyle(
-                fontSize = textSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                fontWeight = FontWeight.Medium,
-                color = mainRed,
-                textAlign = TextAlign.Center
+            Image(
+                painter = painterResource(id = R.drawable.hello),
+                contentDescription = "처음 보이는 화면",
+                modifier = Modifier
+                    .width(widDp)
+                    .height(heiDp)
             )
-        )
+
+            Spacer(modifier = Modifier.height(spaceDp))
+
+            Text(
+                text = "화면을 터치하여 주문을 시작하세요",
+                style = TextStyle(
+                    fontSize = textSp,
+                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontWeight = FontWeight.Medium,
+                    color = mainRed,
+                    textAlign = TextAlign.Center
+                )
+            )
+        }
     }
 }
