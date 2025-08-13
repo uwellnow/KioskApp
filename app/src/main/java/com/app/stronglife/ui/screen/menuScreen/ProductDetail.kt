@@ -21,7 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -47,7 +52,6 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
     val imagetoDp = with(density) {320f.toDp()}
     val roundtoDp = with(density) {20f.toDp()}
     val imagetoTextDp = with(density) {49f.toDp()}
-    val borderRadiusPx = with(density) { roundtoDp.toPx() }
     val blurRadiusPx = with(density) { 24.dp.toPx() }
     val spacertoDp = with(density) {30f.toDp()}
 
@@ -55,13 +59,23 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
             modifier = Modifier
                 .width(widthtoDp)
                 .height(heighttoDp)
-                .customShadow(
-                    color = lightRed,
-                    blurRadius = blurRadiusPx,
-                    borderRadius = borderRadiusPx,
-                    offsetX = 0f,
-                    offsetY = 0f
-                )
+                .drawBehind {
+                    drawIntoCanvas { canvas ->
+                        val paint = Paint().asFrameworkPaint().apply {
+                            color = lightRed.toArgb()
+                            maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                        }
+                        canvas.nativeCanvas.drawRoundRect(
+                            0f,
+                            0f,
+                            size.width,
+                            size.height,
+                            blurRadiusPx,
+                            blurRadiusPx,
+                            paint
+                        )
+                    }
+                }
                 .background(Color.White, RoundedCornerShape(roundtoDp))
                 .padding(spacertoDp) // 전체 여백
         ) {

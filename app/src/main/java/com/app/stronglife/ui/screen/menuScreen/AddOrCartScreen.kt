@@ -15,7 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -56,13 +61,23 @@ fun AddOrCartScreen(navController: NavController) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
-                    .customShadow(
-                        color = shadowGray,
-                        blurRadius = blurRadiusPx,
-                        borderRadius = borderRadiusPx,
-                        offsetX = 0f,
-                        offsetY = 0f
-                    )
+                    .drawBehind {
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().asFrameworkPaint().apply {
+                                color = shadowGray.toArgb()
+                                maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                            }
+                            canvas.nativeCanvas.drawRoundRect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height,
+                                blurRadiusPx,
+                                blurRadiusPx,
+                                paint
+                            )
+                        }
+                    }
                     .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
                     .clickable{navController.navigate("menu")}
                     ,
@@ -95,13 +110,23 @@ fun AddOrCartScreen(navController: NavController) {
                 modifier = Modifier
                     .width(btnToDp)
                     .height(btnToDp)
-                    .customShadow(
-                        color = shadowGray,
-                        blurRadius = blurRadiusPx,
-                        borderRadius = borderRadiusPx,
-                        offsetX = 0f,
-                        offsetY = 0f
-                    )
+                    .drawBehind {
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().asFrameworkPaint().apply {
+                                color = shadowGray.toArgb()
+                                maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                            }
+                            canvas.nativeCanvas.drawRoundRect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height,
+                                blurRadiusPx,
+                                blurRadiusPx,
+                                paint
+                            )
+                        }
+                    }
                     .background(color = Color.White, shape = RoundedCornerShape(imagetoTextDp))
                     .clickable{navController.navigate("cart")}
                     ,

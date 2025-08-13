@@ -33,8 +33,8 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.lightRed
+import com.app.stronglife.ui.theme.mainRed
 
-// 🎯 커스텀 그림자 Modifier
 fun Modifier.customShadow(
     color: Color,
     blurRadius: Float,
@@ -76,20 +76,29 @@ fun TimeSelectBtn(time: String, description: String, english: String, navControl
     val engInSp = with(density) { 124.toSp() }
 
 
-    val borderRadiusPx = with(density) { roundInDp.toPx() }
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Box(
         modifier = Modifier
             .width(widthInDp)
             .height(heightInDp)
-            .customShadow(
-                color = lightRed,
-                blurRadius = blurRadiusPx,
-                borderRadius = borderRadiusPx,
-                offsetX = 0f,
-                offsetY = 0f
-            )
+            .drawBehind {
+                drawIntoCanvas { canvas ->
+                    val paint = Paint().asFrameworkPaint().apply {
+                        color = lightRed.toArgb()
+                        maskFilter = android.graphics.BlurMaskFilter(roundInDp.toPx(), android.graphics.BlurMaskFilter.Blur.NORMAL)
+                    }
+                    canvas.nativeCanvas.drawRoundRect(
+                        0f,
+                        0f,
+                        size.width,
+                        size.height,
+                        blurRadiusPx,
+                        blurRadiusPx,
+                        paint
+                    )
+                }
+            }
             .background(Color.White, RoundedCornerShape(roundInDp))
             .clickable { navController.navigate("menu") }
     ) {

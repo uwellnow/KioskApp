@@ -20,6 +20,7 @@ import com.app.stronglife.viewmodel.ProductViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import androidx.compose.animation.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Composable
@@ -59,7 +60,7 @@ fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, pro
             PayScreen(navController = navController)
         }
         composable("paying") {
-            PayingScreen(navController = navController)
+            PayingScreen(viewModel = cartViewModel,navController = navController)
         }
         composable("End") {
             EndScreen(navController = navController)
