@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.midGray
 
 @Composable
@@ -37,6 +39,7 @@ fun CountBtn(
     val heightDp = with(density) {57f.toDp()}
     val countToSp = with(density) {48f.toSp()}
     val countSectionWidth = with(density) {248f.toDp()}
+    val paddingdp = with(density) {16f.toDp()}
 
     Row(
         modifier = Modifier
@@ -52,21 +55,17 @@ fun CountBtn(
                 )
                 .border(
                     1.dp,
-                    color = midGray.copy(alpha = if (isOne) 0.4f else 1f),
+                    color = lightGray.copy(alpha = if (isOne) 0.5f else 1f),
                     shape = CircleShape
                 )
                 .alpha(if (isOne) 0.4f else 1f)
                 .clickable(enabled = !isOne) { onDecrease() },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "-",
-                style = TextStyle(
-                    fontSize = 70.sp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                    fontWeight = FontWeight.Normal,
-                    color = midGray
-                ),
+            Image(
+                painter = painterResource(id = R.drawable.minus),
+                contentDescription = "감소",
+                modifier = Modifier.size(30.dp)
             )
         }
 
@@ -84,18 +83,15 @@ fun CountBtn(
         Box(
             modifier = Modifier
                 .size(heightDp)
-                .border(1.dp, midGray, CircleShape)
+                .border(1.dp, lightGray, CircleShape)
                 .clickable { onIncrease() },
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = "+",
-                style = TextStyle(
-                    fontSize = 60.sp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
-                    fontWeight = FontWeight.Normal,
-                    color = midGray
-                ),
+            Icon(
+                painter = painterResource(id = R.drawable.plus),
+                contentDescription = "증가",
+                tint = lightGray,
+                modifier = Modifier.size(45.dp)
             )
         }
     }
@@ -108,7 +104,7 @@ fun CountBtn(
 fun CountBtnPreview() {
     CountBtn(
         count = 2,
-        isOne = true,
+        isOne = false,
         onIncrease = {},
         onDecrease = {}
     )

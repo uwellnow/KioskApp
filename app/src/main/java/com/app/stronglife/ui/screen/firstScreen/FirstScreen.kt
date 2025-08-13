@@ -18,12 +18,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
+import com.app.stronglife.ui.theme.boldGray
 
 @Composable
 fun FirstScreen(navController: NavController) {
@@ -32,7 +35,7 @@ fun FirstScreen(navController: NavController) {
     val paddingInDp = with(density) {80f.toDp()}
     val horpaddingInDp = with(density) {55f.toDp()}
     val contentInSp = with(density) {40f.toSp()}
-    val horInDp = with(density) {20f.toDp()}
+    val horInDp = with(density) {28f.toDp()}
 
     Column(
         modifier = Modifier
@@ -47,8 +50,8 @@ fun FirstScreen(navController: NavController) {
                 fontSize = titleInSp,
                 lineHeight = titleInSp * 1.25,
                 letterSpacing = (-2).sp,
-                fontFamily = FontFamily(Font(R.font.sfpro_black)),
-                color = Color.Black
+                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                color = boldGray
             ),
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
         )
@@ -72,4 +75,11 @@ fun FirstScreen(navController: NavController) {
             TimeSelectBtn("운동 후", "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다", "Post-\nworkout", navController)
         }
     }
+}
+
+@Preview(showBackground = true,
+    device = "spec:width=1920px,height=1080px,dpi=81")
+@Composable
+fun FirstPreview() {
+    FirstScreen(navController = rememberNavController())
 }

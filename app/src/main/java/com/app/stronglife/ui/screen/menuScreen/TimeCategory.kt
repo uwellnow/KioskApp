@@ -20,20 +20,20 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
-fun TimeCategory(time:String) {
+fun TimeCategory(time:String, modifier: Modifier = Modifier) {
     val density = LocalDensity.current
-    val widthtoDp = with(density) {171f.toDp()}
-    val heighttoDp = with(density) {50f.toDp()}
-    val roundtoDp = with(density) {20f.toDp()}
+    val widthtoDp = with(density) {96f.toDp()}
+    val heighttoDp = with(density) {46f.toDp()}
+    val roundtoDp = with(density) {12f.toDp()}
     val texttoSp = with(density) {24f.toSp()}
 
     Box (
-       modifier = Modifier
+       modifier = modifier
            .width(widthtoDp)
            .height(heighttoDp)
            .background(
                color = mainRed,
-               shape = RoundedCornerShape(topStart = roundtoDp, topEnd = roundtoDp)
+               shape = RoundedCornerShape(roundtoDp)
            ),
         contentAlignment = Alignment.Center
     ){
@@ -41,8 +41,7 @@ fun TimeCategory(time:String) {
             text = time,
             style = TextStyle(
                 fontSize = texttoSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                 color = Color.White ))
 
                 }
@@ -50,8 +49,3 @@ fun TimeCategory(time:String) {
 
 }
 
-@Preview
-@Composable
-fun TimeCategoryPreview() {
-    TimeCategory("운동 전")
-}

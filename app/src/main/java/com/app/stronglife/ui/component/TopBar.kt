@@ -32,7 +32,7 @@ import com.app.stronglife.ui.theme.mainRed
 @Composable
 fun TopBar(step:Int, pageNames:List<String>, navController: NavController) {
     val density = LocalDensity.current
-    val heightInDp = with(density) { 120f.toDp() }
+    val heightInDp = with(density) { 125f.toDp() }
     val paddingInDp = with(density) {80f.toDp()}
     val textInSp = with(density) {36f.toSp()}
     val heightPaddingInDp = with(density) {36f.toDp()}
@@ -60,7 +60,7 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController) {
         }
 
         Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable{navController.navigate("first")}){
+            modifier = Modifier.clickable{navController.navigate("hello")}){
             Text(
                 text = "처음으로",
                 style = TextStyle(

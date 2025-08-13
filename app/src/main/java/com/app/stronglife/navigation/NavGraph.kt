@@ -1,6 +1,7 @@
 package com.app.stronglife.navigation
 
 import CartViewModel
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.app.stronglife.ui.screen.menuScreen.AddOrCartScreen
@@ -9,20 +10,41 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.app.stronglife.ui.screen.CartScreen.CartScreen
 import com.app.stronglife.ui.screen.EndScreen.EndScreen
+import com.app.stronglife.ui.screen.HelloScreen.HelloScreen
 import com.app.stronglife.ui.screen.PayScreen.PayOverlayCard
 import com.app.stronglife.ui.screen.PayScreen.PayScreen
 import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.viewmodel.ProductViewModel
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import androidx.compose.animation.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 @Composable
-fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, productViewModel: ProductViewModel) {
+fun NavGraph(
+    navController: NavHostController,
+    cartViewModel: CartViewModel,
+    productViewModel: ProductViewModel,
+    apiKey: String) {
 
-    NavHost(
+    @OptIn(ExperimentalAnimationApi::class)
+    AnimatedNavHost(
         navController = navController,
-        startDestination = "first"
+        startDestination = "hello",
+        enterTransition = {
+            slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
+        },
+        exitTransition = {
+            slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
+        }
     ) {
+
+        composable("hello") {
+            HelloScreen(navController = navController)
+        }
         composable("first") {
             FirstScreen(navController = navController)
         }
@@ -39,10 +61,10 @@ fun NavGraph(navController: NavHostController, cartViewModel: CartViewModel, pro
             PaySelectScreen(navController = navController)
         }
         composable("pay") {
-            PayScreen(navController = navController)
+            PayScreen(navController = navController, apiKey)
         }
         composable("paying") {
-            PayingScreen(navController = navController)
+            PayingScreen(viewModel = cartViewModel,navController = navController)
         }
         composable("End") {
             EndScreen(navController = navController)

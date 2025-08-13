@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,7 +17,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -29,10 +35,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.mainRed
+import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
@@ -52,8 +60,12 @@ fun PaySelectScreen(navController: NavController) {
     val space2Dp = with(density) {57f.toDp()}
     val space3Dp = with(density) {32f.toDp()}
 
+    val borderRadiusPx = with(density) { space3Dp.toPx() }
+    val blurRadiusPx = with(density) { 7.dp.toPx() }
+
     Column (
-        modifier = Modifier.background(background),
+        modifier = Modifier
+            .fillMaxSize().background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
@@ -74,9 +86,26 @@ fun PaySelectScreen(navController: NavController) {
                 modifier = Modifier
                     .width(cardWidDp)
                     .height(heightDp)
+                    .drawBehind {
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().asFrameworkPaint().apply {
+                                color = shadowGray.toArgb()
+                                maskFilter = android.graphics.BlurMaskFilter(borderRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
+                            }
+                            canvas.nativeCanvas.drawRoundRect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height,
+                                blurRadiusPx,
+                                blurRadiusPx,
+                                paint
+                            )
+                        }
+                    }
                     .background(color = Color.White,
                         shape = RoundedCornerShape(space3Dp))
-                    .border(2.dp, cardPayGray, RoundedCornerShape(space3Dp)),
+                    ,
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){

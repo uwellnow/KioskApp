@@ -1,7 +1,13 @@
 package com.app.stronglife.ui.screen.menuScreen
 
 import CartViewModel
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalDensity
@@ -38,7 +48,10 @@ fun MenuScreen(
     val density = LocalDensity.current
     val spacertoDp = with(density) {80f.toDp()}
 
-    Box {
+    Box (
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ){
         Column (
             modifier = Modifier
                 .alpha(if (currentDetail != null) 0.3f else 1f)
@@ -68,19 +81,28 @@ fun MenuScreen(
 
     }
 
-        viewModel.currentDetail?.let { product ->
-            ProductDetail(
-                image = product.productImagePath,
-                title = product.name,
-                nut = product.nutritionInfo,
-                onClose = viewModel::closeProductDetail,
-                onAddToCart = {
-                    cartViewModel.addProduct(product) // 장바구니에 추가
-                },
-                onGoCart = {
-                    navController.navigate("addOrCart")
-                }
-            )
+        val productDetail = viewModel.currentDetail
+        val detailVisible = productDetail != null
+
+        AnimatedVisibility(
+            visible = detailVisible,
+            enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn(),
+            exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
+        ) {
+            if (productDetail != null) {
+                ProductDetail(
+                    image = productDetail.productImagePath,
+                    title = productDetail.name,
+                    nut = productDetail.nutritionInfo,
+                    onClose = viewModel::closeProductDetail,
+                    onAddToCart = {
+                        cartViewModel.addProduct(productDetail)
+                    },
+                    onGoCart = {
+                        navController.navigate("addOrCart")
+                    }
+                )
+            }
         }
 }}
 

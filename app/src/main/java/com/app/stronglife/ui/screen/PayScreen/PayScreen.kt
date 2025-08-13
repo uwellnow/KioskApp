@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.PayScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,7 @@ import com.app.stronglife.ui.theme.cardPayGray
 import kotlinx.coroutines.delay
 
 @Composable
-fun PayScreen(navController: NavController) {
+fun PayScreen(navController: NavController, apiKey:String) {
     val density = LocalDensity.current
 
     val barbtnSpace = with(density) {81f.toDp()}
@@ -34,7 +35,7 @@ fun PayScreen(navController: NavController) {
     ){
         TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
         Spacer(modifier = Modifier.height(barbtnSpace))
-        PayOverlayCard(navController)
+        PayOverlayCard(navController, apiKey)
 
     }
 }
