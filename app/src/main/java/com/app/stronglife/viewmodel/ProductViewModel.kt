@@ -35,12 +35,17 @@ class ProductViewModel(
         currentDetail = null
     }
 
-    fun fetchProducts() {
+    fun fetchProducts(forceRefresh: Boolean = false) {
+        if (products.isNotEmpty() && !forceRefresh) {
+            return
+        }
+
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
             try {
-                products = apiService.getProducts()
+                val result = apiService.getProducts()
+                products = result
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {
