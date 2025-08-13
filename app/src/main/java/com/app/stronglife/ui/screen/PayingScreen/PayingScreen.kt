@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.PayingScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +32,7 @@ import com.app.stronglife.ui.theme.midGray
 import kotlinx.coroutines.delay
 
 @Composable
-fun PayingScreen(navController: NavController) {
+fun PayingScreen(viewModel: CartViewModel,navController: NavController) {
     val density = LocalDensity.current
     val widDp = with(density) {1231f.toDp()}
     val heightDp = with(density) {824f.toDp()}
@@ -39,6 +40,8 @@ fun PayingScreen(navController: NavController) {
     val textSp = with(density) {36f.toSp()}
     val spaceDp = with(density) {81f.toDp()}
     val space2Dp = with(density) {134f.toDp()}
+
+    val cartItems = viewModel.cartItems
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -73,10 +76,4 @@ fun PayingScreen(navController: NavController) {
         delay(1500)
         navController.navigate("end")
     }
-}
-
-@Preview
-@Composable
-fun PScPreview() {
-    PayingScreen(navController = rememberNavController())
 }
