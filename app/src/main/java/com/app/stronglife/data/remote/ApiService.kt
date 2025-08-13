@@ -14,6 +14,16 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ApiService {
+
+    data class ApiKeyRequest(
+        val apiKey: String
+    )
+
+    @POST("key/kiosk")
+    suspend fun postApiKey(
+        @Body request: ApiKeyRequest
+    ): ResponseBody
+
     @GET("products")
     suspend fun getProducts(): List<Product>
 

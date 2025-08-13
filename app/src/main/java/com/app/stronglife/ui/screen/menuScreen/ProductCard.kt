@@ -94,7 +94,8 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                         )
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .padding(horizontal = 40.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -111,7 +112,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                 style = TextStyle(
                                     fontSize = desfont,
                                     textAlign = TextAlign.Center,
-                                    lineHeight = desfont * 1.2,
+                                    lineHeight = desfont * 1.3,
                                     fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                                     fontWeight = FontWeight.Normal,
                                     color = midGray
