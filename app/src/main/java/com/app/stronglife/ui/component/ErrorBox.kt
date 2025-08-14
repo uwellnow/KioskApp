@@ -146,5 +146,5 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
 @Composable
 fun ErrorBoxPreview() {
-    ErrorBox("결제 오류", "회원 정보를 찾을 수 없습니다.\n유웰나우 회원이 맞는지 확인해 주세요", navController = rememberNavController())
+    ErrorBox("물 부족", "물 공급이 원활하지 않습니다.\n관리자에게 문의해 주세요", navController = rememberNavController())
 }
