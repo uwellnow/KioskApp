@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
         val apiKey = prefsManager.getApiKey()
         Log.d("API_KEY", apiKey)
 
-        sendApiKeyToServer(apiKey)
 
         enableEdgeToEdge()
         setContent {
@@ -43,28 +42,16 @@ class MainActivity : ComponentActivity() {
             val userViewModel: UserCodeViewModel = viewModel(
                 factory = UserCodeViewModelFactory(RetrofitClient.api)
             )
-            NavGraph(navController = navController, cartViewModel = cartViewModel, productViewModel = productViewModel, userViewModel = userViewModel, apiKey)
+            NavGraph(
+                navController = navController,
+                cartViewModel = cartViewModel,
+                productViewModel = productViewModel,
+                userViewModel = userViewModel,
+                apiKey = apiKey)
 
         }
     }
 
-    private fun sendApiKeyToServer(apiKey: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://manage-uwellnow.com/api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-
-        lifecycleScope.launch {
-            try {
-                val response = apiService.postApiKey(ApiService.ApiKeyRequest(apiKey))
-                Log.d("MainActivity", "Server Response: $response")
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Failed to send API Key", e)
-            }
-        }
-    }
 }
 
 

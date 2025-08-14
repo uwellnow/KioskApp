@@ -47,4 +47,8 @@ open class CartViewModel(
         current.removeAll { it.product.id == product.id }
         _cartItems.value = current
     }
+
+    fun clearCart() {
+        _cartItems.value = emptyList()
+    }
 }

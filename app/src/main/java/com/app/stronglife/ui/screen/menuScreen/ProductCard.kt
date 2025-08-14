@@ -42,17 +42,19 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val horPadding = with(density) { 20.toDp() }
     val widthtoDp = with(density) { 513f.toDp() }
     val heighttoDp = with(density) { 787f.toDp() }
-    val imageSize = with(density) { 400f.toDp() }
+    val imageSize = with(density) { 490f.toDp() }
     val desfont = with(density) { 20f.toSp() }
     val titlefont = with(density) { 30f.toSp() }
     val textSpace = with(density) { 48f.toDp() }
+    val horpadDp = with(density) {80f.toDp()}
+    val textdp = with (density) {65f.toDp()}
 
     val scrollState = rememberScrollState()
 
     Row(
         modifier = Modifier
             .horizontalScroll(scrollState)
-            .padding(start = 70.dp)
+            .padding(horizontal = horpadDp)
     ) {
         products.forEach { product ->
             Column(
@@ -65,9 +67,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                         .shadow(
                             2.dp,
                             shape = RoundedCornerShape(
-                                topEnd = horPadding,
-                                bottomStart = horPadding,
-                                bottomEnd = horPadding
+                                horPadding
                             ),
                             ambientColor = lightGray,
                             spotColor = lightGray
@@ -89,7 +89,6 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = horPadding)
                             .clickable { onProductClick(product) }
                     ) {
                         AsyncImage(
@@ -103,7 +102,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 40.dp),
+                                .padding(horizontal = textdp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -114,9 +113,8 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                     .width(imageSize)
                                     .height(imageSize)
                             )
-                            Spacer(modifier = Modifier.height(textSpace))
                             Text(
-                                text = product.description,
+                                text = product.description.replace("\\n", "\n"),
                                 style = TextStyle(
                                     fontSize = desfont,
                                     textAlign = TextAlign.Center,

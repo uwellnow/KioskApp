@@ -89,8 +89,6 @@ fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navC
             modifier = Modifier
                 .width(widDp)
                 .height(heightDp)
-                .background(color = Color.White, shape = RoundedCornerShape(roundDp))
-                .border(2.dp, cardPayGray, RoundedCornerShape(roundDp))
                 .padding(top = space2Dp),
 
             horizontalAlignment = Alignment.CenterHorizontally,

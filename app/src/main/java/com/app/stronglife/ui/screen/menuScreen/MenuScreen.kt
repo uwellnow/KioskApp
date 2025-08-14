@@ -37,6 +37,7 @@ fun MenuScreen(
     navController: NavController = rememberNavController()
 ) {
 
+
     val isLoading = viewModel.isLoading
     val error = viewModel.errorMessage
     val currentDetail = viewModel.currentDetail
@@ -68,7 +69,6 @@ fun MenuScreen(
                     Text("에러: $error")
                 }
                 else -> {
-                    // 가로 스크롤 전체 상품 목록
                     ProductCard(
                         products = viewModel.products,
                         onProductClick = { product ->

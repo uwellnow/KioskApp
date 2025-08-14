@@ -1,5 +1,6 @@
 package com.app.stronglife.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,7 +14,16 @@ class UserCodeViewModel(
     private val api: ApiService
 ) : ViewModel() {
 
-
+    fun sendApiKey(apiKey: String) {
+        viewModelScope.launch {
+            try {
+                val response = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
+                Log.d("UserCodeViewModel", "Server Response: $response")
+            } catch (e: Exception) {
+                Log.e("UserCodeViewModel", "Failed to send API Key", e)
+            }
+        }
+    }
 
     var userCode = mutableStateOf("")
     var loginResponse = mutableStateOf<LoginResponse?>(null)
