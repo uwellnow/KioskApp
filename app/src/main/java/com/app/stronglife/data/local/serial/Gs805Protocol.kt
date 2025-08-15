@@ -18,10 +18,7 @@ object Gs805Protocol {
         return build(0x01, d)
     }
 
-    fun queryErrorCode(): ByteArray = byteArrayOf(
-        0xAA.toByte(), 0x55.toByte(),
-        0x02, 0x0C, 0x0D
-    )
+    fun queryErrorCode(): ByteArray = build(cmd = 0x0C)
 
     /**
      * 3계열 0x15 레시피 저장 (슬롯 8쌍: 분말/물)

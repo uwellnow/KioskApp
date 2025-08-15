@@ -1,4 +1,4 @@
-package com.app.stronglife.ui.screen
+package com.app.stronglife.ui.screen.EndScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -58,76 +58,72 @@ fun EndScreen(
         )
     }
 
+
     // 요청-응답 시퀀스 실행 및 로깅
     LaunchedEffect(Unit) {
         // 1. 시리얼 연결
         val serialOk = vm.startSerial()
-        if (serialOk) {
-            kioskLogger.logFrame(responseHex = "Serial connection successful", commandHex = null)
-        } else {
-            kioskLogger.logError(error = Throwable("SerialStart failed"), commandHex = null)
-            return@LaunchedEffect // 실패 시 중단
-        }
+        kioskLogger.logEvent(
+            detail = "SerialStart",
+            isError = !serialOk,
+            responseHex = if (serialOk) "Connection successful" else null
+        )
+        if (!serialOk) return@LaunchedEffect
+
+        delay(100L)
 
         // 2. 상태 확인
         val queryResult = vm.queryErrorCode()
-        if (queryResult.responseHex != null && queryResult.businessResult != -1) {
-            kioskLogger.logFrame(
-                responseHex = queryResult.responseHex,
-                commandHex = queryResult.sentHex
-            )
-        } else {
-            kioskLogger.logError(
-                error = Throwable("QueryErrorCode failed (code=${queryResult.businessResult})"),
-                commandHex = queryResult.sentHex
-            )
-        }
+        kioskLogger.logEvent(
+            detail = "QueryErrorCode",
+            isError = (queryResult.responseHex == null || queryResult.businessResult == -1),
+            commandHex = queryResult.sentHex,
+            responseHex = queryResult.responseHex
+        )
+
+        delay(100L)
 
         // 3. 레시피 저장
-        val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
-        val recipeResult = vm.saveRecipe3(0x01, slots)
-        if (recipeResult.businessResult) {
-            kioskLogger.logFrame(
-                responseHex = recipeResult.responseHex!!, // 성공 시 null이 아님을 보장
-                commandHex = recipeResult.sentHex
-            )
-        } else {
-            kioskLogger.logError(
-                error = Throwable("SaveRecipe failed"),
-                commandHex = recipeResult.sentHex
-            )
-        }
+        val slots = listOf(50 to 200, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
+        val recipeResult = vm.saveRecipe3(0x11, slots)
+        kioskLogger.logEvent(
+            detail = "SaveRecipe",
+            isError = !recipeResult.businessResult,
+            commandHex = recipeResult.sentHex,
+            responseHex = recipeResult.responseHex
+        )
+
+        delay(100L)
 
         // 4. 제조 시작
-        val makeResult = vm.makeDrinkNow(0x01, localOrCmd = 0x02)
-        if (makeResult.businessResult) {
-            kioskLogger.logFrame(
-                responseHex = makeResult.responseHex!!, // 성공 시 null이 아님을 보장
-                commandHex = makeResult.sentHex
-            )
-        } else {
-            kioskLogger.logError(
-                error = Throwable("MakeDrink failed"),
-                commandHex = makeResult.sentHex
-            )
-        }
+        val makeResult = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
+        kioskLogger.logEvent(
+            detail = "MakeDrink",
+            isError = !makeResult.businessResult,
+            commandHex = makeResult.sentHex,
+            responseHex = makeResult.responseHex
+        )
     }
 
     // 비동기 이벤트 수신 및 로깅
     LaunchedEffect(Unit) {
         vm.events.collectLatest { ev ->
             when (ev) {
+                is MachineEvent.RawDataReceived -> {
+                    // RawData는 디버깅용이므로 errorDetail을 활용해 명시
+                    kioskLogger.logEvent(detail = "RawDataReceived", isError = false, responseHex = ev.hex)
+                }
                 is MachineEvent.DrinkCompleted -> {
-                    kioskLogger.logFrame(responseHex = "Event: DrinkCompleted", commandHex = null)
+                    kioskLogger.logEvent(detail = "Event: DrinkCompleted", isError = false, responseHex = ev.hex)
                     delay(300)
                     navController.navigate("first")
                 }
                 is MachineEvent.CupDropped -> {
-                    kioskLogger.logFrame(responseHex = "Event: CupDropped", commandHex = null)
+                    kioskLogger.logEvent(detail = "Event: CupDropped", isError = false, responseHex = ev.hex)
                 }
                 is MachineEvent.Offline -> {
                     val message = "Offline cmd=0x${ev.cmd.toString(16)}"
-                    kioskLogger.logError(error = Throwable(message), commandHex = null)
+                    kioskLogger.logEvent(detail = message, isError = true)
                 }
                 is MachineEvent.ErrorCode -> {
                     val message = if (ev.code == -1) {
@@ -135,48 +131,9 @@ fun EndScreen(
                     } else {
                         "MachineErrorCode=0x${ev.code.toString(16)}"
                     }
-                    kioskLogger.logError(error = Throwable(message), commandHex = null)
+                    kioskLogger.logEvent(detail = message, isError = true)
                 }
             }
-        }
-    }
-
-    // ---------------- 기존 UI 그대로 ----------------
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        TopBar(5, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기", "결제완료"), navController)
-
-        Spacer(modifier = Modifier.height(space1Dp))
-        Column(
-            modifier = Modifier
-                .width(widDp)
-                .height(heightDp)
-                .background(color = Color.White, shape = RoundedCornerShape(roundDp))
-                .border(2.dp, cardPayGray, RoundedCornerShape(roundDp)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            AsyncImage(
-                model = R.drawable.uwellnow,
-                contentDescription = "유웰나우 로고",
-                modifier = Modifier
-                    .width(imageWidDp)
-                    .height(imageHeiDp)
-            )
-
-            Spacer(modifier = Modifier.height(space2Dp))
-
-            Text(
-                text = "결제가 완료되었어요!\n음료 제조가 시작되었습니다 잠시만 기다려주세요",
-                style = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                    fontWeight = FontWeight.Bold,
-                    color = midGray,
-                    textAlign = TextAlign.Center
-                )
-            )
         }
     }
 }

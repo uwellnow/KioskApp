@@ -52,30 +52,28 @@ class KioskLogger(
         return (deviceHash16 shl 48) or (t36 shl 12) or c12
     }
 
-    fun logFrame(responseHex: String, commandHex: String?) {
+    /**
+     * [개선] 모든 로그를 처리하는 단일 함수
+     * @param detail 로그의 상세 설명 (예: "QueryErrorCode")
+     * @param isError 성공(FRAME)인지 실패(ERROR)인지 여부
+     * @param commandHex 전송한 명령어
+     * @param responseHex 수신한 응답
+     */
+    fun logEvent(
+        detail: String,
+        isError: Boolean,
+        commandHex: String? = null,
+        responseHex: String? = null
+    ) {
         val payload = KioskLogPayload(
-            errorId = newUniqueId(),                  // ★ 고유 ID
+            errorId = newUniqueId(),
             timestamp = nowIso(),
-            machineId = machineId,                    // ★ null 금지
+            machineId = machineId,
             storeName = storeName,
-            errorType = "FRAME",
-            errorDetail = "Serial frame received",
+            errorType = if (isError) "ERROR" else "FRAME",
+            errorDetail = detail, // 상세 설명을 errorDetail 필드에 저장
             commandSent = commandHex,
-            response = responseHex
-        )
-        queue.trySend(payload)
-    }
-
-    fun logError(error: Throwable, commandHex: String?) {
-        val payload = KioskLogPayload(
-            errorId = newUniqueId(),                  // ★ 고유 ID
-            timestamp = nowIso(),
-            machineId = machineId,                    // ★ null 금지
-            storeName = storeName,
-            errorType = "ERROR",
-            errorDetail = error.message ?: error.toString(),
-            commandSent = commandHex,
-            response = null
+            response = responseHex // 응답을 response 필드에 저장
         )
         queue.trySend(payload)
     }
