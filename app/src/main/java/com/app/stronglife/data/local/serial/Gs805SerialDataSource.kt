@@ -1,5 +1,6 @@
 package com.app.stronglife.data.local.serial
 
+import com.app.stronglife.ui.component.ErrorBox
 import kotlinx.coroutines.*
 import java.io.IOException
 
@@ -61,7 +62,11 @@ class Gs805SerialDataSource(
 
     /** 이미 완성된 바이트 프레임 전송 (예: Gs805Protocol.build 결과) */
     fun send(frame: ByteArray) {
-        val out = opened?.output ?: error("Serial not opened")
+        val out = opened?.output
+        if (out == null) {
+            listener.onError(IllegalStateException("Serial not opened"))
+            return
+        }
         runCatching {
             out.write(frame); out.flush()
         }.onFailure { listener.onError(it) }

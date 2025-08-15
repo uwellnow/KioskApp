@@ -1,4 +1,4 @@
-package com.app.stronglife.ui.screen.EndScreen
+package com.app.stronglife.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,24 +16,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.stronglife.R
+import com.app.stronglife.data.remote.KioskLogger
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
+import com.app.stronglife.viewmodel.Gs8V5ViewModel
+import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.app.stronglife.data.model.KioskLogPayload
-import com.app.stronglife.data.remote.ApiService
-import com.app.stronglife.data.remote.RetrofitClient
-import com.app.stronglife.util.nowIso
-import com.app.stronglife.viewmodel.Gs805ViewModel
-import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
-import java.util.concurrent.atomic.AtomicInteger
-import kotlin.hashCode
-
 
 @Composable
 fun EndScreen(
@@ -51,117 +46,100 @@ fun EndScreen(
     val imageWidDp = with(density) { 381f.toDp() }
     val imageHeiDp = with(density) { 68f.toDp() }
 
-    val api = remember { RetrofitClient.api }
-
-    // 단말 식별 해시(16비트) + 시간(36비트) + 카운터(12비트) = 64비트 고유 ID
-    val deviceHash16 = (apiKey.hashCode() and 0xFFFF).toLong()
-    val counter = AtomicInteger(0)
-    fun newUniqueId(): Long {
-        val t36 = System.currentTimeMillis() and ((1L shl 36) - 1)
-        val c12 = (counter.getAndIncrement() and 0xFFF).toLong()
-        return (deviceHash16 shl 48) or (t36 shl 12) or c12
+    // KioskLogger 인스턴스 생성 (1번 코드 방식)
+    val scope = rememberCoroutineScope()
+    val kioskLogger = remember {
+        KioskLogger(
+            apiKey = apiKey,
+            service = RetrofitClient.api,
+            externalScope = scope,
+            machineId = 12345L,      // 실제 단말 ID로 교체 필요
+            storeName = "스트롱라이프 GFC점" // 실제 매장명으로 교체 필요
+        )
     }
 
-    // [변경] ViewModel 함수 호출 및 로깅 로직 수정
+    // 요청-응답 시퀀스 실행 및 로깅
     LaunchedEffect(Unit) {
-//        val now = nowIso()
-
-        // 1. 시리얼 연결 로그 (기존과 동일)
+        // 1. 시리얼 연결
         val serialOk = vm.startSerial()
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = newUniqueId(),
-            timestamp = nowIso(),
-            errorType = if (serialOk) "FRAME" else "ERROR",
-            errorDetail = "SerialStart"
-        ))
-        if (!serialOk) return@LaunchedEffect // 시리얼 실패 시 중단
+        if (serialOk) {
+            kioskLogger.logFrame(responseHex = "Serial connection successful", commandHex = null)
+        } else {
+            kioskLogger.logError(error = Throwable("SerialStart failed"), commandHex = null)
+            return@LaunchedEffect // 실패 시 중단
+        }
 
-        // 2. 상태 확인 로그
+        // 2. 상태 확인
         val queryResult = vm.queryErrorCode()
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = newUniqueId(),
-            timestamp = nowIso(),
-            // 응답이 없거나(null) 비즈니스 결과가 실패(-1)면 에러로 간주
-            errorType = if (queryResult.responseHex != null && queryResult.businessResult != -1) "FRAME" else "ERROR",
-            errorDetail = "QueryErrorCode",
-            commandSent = queryResult.sentHex,
-            response = queryResult.responseHex ?: "NO_RESPONSE" // 응답 없으면 "NO_RESPONSE"
-        ))
+        if (queryResult.responseHex != null && queryResult.businessResult != -1) {
+            kioskLogger.logFrame(
+                responseHex = queryResult.responseHex,
+                commandHex = queryResult.sentHex
+            )
+        } else {
+            kioskLogger.logError(
+                error = Throwable("QueryErrorCode failed (code=${queryResult.businessResult})"),
+                commandHex = queryResult.sentHex
+            )
+        }
 
-        // 3. 레시피 저장 로그
+        // 3. 레시피 저장
         val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
         val recipeResult = vm.saveRecipe3(0x01, slots)
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = newUniqueId(),
-            timestamp = nowIso(),
-            errorType = if (recipeResult.businessResult) "FRAME" else "ERROR",
-            errorDetail = "SaveRecipe",
-            commandSent = recipeResult.sentHex,
-            response = recipeResult.responseHex ?: "NO_RESPONSE"
-        ))
+        if (recipeResult.businessResult) {
+            kioskLogger.logFrame(
+                responseHex = recipeResult.responseHex!!, // 성공 시 null이 아님을 보장
+                commandHex = recipeResult.sentHex
+            )
+        } else {
+            kioskLogger.logError(
+                error = Throwable("SaveRecipe failed"),
+                commandHex = recipeResult.sentHex
+            )
+        }
 
-        // 4. 제조 시작 로그
+        // 4. 제조 시작
         val makeResult = vm.makeDrinkNow(0x01, localOrCmd = 0x02)
-        sendLog(api, apiKey, KioskLogPayload(
-            errorId = newUniqueId(),
-            timestamp = nowIso(),
-            errorType = if (makeResult.businessResult) "FRAME" else "ERROR",
-            errorDetail = "MakeDrink",
-            commandSent = makeResult.sentHex,
-            response = makeResult.responseHex ?: "NO_RESPONSE"
-        ))
+        if (makeResult.businessResult) {
+            kioskLogger.logFrame(
+                responseHex = makeResult.responseHex!!, // 성공 시 null이 아님을 보장
+                commandHex = makeResult.sentHex
+            )
+        } else {
+            kioskLogger.logError(
+                error = Throwable("MakeDrink failed"),
+                commandHex = makeResult.sentHex
+            )
+        }
     }
 
-
-    // 1) 장치 이벤트 수신 → 제조 완료 시 화면 전환 (기존 그대로)
+    // 비동기 이벤트 수신 및 로깅
     LaunchedEffect(Unit) {
         vm.events.collectLatest { ev ->
             when (ev) {
-                is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = newUniqueId(),
-                        timestamp = nowIso(),
-                        errorType = "FRAME",
-                        errorDetail = "DrinkCompleted"
-                    ))
+                is MachineEvent.DrinkCompleted -> {
+                    kioskLogger.logFrame(responseHex = "Event: DrinkCompleted", commandHex = null)
                     delay(300)
                     navController.navigate("first")
                 }
-                is Gs805ViewModel.MachineEvent.CupDropped -> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = newUniqueId(),
-                        timestamp = nowIso(),
-                        errorType = "FRAME",
-                        errorDetail = "CupDropped"
-                    ))
+                is MachineEvent.CupDropped -> {
+                    kioskLogger.logFrame(responseHex = "Event: CupDropped", commandHex = null)
                 }
-                is Gs805ViewModel.MachineEvent.Offline-> {
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = newUniqueId(),
-                        timestamp = nowIso(),
-                        errorType = "ERROR",
-                        errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}"
-                    ))
+                is MachineEvent.Offline -> {
+                    val message = "Offline cmd=0x${ev.cmd.toString(16)}"
+                    kioskLogger.logError(error = Throwable(message), commandHex = null)
                 }
-                is Gs805ViewModel.MachineEvent.ErrorCode -> {
-                    // ev.code 값을 확인하여 로그 내용을 분기
-                    val detailMessage = if (ev.code == -1) {
-                        "SerialCommunicationError" // 통신 시스템 자체 오류
+                is MachineEvent.ErrorCode -> {
+                    val message = if (ev.code == -1) {
+                        "SerialCommunicationError"
                     } else {
-                        "MachineErrorCode=0x${ev.code.toString(16)}" // 장치가 보고한 특정 에러
+                        "MachineErrorCode=0x${ev.code.toString(16)}"
                     }
-
-                    sendLog(api, apiKey, KioskLogPayload(
-                        errorId = newUniqueId(),
-                        timestamp = nowIso(),
-                        errorType = "ERROR",
-                        errorDetail = detailMessage // 분기 처리된 메시지 사용
-                    ))
+                    kioskLogger.logError(error = Throwable(message), commandHex = null)
                 }
             }
         }
     }
-
 
     // ---------------- 기존 UI 그대로 ----------------
     Column(
@@ -182,7 +160,9 @@ fun EndScreen(
             AsyncImage(
                 model = R.drawable.uwellnow,
                 contentDescription = "유웰나우 로고",
-                modifier = Modifier.width(imageWidDp).height(imageHeiDp)
+                modifier = Modifier
+                    .width(imageWidDp)
+                    .height(imageHeiDp)
             )
 
             Spacer(modifier = Modifier.height(space2Dp))
@@ -201,19 +181,4 @@ fun EndScreen(
     }
 }
 
-private suspend fun sendLog(
-    api: ApiService,
-    apiKey: String,
-    payload: KioskLogPayload
-) {
-    runCatching {
-        val resp = api.postKioskLog(apiKey, payload)
-        if (resp.isSuccessful) {
-            println("로그 전송 성공: ${payload.errorId}")
-        } else {
-            println("로그 전송 실패: ${resp.code()} ${resp.message()}")
-        }
-    }.onFailure {
-        it.printStackTrace()
-    }
-}
+// private suspend fun sendLog(...)  <- 이 함수는 삭제합니다.

@@ -37,7 +37,7 @@ fun UnderBtn(navController: NavController) {
     val backSp = with(density) {40f.toSp()}
     val paySp = with(density) {48f.toSp()}
     val roundDp = with(density) {20f.toDp()}
-    val spaceDp = with(density) {10f.toDp()}
+    val spaceDp = with(density) {38f.toDp()}
 
     Row (
         modifier = Modifier.fillMaxWidth()
