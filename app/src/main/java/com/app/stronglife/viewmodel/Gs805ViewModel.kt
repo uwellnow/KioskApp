@@ -10,6 +10,30 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeoutException
+
+
+// --- Helper 함수 추가 (ByteArray <-> Hex String) ---
+fun ByteArray.toHex(prefix: String = ""): String =
+    prefix + joinToString("") { "%02X".format(it) }
+
+fun hexToBytes(hex: String): ByteArray =
+    hex.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+// ---------------------------------------------------
+
+/**
+ * 시리얼 통신 결과를 담는 데이터 클래스
+ * @param T 비즈니스 결과 타입 (ex: Boolean, Int)
+ * @param businessResult 실제 함수의 성공/실패 등 결과
+ * @param sentHex 전송한 데이터의 HEX 문자열
+ * @param responseHex 응답받은 데이터의 HEX 문자열 (타임아웃 시 null)
+ */
+data class SerialResult<T>(
+    val businessResult: T,
+    val sentHex: String,
+    val responseHex: String?
+)
+
+
 class Gs805ViewModel : ViewModel(), SerialListener {
 
     private val cfg = SerialConfig(
@@ -35,59 +59,87 @@ class Gs805ViewModel : ViewModel(), SerialListener {
     fun stopSerial() = dataSource.stop()
     fun isSerialRunning() = dataSource.isRunning()
 
-    /** 내부: 재전송 포함해서 CMD 응답을 기다리는 서스펜드 함수 */
+    /**
+     * [변경] 내부: 재전송 포함 CMD 응답을 기다리는 함수.
+     * 성공 시 응답 ByteArray, 타임아웃 시 null을 반환.
+     */
     private suspend fun sendAndAwait(
         cmd: Int,
         data: ByteArray = byteArrayOf(),
-        retries: Int = 2,           // 총 3회(초발 + 2회 재전송)
+        retries: Int = 2,
         timeoutMs: Long = 100L
-    ): ByteArray = withContext(Dispatchers.IO) {
-        var last: Throwable? = null
-        repeat(retries + 1) { attempt ->
+    ): ByteArray? = withContext(Dispatchers.IO) { // 반환 타입 ByteArray?로 변경
+        repeat(retries + 1) {
             val waiter = CompletableDeferred<ByteArray>()
-            pending[cmd]?.cancel() // 기존 대기자 정리
+            pending[cmd]?.cancel()
             pending[cmd] = waiter
 
-            // 전송
+            // 실제 전송은 dataSource가 프레임을 만들어 전송한다고 가정
             dataSource.send(cmd, data)
 
             try {
                 return@withContext withTimeout(timeoutMs) { waiter.await() }
             } catch (t: Throwable) {
-                last = t
-                // 다음 루프에서 재전송
+                // 타임아웃 시 아무것도 안하고 다음 루프로 재시도
             }
         }
+        // 모든 재시도 실패 시
         pending.remove(cmd)
         _events.tryEmit(MachineEvent.Offline(cmd))
-        throw last ?: TimeoutException("No response for cmd=0x${cmd.toString(16)}")
+        return@withContext null // 예외 대신 null 반환
     }
 
-    // ===== 비즈니스용 래퍼 =====
+    // ===== 비즈니스용 래퍼 (반환타입 SerialResult로 변경) =====
 
-    suspend fun queryErrorCode(): Int {
-        val resp = sendAndAwait(0x0C) // 데이터 없음(AA55 02 0C 0D는 빌더가 전송해줌)
-        // resp: A5 5A 03 0C ErrorCode SUM
-        val bytes = hexToBytes(resp.toHex("")) // resp가 ByteArray긴 한데 onFrame에서 hex만 올려서 통일
-        return bytes[4].toInt() and 0xFF
+    suspend fun queryErrorCode(): SerialResult<Int> {
+        val frame = Gs805Protocol.queryErrorCode() // 전송 프레임 생성
+        val dataOnly = frame.copyOfRange(4, frame.size - 1)
+        val respBytes = sendAndAwait(0x0C, dataOnly)
+
+        val errCode = if (respBytes != null && respBytes.size > 4) {
+            respBytes[4].toInt() and 0xFF
+        } else {
+            -1 // 응답 없거나 실패 시 임의의 에러코드
+        }
+        return SerialResult(
+            businessResult = errCode,
+            sentHex = frame.toHex(),
+            responseHex = respBytes?.toHex()
+        )
     }
 
-    suspend fun saveRecipe3(drinkNo: Int, slots: List<Pair<Int, Int>>): Boolean {
-        // 전체 프레임을 만들고, CMD/DATA만 꺼내서 전송(API는 send(cmd,data) 형태)
+    suspend fun saveRecipe3(drinkNo: Int, slots: List<Pair<Int, Int>>): SerialResult<Boolean> {
         val frame = Gs805Protocol.recipeSeries3(drinkNo, slots)
-        val dataOnly = frame.copyOfRange(4, frame.size - 1) // [Drink_NO .. 마지막 데이터]
-        val resp = sendAndAwait(0x15, dataOnly) // A5 5A 03 0x15 STA SUM
-        val sta = resp[4].toInt() and 0x7F
-        return sta == 0x00
+        val dataOnly = frame.copyOfRange(4, frame.size - 1)
+        val respBytes = sendAndAwait(0x15, dataOnly)
+
+        val isSuccess = if (respBytes != null && respBytes.size > 4) {
+            (respBytes[4].toInt() and 0x7F) == 0x00
+        } else {
+            false
+        }
+        return SerialResult(
+            businessResult = isSuccess,
+            sentHex = frame.toHex(),
+            responseHex = respBytes?.toHex()
+        )
     }
 
-    suspend fun makeDrinkNow(drinkNo: Int, localOrCmd: Int = 0x02): Boolean {
+    suspend fun makeDrinkNow(drinkNo: Int, localOrCmd: Int = 0x02): SerialResult<Boolean> {
         val frame = Gs805Protocol.makeDrink(drinkNo, localOrCmd)
-        val resp = sendAndAwait(0x01, frame.copyOfRange(4, frame.size - 1))
-        // resp: A5 5A 03 0x01 STA SUM
-        val bytes = hexToBytes(resp.toHex(""))
-        val sta = bytes[4].toInt() and 0x7F
-        return sta == 0x00
+        val dataOnly = frame.copyOfRange(4, frame.size - 1)
+        val respBytes = sendAndAwait(0x01, dataOnly)
+
+        val isSuccess = if (respBytes != null && respBytes.size > 4) {
+            (respBytes[4].toInt() and 0x7F) == 0x00
+        } else {
+            false
+        }
+        return SerialResult(
+            businessResult = isSuccess,
+            sentHex = frame.toHex(),
+            responseHex = respBytes?.toHex()
+        )
     }
 
     // ===== SerialListener =====

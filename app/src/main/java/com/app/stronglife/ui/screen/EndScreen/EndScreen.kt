@@ -31,6 +31,9 @@ import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.util.nowIso
 import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.hashCode
+
 
 @Composable
 fun EndScreen(
@@ -50,50 +53,62 @@ fun EndScreen(
 
     val api = remember { RetrofitClient.api }
 
-    LaunchedEffect(Unit) {
-        val now = nowIso()
+    // 단말 식별 해시(16비트) + 시간(36비트) + 카운터(12비트) = 64비트 고유 ID
+    val deviceHash16 = (apiKey.hashCode() and 0xFFFF).toLong()
+    val counter = AtomicInteger(0)
+    fun newUniqueId(): Long {
+        val t36 = System.currentTimeMillis() and ((1L shl 36) - 1)
+        val c12 = (counter.getAndIncrement() and 0xFFF).toLong()
+        return (deviceHash16 shl 48) or (t36 shl 12) or c12
+    }
 
-        // 1. 시리얼 연결 로그
+    // [변경] ViewModel 함수 호출 및 로깅 로직 수정
+    LaunchedEffect(Unit) {
+//        val now = nowIso()
+
+        // 1. 시리얼 연결 로그 (기존과 동일)
         val serialOk = vm.startSerial()
         sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
-            timestamp = now,
+            errorId = newUniqueId(),
+            timestamp = nowIso(),
             errorType = if (serialOk) "FRAME" else "ERROR",
             errorDetail = "SerialStart"
         ))
+        if (!serialOk) return@LaunchedEffect // 시리얼 실패 시 중단
 
         // 2. 상태 확인 로그
-        val err = vm.queryErrorCode()
+        val queryResult = vm.queryErrorCode()
         sendLog(api, apiKey, KioskLogPayload(
-            errorId = err.toLong(),
+            errorId = newUniqueId(),
             timestamp = nowIso(),
-            errorType = "FRAME",
+            // 응답이 없거나(null) 비즈니스 결과가 실패(-1)면 에러로 간주
+            errorType = if (queryResult.responseHex != null && queryResult.businessResult != -1) "FRAME" else "ERROR",
             errorDetail = "QueryErrorCode",
-            commandSent = "AA55020C0D", // 실제 보낸 프레임 HEX
-            response = "응답 HEX"        // vm에서 받은 응답 HEX 넣으면 좋음
+            commandSent = queryResult.sentHex,
+            response = queryResult.responseHex ?: "NO_RESPONSE" // 응답 없으면 "NO_RESPONSE"
         ))
 
         // 3. 레시피 저장 로그
         val slots = listOf(80 to 80, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0, 0 to 0)
-        val okRecipe = vm.saveRecipe3(0x11, slots)
+        val recipeResult = vm.saveRecipe3(0x01, slots)
         sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
+            errorId = newUniqueId(),
             timestamp = nowIso(),
-            errorType = if (okRecipe) "FRAME" else "ERROR",
+            errorType = if (recipeResult.businessResult) "FRAME" else "ERROR",
             errorDetail = "SaveRecipe",
-            commandSent = "보낸 HEX",
-            response = "응답 HEX"
+            commandSent = recipeResult.sentHex,
+            response = recipeResult.responseHex ?: "NO_RESPONSE"
         ))
 
         // 4. 제조 시작 로그
-        val okMake = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
+        val makeResult = vm.makeDrinkNow(0x01, localOrCmd = 0x02)
         sendLog(api, apiKey, KioskLogPayload(
-            errorId = 0,
+            errorId = newUniqueId(),
             timestamp = nowIso(),
-            errorType = if (okMake) "FRAME" else "ERROR",
+            errorType = if (makeResult.businessResult) "FRAME" else "ERROR",
             errorDetail = "MakeDrink",
-            commandSent = "보낸 HEX",
-            response = "응답 HEX"
+            commandSent = makeResult.sentHex,
+            response = makeResult.responseHex ?: "NO_RESPONSE"
         ))
     }
 
@@ -104,7 +119,7 @@ fun EndScreen(
             when (ev) {
                 is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
                     sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
+                        errorId = newUniqueId(),
                         timestamp = nowIso(),
                         errorType = "FRAME",
                         errorDetail = "DrinkCompleted"
@@ -114,7 +129,7 @@ fun EndScreen(
                 }
                 is Gs805ViewModel.MachineEvent.CupDropped -> {
                     sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
+                        errorId = newUniqueId(),
                         timestamp = nowIso(),
                         errorType = "FRAME",
                         errorDetail = "CupDropped"
@@ -122,58 +137,31 @@ fun EndScreen(
                 }
                 is Gs805ViewModel.MachineEvent.Offline-> {
                     sendLog(api, apiKey, KioskLogPayload(
-                        errorId = 0,
+                        errorId = newUniqueId(),
                         timestamp = nowIso(),
                         errorType = "ERROR",
                         errorDetail = "Offline cmd=0x${ev.cmd.toString(16)}"
                     ))
                 }
                 is Gs805ViewModel.MachineEvent.ErrorCode -> {
+                    // ev.code 값을 확인하여 로그 내용을 분기
+                    val detailMessage = if (ev.code == -1) {
+                        "SerialCommunicationError" // 통신 시스템 자체 오류
+                    } else {
+                        "MachineErrorCode=0x${ev.code.toString(16)}" // 장치가 보고한 특정 에러
+                    }
+
                     sendLog(api, apiKey, KioskLogPayload(
-                        errorId = ev.code.toLong(),
+                        errorId = newUniqueId(),
                         timestamp = nowIso(),
                         errorType = "ERROR",
-                        errorDetail = "ErrorCode"
+                        errorDetail = detailMessage // 분기 처리된 메시지 사용
                     ))
                 }
             }
         }
     }
 
-    // 2) 시작 + 테스트 시퀀스(3계열) = 한 코루틴에서 순차 실행
-    LaunchedEffect(Unit) {
-        val ok = vm.startSerial()
-        if (!ok) {
-            println("Serial not available; running in mock-ish mode")
-            // 여기선 장치가 없으니 실제 전송은 건너뜀(앱은 계속 UI 유지)
-            return@LaunchedEffect
-        }
-
-        runCatching {
-            // (a) 상태 확인 (0x0C)
-            val err = vm.queryErrorCode()
-            println("queryErrorCode() = 0x${err.toString(16)}")
-
-            // (b) 레시피 저장 (0x15, 3계열) — 예시값
-            val drinkNo = 0x11
-            val slots = listOf(
-                80 to 80, // 채널1
-                0 to 0, 0 to 0, 0 to 0,
-                0 to 0, 0 to 0, 0 to 0, 0 to 0
-            )
-            val okRecipe = vm.saveRecipe3(drinkNo, slots)
-            println("saveRecipe3() = $okRecipe")
-            check(okRecipe) { "레시피 저장 실패" }
-
-            // (c) 즉시 제조 (0x01, LocalOrCmd=0x02)
-            val okMake = vm.makeDrinkNow(drinkNo, localOrCmd = 0x02)
-            println("makeDrinkNow() = $okMake")
-            check(okMake) { "제조 시작 실패" }
-            // 이후 완료 신호는 vm.events에서 수신
-        }.onFailure { e ->
-            e.printStackTrace() // onFailure 유지
-        }
-    }
 
     // ---------------- 기존 UI 그대로 ----------------
     Column(
