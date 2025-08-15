@@ -25,7 +25,7 @@ import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
-import com.app.stronglife.viewmodel.Gs8V5ViewModel
+import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
