@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.firstScreen.customShadow
@@ -44,7 +45,10 @@ import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
-fun PaySelectScreen(navController: NavController) {
+fun PaySelectScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel = viewModel()
+) {
     val density = LocalDensity.current
 
     val titleSp = with(density) {52f.toSp()}
@@ -68,7 +72,7 @@ fun PaySelectScreen(navController: NavController) {
             .fillMaxSize().background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
+        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
         Spacer(modifier = Modifier.height(space1Dp))
         Text(
             text = "결제 방법을 선택해주세요",

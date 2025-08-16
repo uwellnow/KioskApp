@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.firstScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,13 +24,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.boldGray
+import com.app.stronglife.ui.theme.descGray
 
 @Composable
-fun FirstScreen(navController: NavController) {
+fun FirstScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel = viewModel()
+) {
     val density = LocalDensity.current
     val titleInSp = with(density) {80f.toSp()}
     val paddingInDp = with(density) {80f.toDp()}
@@ -42,10 +48,10 @@ fun FirstScreen(navController: NavController) {
             .fillMaxSize()
             .background(background)
     ) {
-        TopBar(step = 1, pageNames = listOf("섭취시점 선택"), navController = navController)
+        TopBar(step = 1, pageNames = listOf("섭취시점 선택"), navController = navController, cartViewModel = cartViewModel)
         Spacer(modifier = Modifier.width(30.dp))
         Text(
-            text = "운동 전-중-후에 필요한\n보충제를 각 단계별로 구매해보세요",
+            text = "언제 드실 보충제인가요?",
             style = TextStyle(
                 fontSize = titleInSp,
                 lineHeight = titleInSp * 1.25,
@@ -56,12 +62,12 @@ fun FirstScreen(navController: NavController) {
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
         )
         Text(
-            text = "언제 드실 보충제인가요?",
+            text = "운동 각 단계에 필요한 보충제를 섭취해 보세요",
             style = TextStyle(
                 fontSize = contentInSp,
                 fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                 fontWeight = FontWeight.Normal,
-                color = Color.Black
+                color = descGray
             ),
             modifier = Modifier.padding(start = paddingInDp, top = horpaddingInDp)
         )
@@ -78,7 +84,7 @@ fun FirstScreen(navController: NavController) {
 }
 
 @Preview(showBackground = true,
-    device = "spec:width=1920px,height=1080px,dpi=81")
+    device = "spec:width=1920px,height=1080px,dpi=82")
 @Composable
 fun FirstPreview() {
     FirstScreen(navController = rememberNavController())

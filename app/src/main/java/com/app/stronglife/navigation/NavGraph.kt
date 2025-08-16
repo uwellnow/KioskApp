@@ -49,22 +49,22 @@ fun NavGraph(
             HelloScreen(navController = navController, cartViewModel, userViewModel, apiKey)
         }
         composable("first") {
-            FirstScreen(navController = navController)
+            FirstScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("menu") {
             MenuScreen(viewModel = productViewModel, navController = navController, cartViewModel = cartViewModel)
         }
         composable("addOrCart") {
-            AddOrCartScreen(navController = navController)
+            AddOrCartScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("cart") {
             CartScreen(viewModel = cartViewModel,navController = navController)
         }
         composable("paySelect") {
-            PaySelectScreen(navController = navController)
+            PaySelectScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("pay") {
-            PayScreen(navController = navController, apiKey)
+            PayScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
         }
         composable("paying") {
             PayingScreen(viewModel = cartViewModel, userViewModel = userViewModel, navController)

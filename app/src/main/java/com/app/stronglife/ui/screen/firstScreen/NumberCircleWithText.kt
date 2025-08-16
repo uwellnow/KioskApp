@@ -40,7 +40,7 @@ fun NumberCircleWithText(number: String, title: String, isActive: Boolean, textS
             Text(
                 text = number,
                 fontSize = numberFontSize,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontFamily = FontFamily(Font(R.font.sfpro_regular)),
                 fontWeight = FontWeight.Bold,
                 color = mainRed.copy(alpha = alpha)
             )
@@ -49,8 +49,8 @@ fun NumberCircleWithText(number: String, title: String, isActive: Boolean, textS
         Text(
             text = title,
             fontSize = textFontSize,
-            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+            fontWeight = FontWeight.Medium,
             color = Color.White.copy(alpha = alpha)
         )
     }

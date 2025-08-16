@@ -82,7 +82,7 @@ fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navC
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
+        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = viewModel)
 
         Spacer(modifier = Modifier.height(spaceDp))
         Column (
