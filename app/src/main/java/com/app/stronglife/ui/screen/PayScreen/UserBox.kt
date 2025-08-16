@@ -40,7 +40,7 @@ fun UserBox(
 
     val density = LocalDensity.current
 
-    val t2iSpaceDp = with(density) {16f.toDp()}
+    val t2iSpaceDp = with(density) {20f.toDp()}
     val boxwidDp = with(density) {763f.toDp()}
     val boxheightDp = with(density) {266f.toDp()}
     val boxRoundDp = with(density) {24f.toDp()}

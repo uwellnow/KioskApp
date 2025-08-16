@@ -101,7 +101,7 @@ fun CouponScreen(
                 viewModel = userCodeViewModel,
                 apiKey = apiKey,
                 onUserFound = { navController.navigate("userInfo") },
-                navController = navController
+                cartViewModel = cartViewModel
             )
         }
         Spacer(modifier = Modifier.weight(1f)) // 아래로 밀기

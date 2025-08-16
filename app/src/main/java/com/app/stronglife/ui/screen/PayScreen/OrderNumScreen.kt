@@ -46,11 +46,9 @@ import kotlinx.coroutines.delay
 fun OrderNumScreen(
     navController: NavController, 
     apiKey: String,
-    cartViewModel: CartViewModel = viewModel()
+    cartViewModel: CartViewModel = viewModel(),
+    userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 ) {
-    val userCodeViewModel: UserCodeViewModel = viewModel(
-        factory = UserCodeViewModelFactory(RetrofitClient.api)
-    )
 
     val density = LocalDensity.current
     val barbtnSpace = with(density) {81f.toDp()}
@@ -63,6 +61,11 @@ fun OrderNumScreen(
     val titleSp = with(density) {36f.toSp()}
     val spacerDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
+
+    // 화면이 처음 로드될 때 userCode 초기화
+    LaunchedEffect(Unit) {
+        userCodeViewModel.clear()
+    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,7 +108,7 @@ fun OrderNumScreen(
                 viewModel = userCodeViewModel,
                 apiKey = apiKey,
                 onUserFound = { navController.navigate("userInfo") },
-                navController = navController
+                cartViewModel = cartViewModel
             )
         }
         Spacer(modifier = Modifier.weight(1f)) // 아래로 밀기

@@ -7,7 +7,8 @@ data class User (
 )
 
 data class UserLoginRequest(
-    val userCode: String
+    val userCode: String,
+    val paymentMethodId: Int
 )
 
 data class Membership(
@@ -32,4 +33,9 @@ data class UserPurchase(
     val productCount: List<Int>,
     val userId: String,
     val userCode: String,
+)
+
+data class ProductPurchaseRequest(
+    val productIds: List<Int>,
+    val productCounts: List<Int>
 )

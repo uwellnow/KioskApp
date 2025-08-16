@@ -13,8 +13,6 @@ import com.app.stronglife.ui.screen.EndScreen.EndScreen
 import com.app.stronglife.ui.screen.HelloScreen.HelloScreen
 import com.app.stronglife.ui.screen.PayScreen.CouponScreen
 import com.app.stronglife.ui.screen.PayScreen.OrderNumScreen
-import com.app.stronglife.ui.screen.PayScreen.PayOverlayCard
-import com.app.stronglife.ui.screen.PayScreen.PayScreen
 import com.app.stronglife.ui.screen.UserInfoScreen.UserInfoScreen
 import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
@@ -66,9 +64,7 @@ fun NavGraph(
         composable("paySelect") {
             PaySelectScreen(navController = navController, cartViewModel = cartViewModel)
         }
-        composable("pay") {  // 안씀
-            PayScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
-        }
+
         composable("pay_barcode") {
             CouponScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
         }

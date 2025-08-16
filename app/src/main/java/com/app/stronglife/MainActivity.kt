@@ -25,12 +25,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         val prefsManager = PrefsManager(this)
         prefsManager.saveApiKeyIfNotExists()
         val apiKey = prefsManager.getApiKey()
         Log.d("API_KEY", apiKey)
 
+        // 앱 시작 시 API 키를 서버에 전송
+        val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+        userCodeViewModel.sendApiKey(apiKey)
 
         enableEdgeToEdge()
         setContent {

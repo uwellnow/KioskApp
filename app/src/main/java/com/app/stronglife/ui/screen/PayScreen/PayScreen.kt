@@ -24,10 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import kotlinx.coroutines.delay
+/*
 
 @Composable
 fun PayScreen(
-    navController: NavController, 
+    navController: NavController,
     apiKey: String,
     cartViewModel: CartViewModel = viewModel()
 ) {
@@ -44,3 +45,4 @@ fun PayScreen(
 
     }
 }
+*/

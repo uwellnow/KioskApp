@@ -32,9 +32,10 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.superLightGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
-fun UnderBtn(navController: NavController) {
+fun UnderBtn(navController: NavController, userCodeViewModel: UserCodeViewModel) {
     val density = LocalDensity.current
     val couponWidDp = with(density) {770f.toDp()}
     val payWidDp = with(density) {840f.toDp()}
@@ -74,7 +75,10 @@ fun UnderBtn(navController: NavController) {
                     shape = RoundedCornerShape(roundDp)
                 )
                 .border(2.dp, color = mainRed, shape = RoundedCornerShape(roundDp))
-                .clickable { navController.navigate("pay")},
+                .clickable { 
+                    userCodeViewModel.setPaymentMethodId(1)
+                    navController.navigate("pay_barcode")
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -88,8 +92,6 @@ fun UnderBtn(navController: NavController) {
             )
         }
 
-
-
         Box(
             modifier = Modifier
                 .width(payWidDp)
@@ -98,7 +100,10 @@ fun UnderBtn(navController: NavController) {
                     mainRed,
                     shape = RoundedCornerShape(roundDp)
                 )
-                .clickable { navController.navigate("paySelect")},
+                .clickable { 
+                    userCodeViewModel.setPaymentMethodId(2)
+                    navController.navigate("pay_number")
+                },
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -114,8 +119,3 @@ fun UnderBtn(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
-@Composable
-fun UnderBtnPreview() {
-    UnderBtn(navController = rememberNavController())
-}

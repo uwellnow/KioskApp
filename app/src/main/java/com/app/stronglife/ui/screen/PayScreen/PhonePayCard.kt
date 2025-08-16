@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.PayScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,8 +38,12 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
-fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, apiKey: String, onUserFound: () -> Unit) {
-
+fun PhonePayCard (
+    viewModel: UserCodeViewModel, 
+    apiKey: String, 
+    onUserFound: () -> Unit,
+    cartViewModel: CartViewModel
+) {
 
     val density = LocalDensity.current
     val widDp = with(density) {584f.toDp()}
@@ -50,6 +55,9 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
     val spacerDp = with(density) {60f.toDp()}
     val spacer2Dp = with(density) {17f.toDp()}
 
+    val titleSp = with(density) {36f.toSp()}
+    val spaceDp = with(density) {16f.toDp()}
+    val descSp = with(density) {20f.toSp()}
 
     Column (
         verticalArrangement = Arrangement.Center,
@@ -80,6 +88,7 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (viewModel.userCode.value.isNotEmpty()) {
+                            // 사용자 조회 요청
                             viewModel.fetchUser(apiKey) { success ->
                                 if (success) {
                                     onUserFound()

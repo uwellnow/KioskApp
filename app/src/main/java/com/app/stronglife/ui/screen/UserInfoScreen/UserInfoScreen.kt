@@ -54,9 +54,7 @@ fun UserInfoScreen(
     apiKey: String,
     cartViewModel: CartViewModel = viewModel()
 ) {
-    val userCodeViewModel: UserCodeViewModel = viewModel(
-        factory = UserCodeViewModelFactory(RetrofitClient.api)
-    )
+    val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     val loginResponse = userCodeViewModel.loginResponse.value
 
     val density = LocalDensity.current
@@ -64,12 +62,6 @@ fun UserInfoScreen(
     val widDp = with(density) {374f.toDp()}
     val heightDp = with(density) {91f.toDp()}
     val roundDp = with(density) {46f.toDp()}
-
-    LaunchedEffect(loginResponse) {
-        if (loginResponse != null) {
-            navController.navigate("paying")
-        }
-    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
@@ -147,7 +139,24 @@ fun UserInfoScreen(
                     modifier = Modifier.size(widDp,heightDp)
                         .background(mainRed, RoundedCornerShape(roundDp))
                         .border(2.dp, mainRed, RoundedCornerShape(roundDp))
-                        .clickable{navController.navigate("paying")},
+                        .clickable{
+                            // 장바구니 정보 가져오기
+                            val cartItems = cartViewModel.cartItems.value
+                            val productIds = cartItems.map { it.product.id }
+                            val productCounts = cartItems.map { it.quantity }
+                            
+                            // 구매 요청
+                            userCodeViewModel.purchaseProductByOrder(
+                                apiKey = apiKey,
+                                orderNumber = userCodeViewModel.userCode.value,
+                                productIds = productIds,
+                                productCounts = productCounts
+                            ) { success ->
+                                if (success) {
+                                    navController.navigate("paying")
+                                }
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
