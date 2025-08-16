@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,18 +32,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
-import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
-fun PaySelectScreen(navController: NavController) {
+fun PaySelectScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel = viewModel()
+) {
     val density = LocalDensity.current
 
     val titleSp = with(density) {52f.toSp()}
@@ -68,13 +69,13 @@ fun PaySelectScreen(navController: NavController) {
             .fillMaxSize().background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController)
+        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
         Spacer(modifier = Modifier.height(space1Dp))
         Text(
             text = "결제 방법을 선택해주세요",
             style = TextStyle(
                 fontSize = titleSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                 fontWeight = FontWeight.Bold,
                 color = black
             )
@@ -113,7 +114,7 @@ fun PaySelectScreen(navController: NavController) {
                     text = "카드 결제",
                     style = TextStyle(
                         fontSize = cardTitleSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = cardPayGray
                     )
@@ -124,7 +125,7 @@ fun PaySelectScreen(navController: NavController) {
                     text = "지금은 멤버십 차감 방식으로만\n결제가 가능해요",
                     style = TextStyle(
                         fontSize = DesSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         fontWeight = FontWeight.Normal,
                         color = cardPayGray
                     ),
@@ -149,7 +150,7 @@ fun PaySelectScreen(navController: NavController) {
                     text = "멤버십 결제",
                     style = TextStyle(
                         fontSize = memberTitleSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = mainRed
                     )
@@ -160,7 +161,7 @@ fun PaySelectScreen(navController: NavController) {
                     text = "아직 멤버십에 등록하지 않았다면\n카카오톡 채널 ‘유웰나우’에서 자세한 방법을 확인해주세요",
                     style = TextStyle(
                         fontSize = DesSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         fontWeight = FontWeight.Normal,
                         color = mainRed
                     ),

@@ -21,8 +21,8 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
-fun NumberCircleWithText(number: String, title: String, isActive: Boolean, textSizeSp: Float) {
-    val alpha = if (isActive) 1f else 0.5f
+fun NumberCircleWithText(number: String, title: String, textSizeSp: Float) {
+    val alpha = 0.9f
     val density = LocalDensity.current
     val numberCircleSize = with(density) { 43f.toDp() }
     val numberFontSize = with(density) { 32f.toSp() }
@@ -40,7 +40,7 @@ fun NumberCircleWithText(number: String, title: String, isActive: Boolean, textS
             Text(
                 text = number,
                 fontSize = numberFontSize,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 fontWeight = FontWeight.Bold,
                 color = mainRed.copy(alpha = alpha)
             )
@@ -49,8 +49,8 @@ fun NumberCircleWithText(number: String, title: String, isActive: Boolean, textS
         Text(
             text = title,
             fontSize = textFontSize,
-            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+            fontWeight = FontWeight.Medium,
             color = Color.White.copy(alpha = alpha)
         )
     }

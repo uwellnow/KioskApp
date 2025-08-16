@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.EndScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
@@ -36,15 +38,11 @@ fun EndScreen(
     vm: Gs805ViewModel = viewModel(),
     apiKey: String
 ) {
-    val density = LocalDensity.current
-    val widDp = with(density) { 1231f.toDp() }
-    val heightDp = with(density) { 824f.toDp() }
-    val roundDp = with(density) { 32f.toDp() }
-    val textSp = with(density) { 36f.toSp() }
-    val space1Dp = with(density) { 81f.toDp() }
-    val space2Dp = with(density) { 107f.toDp() }
-    val imageWidDp = with(density) { 381f.toDp() }
-    val imageHeiDp = with(density) { 68f.toDp() }
+
+    val cartViewModel: CartViewModel = viewModel()
+
+    Finish(navController, cartViewModel)
+
 
     // KioskLogger 인스턴스 생성 (1번 코드 방식)
     val scope = rememberCoroutineScope()
@@ -116,7 +114,7 @@ fun EndScreen(
                 is MachineEvent.DrinkCompleted -> {
                     kioskLogger.logEvent(detail = "Event: DrinkCompleted", isError = false, responseHex = ev.hex)
                     delay(300)
-                    navController.navigate("first")
+                    navController.navigate("hello")
                 }
                 is MachineEvent.CupDropped -> {
                     kioskLogger.logEvent(detail = "Event: CupDropped", isError = false, responseHex = ev.hex)

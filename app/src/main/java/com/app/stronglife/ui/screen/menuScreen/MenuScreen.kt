@@ -59,7 +59,7 @@ fun MenuScreen(
                 .fillMaxSize()
                 .background(background)
         ){
-            TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"), navController = navController)
+            TopBar(step = 2, listOf("섭취시점 선택", "메뉴선택"), navController = navController, cartViewModel = cartViewModel)
             Spacer(modifier = Modifier.height(spacertoDp))
             when {
                 isLoading -> {

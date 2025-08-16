@@ -6,11 +6,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -20,12 +15,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.model.CartItem
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.lightRed
-import com.app.stronglife.ui.theme.midGray
-import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
 fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
@@ -34,11 +24,8 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
 
     val density = LocalDensity.current
     val titleToSp = with(density) { 40f.toSp() }
-    val imageToDp = with(density) { 160f.toDp() }
+    val imageToDp = with(density) { 200f.toDp() }
     val spaceDp = with(density) { 32f.toDp() }
-    val roundtoDp = with(density) { 20f.toDp()}
-    val borderRadiusPx = with(density) { roundtoDp.toPx() }
-    val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Row(
         modifier = Modifier
@@ -63,7 +50,7 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
                 text = product.name,
                 style = TextStyle(
                     fontSize = titleToSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                     fontWeight = FontWeight.Bold,
                     color = black
                 )

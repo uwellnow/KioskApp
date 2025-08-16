@@ -1,4 +1,4 @@
-package com.app.stronglife.ui.component
+package com.app.stronglife.ui.screen.PayingScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,14 +36,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.errorGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
-fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
+fun MemberErrorBox(navController: NavController) {
+    val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+    
     val density = LocalDensity.current
     val widDp = with(density) {178f.toDp()}
     val roundDp = with(density) {32f.toDp()}
@@ -75,7 +79,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(spaceDp))
             Text(
-                text = errorMsg,
+                text = "회원 인증 실패",
                 style = TextStyle(
                     fontSize = ErrorSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -84,7 +88,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(roundDp))
             Text(
-                text = desMsg,
+                text = "회원 인증에 실패했습니다. 주문번호를 다시 확인해 주세요",
                 style = TextStyle(
                     fontSize = DesSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -97,13 +101,14 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
                 modifier = Modifier
                     .background(color = mainRed, shape = RoundedCornerShape(round2dp))
                     .clickable {
-                        navController.navigate("hello")
+                        userCodeViewModel.clear404Error()
+                        navController.popBackStack()
                     },
 
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "처음으로 이동",
+                    text = "재시도",
                     style = TextStyle(
                         fontSize = btnSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -116,8 +121,3 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
-@Composable
-fun ErrorBoxPreview() {
-    ErrorBox("물 부족", "물 공급이 원활하지 않습니다. 관리자에게 문의해 주세요", navController = rememberNavController())
-}

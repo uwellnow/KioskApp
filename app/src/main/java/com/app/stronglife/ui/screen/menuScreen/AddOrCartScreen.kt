@@ -1,6 +1,7 @@
 package com.app.stronglife.ui.screen.menuScreen
 
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,18 +29,18 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.lightRed
-import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
-fun AddOrCartScreen(navController: NavController) {
+fun AddOrCartScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel = viewModel()
+) {
 
     val density = LocalDensity.current
     val textToSp = with(density) {40f.toSp()}
@@ -51,7 +52,7 @@ fun AddOrCartScreen(navController: NavController) {
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Column {
-        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController)
+        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController, cartViewModel = cartViewModel)
         Row (
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
@@ -97,7 +98,7 @@ fun AddOrCartScreen(navController: NavController) {
                     text = "추가 주문하기",
                     style = TextStyle(
                         fontSize = textToSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = black
                     )
@@ -147,7 +148,7 @@ fun AddOrCartScreen(navController: NavController) {
                     text = "장바구니로 이동",
                     style = TextStyle(
                         fontSize = textToSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = black
                     )

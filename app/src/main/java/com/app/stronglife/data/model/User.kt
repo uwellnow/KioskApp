@@ -7,16 +7,25 @@ data class User (
 )
 
 data class UserLoginRequest(
-    val userCode: String
+    val userCode: String,
+    val paymentMethodId: Int
+)
+
+data class Membership(
+    val id: Int,
+    val barcode: String,
+    val membership_name: String,
+    val remain_count: Int,
+    val total_count: Int
 )
 
 data class LoginResponse(
     val id: Int,
+    val user_code: String,
     val name: String,
-    val userCode: String,
     val age: Int,
     val gender: String,
-    val remainCount: Int,
+    val membership: Membership
 )
 
 data class UserPurchase(
@@ -24,5 +33,9 @@ data class UserPurchase(
     val productCount: List<Int>,
     val userId: String,
     val userCode: String,
+)
 
+data class ProductPurchaseRequest(
+    val productIds: List<Int>,
+    val productCounts: List<Int>
 )

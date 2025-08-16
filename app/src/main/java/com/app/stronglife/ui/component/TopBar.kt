@@ -1,8 +1,11 @@
 package com.app.stronglife.ui.component
 
+import CartViewModel
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,69 +20,82 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.Image
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
+import androidx.compose.ui.res.painterResource
 
 @Composable
-fun TopBar(step:Int, pageNames:List<String>, navController: NavController) {
+fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartViewModel: CartViewModel) {
     val density = LocalDensity.current
-    val heightInDp = with(density) { 125f.toDp() }
-    val paddingInDp = with(density) {80f.toDp()}
-    val textInSp = with(density) {36f.toSp()}
-    val heightPaddingInDp = with(density) {36f.toDp()}
-    val btnInDp = with(density) {43f.toDp()}
+    val heightInDp = with(density) { 112f.toDp() }
+    val paddingInDp = with(density) {60f.toDp()}
+    val IconPadInDp = with(density) {24f.toDp()}
+    val startPaddingInDp = with(density) {20f.toDp()}
+    val btnInDp = with(density) {48f.toDp()}
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(heightInDp)
             .background(mainRed)
-            .padding(horizontal = paddingInDp, vertical = heightPaddingInDp),
+            .padding(horizontal = paddingInDp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = startPaddingInDp)) {
             pageNames.forEachIndexed { index, title ->
                 if (index > 0) Spacer(modifier = Modifier.width(50.dp))
                 NumberCircleWithText(
                     number = (index + 1).toString(),
                     title = title,
-                    isActive = (index == pageNames.lastIndex),
                     textSizeSp = 36f
                 )
             }
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable{navController.navigate("hello")}){
-            Text(
-                text = "처음으로",
-                style = TextStyle(
-                    fontSize = textInSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+        Row(verticalAlignment = Alignment.CenterVertically){
+
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.cart),
+                    modifier = Modifier.size(btnInDp)
+                        .clickable{navController.navigate("cart")},
+                    contentDescription = "장바구니 이동 버튼"
                 )
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Icon(
-                modifier = Modifier.size(btnInDp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_homebtn),
-                contentDescription = "처음으로 이동 버튼",
-                tint = Color.White
+                
+                // Cart 아이템 개수가 1개 이상일 때만 CartAlertBox 표시
+                val cartItemCount = cartViewModel.cartItems.value.sumOf { it.quantity }
+                if (cartItemCount > 0) {
+                    CartAlertBox(
+                        number = cartItemCount,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(IconPadInDp))
+
+            Image(
+                painter = painterResource(id = R.drawable.home),
+                modifier = Modifier.size(btnInDp)
+                    .clickable{navController.navigate("hello")},
+                contentDescription = "처음으로 이동 버튼"
             )
         }
     }
 }
-
 
 

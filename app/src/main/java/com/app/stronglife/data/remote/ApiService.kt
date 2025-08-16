@@ -2,6 +2,7 @@ package com.app.stronglife.data.remote
 
 import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.data.model.Product
+import com.app.stronglife.data.model.ProductPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import okhttp3.RequestBody
@@ -41,6 +42,13 @@ interface ApiService {
     suspend fun postPurchaseProduct(
         @Header("x-api-key") apiKey: String,
         @Body body: UserPurchase
+    ) : retrofit2.Response<okhttp3.ResponseBody>
+
+    @POST("user/purchase/product-by-order")
+    suspend fun postPurchaseProductByOrder(
+        @Header("x-api-key") apiKey: String,
+        @Query("orderNumber") orderNumber: String,
+        @Body body: ProductPurchaseRequest
     ) : retrofit2.Response<okhttp3.ResponseBody>
   
 

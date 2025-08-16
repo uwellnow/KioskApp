@@ -30,7 +30,7 @@ import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 import kotlinx.coroutines.delay
-
+/*
 @Composable
 fun PayOverlayCard(navController: NavController, apiKey: String) {
 
@@ -107,25 +107,20 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
                 }
             }
             "phone" -> {
-                if (isUserInfoVisible) {
-                    UserBox(
-                        showInfo = userCodeViewModel.loginResponse.value != null,
-                        loginResponse = userCodeViewModel.loginResponse.value
-                    )
-                } else {
+
                     PhonePayCard(
                         viewModel = userCodeViewModel,
                         apiKey = apiKey,
-                    onUserFound = { isUserInfoVisible = true},
-                        navController = navController
+                        onUserFound = { navController.navigate("userInfo") },
+                        cartViewModel = cartViewModel
                     )
                 }
                 }
 
                 }
             }
-        }
 
 
+*/
 
 
