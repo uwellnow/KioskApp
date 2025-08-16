@@ -8,33 +8,46 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.errorGray
 import com.app.stronglife.ui.theme.mainRed
+import com.app.stronglife.ui.theme.shadowGray
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
 fun MemberErrorBox(navController: NavController) {
+    val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+    
     val density = LocalDensity.current
     val widDp = with(density) {178f.toDp()}
     val roundDp = with(density) {32f.toDp()}
@@ -88,6 +101,7 @@ fun MemberErrorBox(navController: NavController) {
                 modifier = Modifier
                     .background(color = mainRed, shape = RoundedCornerShape(round2dp))
                     .clickable {
+                        userCodeViewModel.clear404Error()
                         navController.popBackStack()
                     },
 

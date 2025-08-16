@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.lightGray
@@ -65,6 +66,12 @@ fun OrderNumScreen(
     // 화면이 처음 로드될 때 userCode 초기화
     LaunchedEffect(Unit) {
         userCodeViewModel.clear()
+    }
+
+    // 404 오류 시 MemberErrorBox 표시
+    if (userCodeViewModel.is404Error.value) {
+        MemberErrorBox(navController = navController)
+        return
     }
 
     Column (
@@ -105,6 +112,7 @@ fun OrderNumScreen(
             Spacer(modifier = Modifier.height(spaceDp))
             
             PhonePayCard(
+                navController = navController,
                 viewModel = userCodeViewModel,
                 apiKey = apiKey,
                 onUserFound = { navController.navigate("userInfo") },

@@ -30,6 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.lightGray
@@ -44,9 +45,7 @@ fun CouponScreen(
     apiKey: String,
     cartViewModel: CartViewModel = viewModel()
 ) {
-    val userCodeViewModel: UserCodeViewModel = viewModel(
-        factory = UserCodeViewModelFactory(RetrofitClient.api)
-    )
+    val userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
     val density = LocalDensity.current
     val barbtnSpace = with(density) {81f.toDp()}
@@ -59,6 +58,12 @@ fun CouponScreen(
     val titleSp = with(density) {36f.toSp()}
     val spacerDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
+
+    // 404 오류 시 MemberErrorBox 표시
+    if (userCodeViewModel.is404Error.value) {
+        MemberErrorBox(navController = navController)
+        return
+    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -98,6 +103,7 @@ fun CouponScreen(
             Spacer(modifier = Modifier.height(spaceDp))
 
             PhonePayCard(
+                navController = navController,
                 viewModel = userCodeViewModel,
                 apiKey = apiKey,
                 onUserFound = { navController.navigate("userInfo") },

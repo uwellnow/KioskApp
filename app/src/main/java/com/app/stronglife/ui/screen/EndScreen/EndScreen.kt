@@ -23,6 +23,7 @@ import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
@@ -113,7 +114,7 @@ fun EndScreen(
                 is MachineEvent.DrinkCompleted -> {
                     kioskLogger.logEvent(detail = "Event: DrinkCompleted", isError = false, responseHex = ev.hex)
                     delay(300)
-                    navController.navigate("first")
+                    navController.navigate("hello")
                 }
                 is MachineEvent.CupDropped -> {
                     kioskLogger.logEvent(detail = "Event: CupDropped", isError = false, responseHex = ev.hex)

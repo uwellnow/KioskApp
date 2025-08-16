@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
+import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
@@ -39,6 +40,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
 fun PhonePayCard (
+    navController: NavController,
     viewModel: UserCodeViewModel, 
     apiKey: String, 
     onUserFound: () -> Unit,
@@ -58,6 +60,7 @@ fun PhonePayCard (
     val titleSp = with(density) {36f.toSp()}
     val spaceDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
+
 
     Column (
         verticalArrangement = Arrangement.Center,

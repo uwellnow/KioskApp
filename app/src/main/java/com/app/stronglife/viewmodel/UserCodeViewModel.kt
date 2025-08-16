@@ -42,6 +42,8 @@ class UserCodeViewModel(
     var loginResponse = mutableStateOf<LoginResponse?>(null)
         private set
     var errorMessage = mutableStateOf<String?>(null)
+    var is404Error = mutableStateOf(false)
+    var isPurchaseError = mutableStateOf(false)
 
     fun addDigit(digit: String) {
         userCode.value += digit
@@ -57,6 +59,12 @@ class UserCodeViewModel(
         userCode.value = ""
     }
 
+    fun clear404Error() {
+        is404Error.value = false
+        loginResponse.value = null
+        errorMessage.value = null
+    }
+
     fun setPaymentMethodId(id: Int) {
         paymentMethodId.value = id
     }
@@ -70,12 +78,20 @@ class UserCodeViewModel(
                 )
                 if (response.isSuccessful) {
                     loginResponse.value = response.body()
+                    is404Error.value = false
                     onResult(true)
                 } else {
-                    errorMessage.value = "조회 실패 (${response.code()})"
+                    if (response.code() == 404) {
+                        is404Error.value = true
+                        errorMessage.value = "회원을 찾을 수 없습니다"
+                    } else {
+                        is404Error.value = false
+                        errorMessage.value = "조회 실패 (${response.code()})"
+                    }
                     onResult(false)
                 }
             } catch (e: Exception) {
+                is404Error.value = false
                 errorMessage.value = e.message
                 onResult(false)
             }
@@ -103,16 +119,19 @@ class UserCodeViewModel(
                 if (response.isSuccessful) {
                     val responseBody = response.body()?.string()
                     Log.d("UserCodeViewModel", "Purchase successful: $responseBody")
+                    isPurchaseError.value = false
                     onResult(true)
                 } else {
                     Log.e("UserCodeViewModel", "Purchase failed with code: ${response.code()}")
                     Log.e("UserCodeViewModel", "Error body: ${response.errorBody()?.string()}")
                     errorMessage.value = "구매 실패 (${response.code()})"
+                    isPurchaseError.value = true
                     onResult(false)
                 }
             } catch (e: Exception) {
                 Log.e("UserCodeViewModel", "Purchase exception: ${e.message}", e)
                 errorMessage.value = e.message
+                isPurchaseError.value = true
                 onResult(false)
             }
         }

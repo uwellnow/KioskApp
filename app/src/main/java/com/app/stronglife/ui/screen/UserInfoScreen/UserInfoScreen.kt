@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.PayScreen.UserBox
 import com.app.stronglife.ui.theme.black
@@ -62,6 +63,16 @@ fun UserInfoScreen(
     val widDp = with(density) {374f.toDp()}
     val heightDp = with(density) {91f.toDp()}
     val roundDp = with(density) {46f.toDp()}
+
+    // 결제 실패 시 ErrorBox 표시
+    if (userCodeViewModel.isPurchaseError.value) {
+        ErrorBox(
+            errorMsg = "결제 실패",
+            desMsg = "결제 중 오류가 발생했습니다. 다시 시도해 주세요.",
+            navController = navController
+        )
+        return
+    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
