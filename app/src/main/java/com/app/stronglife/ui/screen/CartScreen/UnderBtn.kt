@@ -2,11 +2,9 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -21,7 +19,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.lightGray
@@ -56,7 +53,7 @@ fun UnderBtn(navController: NavController) {
                 text = "뒤로가기",
                 style = TextStyle(
                     fontSize = backSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Normal,
                     color = lightGray
                 )
@@ -80,7 +77,7 @@ fun UnderBtn(navController: NavController) {
                 text = "결제하기",
                 style = TextStyle(
                     fontSize = paySp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
                 )

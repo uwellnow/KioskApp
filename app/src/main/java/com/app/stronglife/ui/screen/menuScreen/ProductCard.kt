@@ -32,8 +32,6 @@ import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.midGray
-import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
 fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
@@ -42,12 +40,13 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val horPadding = with(density) { 20.toDp() }
     val widthtoDp = with(density) { 513f.toDp() }
     val heighttoDp = with(density) { 787f.toDp() }
-    val imageSize = with(density) { 490f.toDp() }
+    val imageSize = with(density) { 448f.toDp() }
     val desfont = with(density) { 20f.toSp() }
     val titlefont = with(density) { 30f.toSp() }
-    val textSpace = with(density) { 48f.toDp() }
+    val textSpace = with(density) { 60f.toDp() }
     val horpadDp = with(density) {80f.toDp()}
     val textdp = with (density) {65f.toDp()}
+    val spaceDp = with (density) {18f.toDp()}
 
     val scrollState = rememberScrollState()
 
@@ -58,7 +57,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     ) {
         products.forEach { product ->
             Column(
-                modifier = Modifier.padding(horizontal = 15.dp)
+                modifier = Modifier.padding(horizontal = spaceDp)
             ) {
                 Box(
                     modifier = Modifier
@@ -113,33 +112,48 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                     .width(imageSize)
                                     .height(imageSize)
                             )
+
+                        }
+
+                        Spacer(modifier = Modifier.height(horPadding))
+
+                        Column (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = textdp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
                             Text(
                                 text = product.description.replace("\\n", "\n"),
                                 style = TextStyle(
                                     fontSize = desfont,
                                     textAlign = TextAlign.Center,
                                     lineHeight = desfont * 1.3,
-                                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                                     fontWeight = FontWeight.Normal,
-                                    color = midGray
+                                    color = lightGray
+                                )
+                            )
+                            Text(
+                                text = product.name,
+                                modifier = Modifier
+                                    .padding(top = horPadding),
+                                style = TextStyle(
+                                    fontSize = titlefont,
+                                    fontFamily = FontFamily(Font(R.font.pretendard_bold)),
+                                    fontWeight = FontWeight.Bold,
+                                    color = black
                                 )
                             )
                         }
+
+
                     }
 
-                    // 하단 고정 상품명
-                    Text(
-                        text = product.name,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = textSpace),
-                        style = TextStyle(
-                            fontSize = titlefont,
-                            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
-                            fontWeight = FontWeight.Bold,
-                            color = black
-                        )
-                    )
+
+
+
                 }
             }
         }

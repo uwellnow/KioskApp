@@ -33,11 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.lightRed
-import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
@@ -102,7 +98,7 @@ fun AddOrCartScreen(
                     text = "추가 주문하기",
                     style = TextStyle(
                         fontSize = textToSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = black
                     )
@@ -152,7 +148,7 @@ fun AddOrCartScreen(
                     text = "장바구니로 이동",
                     style = TextStyle(
                         fontSize = textToSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
                         color = black
                     )

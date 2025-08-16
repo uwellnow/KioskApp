@@ -22,11 +22,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.midGray
 
 @Composable
 fun CountBtn(
@@ -73,7 +71,7 @@ fun CountBtn(
             text = count.toString(),
             style = TextStyle(
                 fontSize = countToSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                 fontWeight = FontWeight.Bold,
                 color = black
             )

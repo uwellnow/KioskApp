@@ -1,10 +1,7 @@
 package com.app.stronglife.ui.component
 
-import CartViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,8 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -37,16 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
-import com.app.stronglife.data.model.UserPurchase
-import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.errorGray
 import com.app.stronglife.ui.theme.mainRed
-import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.shadowGray
-import com.app.stronglife.viewmodel.UserCodeViewModel
-import kotlinx.coroutines.delay
 
 
 @Composable
@@ -103,7 +92,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
                 text = "["+ errorMsg+"]",
                 style = TextStyle(
                     fontSize = ErrorSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     fontWeight = FontWeight.Bold,
                     color = black
                 ),
@@ -114,7 +103,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
                 text = desMsg,
                 style = TextStyle(
                     fontSize = DesSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     color = errorGray
                 ),
                 textAlign = TextAlign.Center
@@ -133,7 +122,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
                     text = "처음으로 이동",
                     style = TextStyle(
                         fontSize = btnSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         color = Color.White
                     ),
                     modifier = Modifier.padding(horizontal = 70.dp, vertical = 30.dp)

@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
@@ -61,7 +60,6 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartV
                 NumberCircleWithText(
                     number = (index + 1).toString(),
                     title = title,
-                    isActive = (index == pageNames.lastIndex),
                     textSizeSp = 36f
                 )
             }

@@ -1,6 +1,5 @@
 package com.app.stronglife.ui.screen.PayScreen
 
-import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,25 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.semantics.SemanticsProperties.InputText
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.background
-import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.boldGray
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
-import java.nio.file.WatchEvent
-import kotlin.math.round
 
 @Composable
 fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, apiKey: String, onUserFound: () -> Unit) {
@@ -69,7 +59,7 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
                 text = if (viewModel.userCode.value.isEmpty()) "주문번호를 입력하세요" else viewModel.userCode.value,
                 style = TextStyle(
                     fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Medium,
                     color = lightGray
                 )
@@ -99,7 +89,7 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
                     text = "조회",
                     style = TextStyle(
                         fontSize = boxTextSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         fontWeight = FontWeight.Medium,
                         color = if (viewModel.userCode.value.isNotEmpty()) Color.White else midGray
                     )

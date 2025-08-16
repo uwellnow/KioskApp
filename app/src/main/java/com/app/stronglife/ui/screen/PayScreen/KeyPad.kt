@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -19,7 +16,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.boldGray
@@ -78,7 +74,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                     style = TextStyle(
                         fontSize = deleteSp,
                         lineHeight = deleteSp * 1.1,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         color = boldGray
                     ),
                 )
@@ -95,7 +91,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                     text = "지움",
                     style = TextStyle(
                         fontSize = removeSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         color = boldGray
                     ),
                 )

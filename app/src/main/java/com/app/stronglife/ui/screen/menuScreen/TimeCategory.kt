@@ -14,8 +14,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
 
@@ -41,7 +39,7 @@ fun TimeCategory(time:String, modifier: Modifier = Modifier) {
             text = time,
             style = TextStyle(
                 fontSize = texttoSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = Color.White ))
 
                 }

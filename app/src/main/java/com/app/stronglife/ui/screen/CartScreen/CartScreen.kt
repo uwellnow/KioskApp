@@ -2,15 +2,11 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,10 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
@@ -64,7 +57,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                 text = "주문 내역",
                 style = TextStyle(
                     fontSize = titleSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                     fontWeight = FontWeight.Bold,
                     color = black
                 ),

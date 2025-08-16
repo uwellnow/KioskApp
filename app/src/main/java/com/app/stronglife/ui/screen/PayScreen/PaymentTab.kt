@@ -47,7 +47,7 @@ fun PaymentTab(
             text = text,
             color = textColor,
             fontSize = textSp,
-            fontFamily = FontFamily(Font(R.font.sfpro_regular))
+            fontFamily = FontFamily(Font(R.font.pretendard_regular))
         )
         Spacer(modifier = Modifier.height(spaceDp))
         Divider(

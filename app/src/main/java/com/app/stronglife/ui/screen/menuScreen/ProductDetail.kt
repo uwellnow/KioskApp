@@ -1,18 +1,10 @@
 package com.app.stronglife.ui.screen.menuScreen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -32,11 +24,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.app.stronglife.R
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.midGray
@@ -97,7 +87,7 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
                         text = title,
                         style = TextStyle(
                             fontSize = titletoSp,
-                            fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                            fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                             fontWeight = FontWeight.Bold,
                             color = black
                         )
@@ -107,7 +97,7 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
                         text = nut.replace("\\n", "\n"),
                         style = TextStyle(
                             fontSize = nuttoSp,
-                            fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                             fontWeight = FontWeight.Normal,
                             color = midGray
                         )

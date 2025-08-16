@@ -1,16 +1,9 @@
 package com.app.stronglife.ui.screen.PayScreen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,17 +13,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.app.stronglife.R
-import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.mock.sampleMembers
-import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.mainRed
-import com.app.stronglife.ui.theme.midGray
-import com.app.stronglife.ui.theme.qrScanGray
 
 @Composable
 fun QRPayCard(inputId: Int, showInfo: Boolean) {
@@ -58,7 +44,7 @@ fun QRPayCard(inputId: Int, showInfo: Boolean) {
             text = "QR 코드를 스캔해주세요",
             style = TextStyle(
                 fontSize = titleSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_bold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                 fontWeight = FontWeight.Bold,
                 color = black
             )

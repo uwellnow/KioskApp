@@ -2,7 +2,6 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,16 +26,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 import com.app.stronglife.data.model.CartItem
-import com.app.stronglife.ui.screen.firstScreen.customShadow
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.lightGray
-import com.app.stronglife.ui.theme.lightRed
-import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.shadowGray
-import kotlin.math.round
 
 @Composable
 fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
@@ -58,7 +51,7 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
             Text(
                 text = "장바구니가 비었습니다",
                 fontSize = textSp,
-                fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
+                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = black,
                 modifier = Modifier.padding(vertical = 40.dp)
             )

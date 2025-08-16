@@ -22,13 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
 import com.app.stronglife.data.model.LoginResponse
-import com.app.stronglife.mock.sampleMembers
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.qrScanGray
-import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
 fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
@@ -66,7 +64,7 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
                     .weight(1f),
                 style = TextStyle(
                     fontSize = textRegSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Normal,
                     color = midGray
                 )
@@ -77,7 +75,7 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
                     text = "${loginResponse.name} 고객님 (${loginResponse.userCode})",
                     style = TextStyle(
                         fontSize = textBolSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                         fontWeight = FontWeight.SemiBold,
                         color = black
                     )
@@ -98,7 +96,7 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
                 text = "남은 음료 잔 수",
                 style = TextStyle(
                     fontSize = textRegSp,
-                    fontFamily = FontFamily(Font(R.font.sfpro_regular)),
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Normal,
                     color = midGray
                 )
@@ -109,7 +107,7 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
                     text = loginResponse.remainCount.toString() + "잔",
                     style = TextStyle(
                         fontSize = textBolSp,
-                        fontFamily = FontFamily(Font(R.font.sfpro_semibold)),
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                         fontWeight = FontWeight.SemiBold,
                         color = mainRed
                     )
