@@ -107,12 +107,7 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
                 }
             }
             "phone" -> {
-                if (isUserInfoVisible) {
-                    UserBox(
-                        showInfo = userCodeViewModel.loginResponse.value != null,
-                        loginResponse = userCodeViewModel.loginResponse.value
-                    )
-                } else {
+
                     PhonePayCard(
                         viewModel = userCodeViewModel,
                         apiKey = apiKey,
@@ -124,7 +119,7 @@ fun PayOverlayCard(navController: NavController, apiKey: String) {
 
                 }
             }
-        }
+
 
 
 

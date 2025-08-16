@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.screen.PayScreen
 
+import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -24,18 +26,23 @@ import com.app.stronglife.R
 import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.desc2Gray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.ui.theme.qrScanGray
 
 @Composable
-fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
+fun UserBox(
+    showInfo: Boolean, 
+    loginResponse: LoginResponse?,
+    cartViewModel: CartViewModel
+) {
 
     val density = LocalDensity.current
 
     val t2iSpaceDp = with(density) {16f.toDp()}
-    val boxwidDp = with(density) {666f.toDp()}
-    val boxheightDp = with(density) {178f.toDp()}
+    val boxwidDp = with(density) {763f.toDp()}
+    val boxheightDp = with(density) {266f.toDp()}
     val boxRoundDp = with(density) {24f.toDp()}
 
     val boxHeiPadDp = with(density) {35f.toDp()}
@@ -44,35 +51,44 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
     val textRegSp = with(density) {28f.toSp()}
     val textBolSp = with(density) {32f.toSp()}
 
+
+    // 장바구니 총 수량 계산
+    val cartTotalQuantity = cartViewModel.cartItems.value.sumOf { it.quantity }
+    
+    // 차감 후 수량 계산
+    val remainingAfterDeduction = if (showInfo && loginResponse != null) {
+        loginResponse.membership.remain_count - cartTotalQuantity
+    } else 0
+
     Column(
         modifier = Modifier
             .width(boxwidDp)
             .height(boxheightDp)
-            .background(color = background, RoundedCornerShape(boxRoundDp))
+            .background(color = Color.White, RoundedCornerShape(boxRoundDp))
             .padding(horizontal = boxWidPadDp, vertical = boxHeiPadDp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // 첫 번째 행: 회원 정보
         Row (
             modifier = Modifier
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ){
             Text(
                 text = "회원 정보",
-                modifier = Modifier
-                    .weight(1f),
                 style = TextStyle(
                     fontSize = textRegSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Normal,
-                    color = midGray
+                    color = desc2Gray
                 )
             )
 
             if (showInfo && loginResponse != null) {
                 Text(
-                    text = "${loginResponse.name} 고객님 (${loginResponse.userCode})",
+                    text = "${loginResponse.name} 고객님 (${loginResponse.user_code})",
                     style = TextStyle(
                         fontSize = textBolSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -83,28 +99,28 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
             }
         }
 
-        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = t2iSpaceDp),color = qrScanGray, thickness = 1.dp)
+        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = t2iSpaceDp), color = qrScanGray, thickness = 1.dp)
 
+        // 두 번째 행: 현재 보유 수량
         Row (
             modifier = Modifier
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-
         ){
             Text(
-                text = "남은 음료 잔 수",
+                text = "현재 보유 수량",
                 style = TextStyle(
                     fontSize = textRegSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Normal,
-                    color = midGray
+                    color = desc2Gray
                 )
             )
 
             if (showInfo && loginResponse != null) {
                 Text(
-                    text = loginResponse.remainCount.toString() + "잔",
+                    text = "${loginResponse.membership.remain_count}잔",
                     style = TextStyle(
                         fontSize = textBolSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -113,8 +129,38 @@ fun UserBox(showInfo: Boolean, loginResponse: LoginResponse?) {
                     )
                 )
             }
-
         }
 
+        Divider(modifier = Modifier.fillMaxWidth().padding(vertical = t2iSpaceDp), color = qrScanGray, thickness = 1.dp)
+
+        // 세 번째 행: 차감 후 수량
+        Row (
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ){
+            Text(
+                text = "차감 후 수량",
+                style = TextStyle(
+                    fontSize = textRegSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                    fontWeight = FontWeight.Normal,
+                    color = desc2Gray
+                )
+            )
+
+            if (showInfo && loginResponse != null) {
+                Text(
+                    text = "${remainingAfterDeduction}잔",
+                    style = TextStyle(
+                        fontSize = textBolSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                        fontWeight = FontWeight.SemiBold,
+                        color = mainRed
+                    )
+                )
+            }
+        }
     }
 }

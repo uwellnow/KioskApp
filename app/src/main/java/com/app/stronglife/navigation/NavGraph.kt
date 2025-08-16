@@ -11,8 +11,11 @@ import androidx.navigation.compose.composable
 import com.app.stronglife.ui.screen.CartScreen.CartScreen
 import com.app.stronglife.ui.screen.EndScreen.EndScreen
 import com.app.stronglife.ui.screen.HelloScreen.HelloScreen
+import com.app.stronglife.ui.screen.PayScreen.CouponScreen
+import com.app.stronglife.ui.screen.PayScreen.OrderNumScreen
 import com.app.stronglife.ui.screen.PayScreen.PayOverlayCard
 import com.app.stronglife.ui.screen.PayScreen.PayScreen
+import com.app.stronglife.ui.screen.UserInfoScreen.UserInfoScreen
 import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
@@ -63,8 +66,17 @@ fun NavGraph(
         composable("paySelect") {
             PaySelectScreen(navController = navController, cartViewModel = cartViewModel)
         }
-        composable("pay") {
+        composable("pay") {  // 안씀
             PayScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
+        }
+        composable("pay_barcode") {
+            CouponScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
+        }
+        composable("pay_number") {
+            OrderNumScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
+        }
+        composable("userInfo") {
+            UserInfoScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
         }
         composable("paying") {
             PayingScreen(viewModel = cartViewModel, userViewModel = userViewModel, navController)

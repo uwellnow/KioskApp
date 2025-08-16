@@ -23,17 +23,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.background
+import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
+
 @Composable
 fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, apiKey: String, onUserFound: () -> Unit) {
+
 
     val density = LocalDensity.current
     val widDp = with(density) {584f.toDp()}
@@ -44,6 +49,7 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
     val boxTextSp = with(density) {24f.toSp()}
     val spacerDp = with(density) {60f.toDp()}
     val spacer2Dp = with(density) {17f.toDp()}
+
 
     Column (
         verticalArrangement = Arrangement.Center,
@@ -72,16 +78,15 @@ fun PhonePayCard (navController: NavController, viewModel: UserCodeViewModel, ap
             Box(
                 modifier = Modifier.background(if (viewModel.userCode.value.isNotEmpty()) mainRed else background, shape = RoundedCornerShape(roundDp))
                     .size(boxWidDp, boxHeiDp)
-//                    .clickable(enabled = isFilled) {
-//                        if (viewModel.userCode.value.isNotEmpty()) {
-//                            viewModel.fetchUser(apiKey) { success ->
-//                                if (success) {
-//                                    onUserFound()
-//                                }
-//                            }
-//                        }
-//                    }
-                    .clickable{navController.navigate("end")}
+                    .clickable(enabled = isFilled) {
+                        if (viewModel.userCode.value.isNotEmpty()) {
+                            viewModel.fetchUser(apiKey) { success ->
+                                if (success) {
+                                    onUserFound()
+                                }
+                            }
+                        }
+                    }
                 ,
                 contentAlignment = Alignment.Center
             ) {

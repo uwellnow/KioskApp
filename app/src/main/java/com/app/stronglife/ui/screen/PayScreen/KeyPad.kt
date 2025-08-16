@@ -88,7 +88,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "지움",
+                    text = "지\n움",
                     style = TextStyle(
                         fontSize = removeSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

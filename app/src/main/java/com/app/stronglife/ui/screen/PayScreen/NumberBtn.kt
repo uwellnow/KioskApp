@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontFamily
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.boldGray
+import com.app.stronglife.ui.theme.keyGray
 
 @Composable
 fun NumberBtn(number: String, onClick: () -> Unit) {
@@ -33,8 +34,8 @@ fun NumberBtn(number: String, onClick: () -> Unit) {
             text = number,
             style = TextStyle(
                 fontSize = numberDp,
-                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                color = boldGray
+                fontFamily = FontFamily(Font(R.font.pretendard_light)),
+                color = keyGray
             ),
         )
     }
