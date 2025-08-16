@@ -2,12 +2,14 @@ package com.app.stronglife.ui.screen.CartScreen
 
 import CartViewModel
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
 import com.app.stronglife.data.model.CartItem
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.descGray
+import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
@@ -37,27 +41,13 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
     val roundDp = with(density) { 28f.toDp() }
     val horPad = with(density) { 60f.toDp() }
     val verPad = with(density) { 32f.toDp() }
-    val textSp = with(density) {80f.toSp()}
+
 
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
 
 
-    if (cartItems.isEmpty()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "장바구니가 비었습니다",
-                fontSize = textSp,
-                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                color = black,
-                modifier = Modifier.padding(vertical = 40.dp)
-            )
-        }
 
-    } else {
         Column(
             modifier = Modifier
                 .drawBehind {
@@ -95,5 +85,5 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
 
     }
 
-    }
+
 

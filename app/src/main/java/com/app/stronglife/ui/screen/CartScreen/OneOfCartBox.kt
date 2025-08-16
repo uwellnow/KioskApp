@@ -24,11 +24,8 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
 
     val density = LocalDensity.current
     val titleToSp = with(density) { 40f.toSp() }
-    val imageToDp = with(density) { 160f.toDp() }
+    val imageToDp = with(density) { 200f.toDp() }
     val spaceDp = with(density) { 32f.toDp() }
-    val roundtoDp = with(density) { 20f.toDp()}
-    val borderRadiusPx = with(density) { roundtoDp.toPx() }
-    val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Row(
         modifier = Modifier

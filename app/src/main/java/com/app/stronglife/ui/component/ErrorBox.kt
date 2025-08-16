@@ -1,5 +1,6 @@
 package com.app.stronglife.ui.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -22,6 +25,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -41,19 +45,14 @@ import com.app.stronglife.ui.theme.shadowGray
 @Composable
 fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
     val density = LocalDensity.current
-    val widDp = with(density) {1231f.toDp()}
-    val heightDp = with(density) {824f.toDp()}
+    val widDp = with(density) {178f.toDp()}
     val roundDp = with(density) {32f.toDp()}
-    val ErrorSp = with(density) {56f.toSp()}
-    val DesSp = with(density) {28f.toSp()}
+    val ErrorSp = with(density) {70f.toSp()}
+    val DesSp = with(density) {32f.toSp()}
     val spaceDp = with(density) {56f.toDp()}
     val btnSp = with(density) {28f.toSp()}
     val round2dp = with(density) {48f.toDp()}
-    val space2Dp = with(density) {135f.toDp()}
-    val space3Dp = with(density) {257f.toDp()}
-
-    val borderRadiusPx = with(density) { roundDp.toPx() }
-    val blurRadiusPx = with(density) { 24.dp.toPx() }
+    val space2Dp = with(density) {157f.toDp()}
 
 
 
@@ -64,41 +63,26 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
     ){
         Column (
             modifier = Modifier
-                .width(widDp)
-                .height(heightDp)
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().asFrameworkPaint().apply {
-                            color = shadowGray.toArgb()
-                            maskFilter = android.graphics.BlurMaskFilter(borderRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
-                        }
-                        canvas.nativeCanvas.drawRoundRect(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
-                            blurRadiusPx,
-                            blurRadiusPx,
-                            paint
-                        )
-                    }
-                }
-                .background(color = Color.White, shape = RoundedCornerShape(roundDp)),
-
-
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+
+            Image(
+                painter = painterResource(R.drawable.error),
+                contentDescription = "에러발생",
+                modifier = Modifier.size(widDp)
+            )
+            Spacer(modifier = Modifier.height(spaceDp))
             Text(
-                text = "["+ errorMsg+"]",
+                text = errorMsg,
                 style = TextStyle(
                     fontSize = ErrorSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                    fontWeight = FontWeight.Bold,
                     color = black
-                ),
-                modifier = Modifier.padding(top= space3Dp)
+                )
             )
-            Spacer(modifier = Modifier.height(spaceDp))
+            Spacer(modifier = Modifier.height(roundDp))
             Text(
                 text = desMsg,
                 style = TextStyle(
@@ -135,5 +119,5 @@ fun ErrorBox(errorMsg: String, desMsg: String, navController: NavController) {
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
 @Composable
 fun ErrorBoxPreview() {
-    ErrorBox("물 부족", "물 공급이 원활하지 않습니다.\n관리자에게 문의해 주세요", navController = rememberNavController())
+    ErrorBox("물 부족", "물 공급이 원활하지 않습니다. 관리자에게 문의해 주세요", navController = rememberNavController())
 }
