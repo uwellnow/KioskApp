@@ -65,15 +65,17 @@ fun Modifier.customShadow(
 fun TimeSelectBtn(time: String, description: String, english: String, navController: NavController) {
     val density = LocalDensity.current
 
-    val widthInDp = with(density) { 568.toDp() }
-    val heightInDp = with(density) { 443.toDp() }
+    val widthInDp = with(density) { 568f.toDp() }
+    val heightInDp = with(density) { 518f.toDp() }
     val roundInDp = with(density) { 20f.toDp() }
-    val startInDp = with(density) { 30f.toDp() }
+    val startInDp = with(density) { 39f.toDp() }
     val midInDp = with(density) { 20f.toDp() }
-    val topInDp = with(density) { 45f.toDp() }
+    val topInDp = with(density) { 59f.toDp() }
     val timeInSp = with(density) { 36.toSp() }
     val desInSp = with(density) { 24.toSp() }
     val engInSp = with(density) { 124.toSp() }
+
+    val spaceDp = with(density) {53f.toDp()}
 
 
     val blurRadiusPx = with(density) { 24.dp.toPx() }
@@ -125,7 +127,7 @@ fun TimeSelectBtn(time: String, description: String, english: String, navControl
                     color = lightGray
                 )
             )
-            Spacer(modifier = Modifier.height(midInDp))
+            Spacer(modifier = Modifier.height(spaceDp))
             Text(
                 text = english,
                 style = TextStyle(
