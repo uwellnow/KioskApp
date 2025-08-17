@@ -66,6 +66,7 @@ fun OrderNumScreen(
     // 화면이 처음 로드될 때 userCode 초기화
     LaunchedEffect(Unit) {
         userCodeViewModel.clear()
+        userCodeViewModel.clear404Error()
     }
 
     // 404 오류 시 MemberErrorBox 표시

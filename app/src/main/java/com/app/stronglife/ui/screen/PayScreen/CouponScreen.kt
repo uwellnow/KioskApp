@@ -47,6 +47,11 @@ fun CouponScreen(
 ) {
     val userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
+    // 화면 진입 시 404 에러 상태 초기화
+    LaunchedEffect(Unit) {
+        userCodeViewModel.clear404Error()
+    }
+
     val density = LocalDensity.current
     val barbtnSpace = with(density) {81f.toDp()}
     val widDp = with(density) {1231f.toDp()}

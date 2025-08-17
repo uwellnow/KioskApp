@@ -65,6 +65,11 @@ class UserCodeViewModel(
         errorMessage.value = null
     }
 
+    fun clearPurchaseError() {
+        isPurchaseError.value = false
+        errorMessage.value = null
+    }
+
     fun setPaymentMethodId(id: Int) {
         paymentMethodId.value = id
     }

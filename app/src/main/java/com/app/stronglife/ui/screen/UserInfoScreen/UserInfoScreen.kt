@@ -58,6 +58,11 @@ fun UserInfoScreen(
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     val loginResponse = userCodeViewModel.loginResponse.value
 
+    // 화면 진입 시 결제 에러 상태 초기화
+    LaunchedEffect(Unit) {
+        userCodeViewModel.clearPurchaseError()
+    }
+
     val density = LocalDensity.current
     val barbtnSpace = with(density) {27f.toDp()}
     val widDp = with(density) {374f.toDp()}
@@ -67,7 +72,7 @@ fun UserInfoScreen(
     // 결제 실패 시 ErrorBox 표시
     if (userCodeViewModel.isPurchaseError.value) {
         ErrorBox(
-            errorMsg = "결제 실패",
+            errorMsg = "재고 부족", //Todo: 재고 부족으로 변경 -> 409 에러 (컵이랑 물 구분)
             desMsg = "결제 중 오류가 발생했습니다. 다시 시도해 주세요.",
             navController = navController
         )
