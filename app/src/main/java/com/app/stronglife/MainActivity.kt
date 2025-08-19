@@ -6,6 +6,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -26,13 +29,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val prefsManager = PrefsManager(this)
-        prefsManager.saveApiKeyIfNotExists()
-        val apiKey = prefsManager.getApiKey()
-        Log.d("API_KEY", apiKey)
 
-        // 앱 시작 시 API 키를 서버에 전송
-        val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
-        userCodeViewModel.sendApiKey(apiKey)
+        prefsManager.clearApiKey()
+        
+        var apiKey by mutableStateOf(prefsManager.getApiKey())
+        Log.d("API_KEY", "Current API Key: $apiKey")
+
+        if (prefsManager.hasApiKey()) {
+            val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+            userCodeViewModel.sendApiKey(apiKey)
+        }
 
         enableEdgeToEdge()
         setContent {
@@ -44,16 +50,19 @@ class MainActivity : ComponentActivity() {
             val userViewModel: UserCodeViewModel = viewModel(
                 factory = UserCodeViewModelFactory(RetrofitClient.api)
             )
+            
             NavGraph(
                 navController = navController,
                 cartViewModel = cartViewModel,
                 productViewModel = productViewModel,
                 userViewModel = userViewModel,
-                apiKey = apiKey)
-
+                apiKey = apiKey,
+                onApiKeyChanged = { newApiKey ->
+                    apiKey = newApiKey
+                }
+            )
         }
     }
-
 }
 
 

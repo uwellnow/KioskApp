@@ -1,7 +1,6 @@
 package com.app.stronglife.navigation
 
 import CartViewModel
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.app.stronglife.ui.screen.menuScreen.AddOrCartScreen
@@ -18,11 +17,7 @@ import com.app.stronglife.ui.screen.PaySelectScreen.PaySelectScreen
 import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.viewmodel.ProductViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import androidx.compose.animation.*
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.app.stronglife.data.model.User
+import com.app.stronglife.ui.screen.HelloScreen.RegisterStoreScreen
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
@@ -32,20 +27,29 @@ fun NavGraph(
     cartViewModel: CartViewModel,
     productViewModel: ProductViewModel,
     userViewModel: UserCodeViewModel,
-    apiKey: String) {
+    apiKey: String,
+    onApiKeyChanged: (String) -> Unit
+) {
 
-    @OptIn(ExperimentalAnimationApi::class)
-    AnimatedNavHost(
+    val start = if (apiKey.isNotEmpty()) "hello" else "register"
+
+    NavHost(
         navController = navController,
-        startDestination = "hello",
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { 1000 }) + fadeIn()
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -1000 }) + fadeOut()
-        }
+        startDestination = start
     ) {
-
+        composable("register") {
+            RegisterStoreScreen(
+                navController = navController,
+                userCodeViewModel = userViewModel,
+                onApiKeySet = { newApiKey ->
+                    onApiKeyChanged(newApiKey)
+                    navController.navigate("hello") {
+                        popUpTo("register") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
         composable("hello") {
             HelloScreen(navController = navController, cartViewModel, userViewModel, apiKey)
         }

@@ -26,13 +26,15 @@ class UserCodeViewModel(
         }
     }
 
-    fun sendApiKey(apiKey: String) {
+    fun sendApiKey(apiKey: String, onResult: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
             try {
-                val response = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
-                Log.d("UserCodeViewModel", "Server Response: $response")
+                val result = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
+                Log.d("api key", "API Key 등록 성공: $result")
+                onResult(true)
             } catch (e: Exception) {
-                Log.e("UserCodeViewModel", "Failed to send API Key", e)
+                Log.e("api key", "API Key 전송 오류", e)
+                onResult(false)
             }
         }
     }
