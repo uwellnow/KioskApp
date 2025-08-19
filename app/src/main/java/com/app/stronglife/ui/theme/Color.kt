@@ -25,3 +25,5 @@ val cardPayGray = Color (0xFFC6C6C6)
 val paySelectGray = Color (0xFFD6D6D6)
 
 val qrScanGray = Color (0xFFE3E3E3)
+
+val blue = Color (0xFF4079ED)

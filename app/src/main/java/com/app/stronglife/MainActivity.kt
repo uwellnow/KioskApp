@@ -20,9 +20,6 @@ import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import com.app.stronglife.viewmodel.UserCodeViewModelFactory
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

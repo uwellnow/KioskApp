@@ -136,9 +136,10 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                 )
                             )
                             Text(
-                                text = product.name,
+                                text = product.name.replace("\\n", "\n"),
                                 modifier = Modifier
                                     .padding(top = horPadding),
+                                textAlign = TextAlign.Center,
                                 style = TextStyle(
                                     fontSize = titlefont,
                                     fontFamily = FontFamily(Font(R.font.pretendard_bold)),

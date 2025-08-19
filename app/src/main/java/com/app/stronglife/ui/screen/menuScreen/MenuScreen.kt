@@ -93,6 +93,7 @@ fun MenuScreen(
                 ProductDetail(
                     image = productDetail.productImagePath,
                     title = productDetail.name,
+                    desc = productDetail.description,
                     nut = productDetail.nutritionInfo,
                     onClose = viewModel::closeProductDetail,
                     onAddToCart = {

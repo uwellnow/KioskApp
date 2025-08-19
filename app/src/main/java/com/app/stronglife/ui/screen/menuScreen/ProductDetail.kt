@@ -28,22 +28,29 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.midGray
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
+fun ProductDetail (image:String, title:String, desc:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
     val titletoSp = with(density) {40f.toSp()}
-    val nuttoSp = with(density) {24f.toSp()}
+    val desctoSp = with(density) {28f.toSp()}
     val imagetoDp = with(density) {400f.toDp()}
     val roundtoDp = with(density) {20f.toDp()}
     val imagetoTextDp = with(density) {49f.toDp()}
     val blurRadiusPx = with(density) { 24.dp.toPx() }
     val spacertoDp = with(density) {30f.toDp()}
+    val space2Dp = with(density) {64f.toDp()}
+
+    val allNutrients = parseNutritionInfo(nut)
+    val functional = filterFunctionalNutrients(allNutrients)
+
+
 
         Column(
             modifier = Modifier
@@ -94,14 +101,18 @@ fun ProductDetail (image:String, title:String, nut:String , onClose: () -> Unit,
                     )
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = nut.replace("\\n", "\n"),
+                        text = desc.replace("\\n", "\n"),
                         style = TextStyle(
-                            fontSize = nuttoSp,
+                            fontSize = desctoSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                             fontWeight = FontWeight.Normal,
-                            color = midGray
+                            color = lightGray
                         )
                     )
+
+                    Spacer(modifier = Modifier.height(space2Dp))
+
+                    NutritionCardRow(functional)
                 }
             }
 
