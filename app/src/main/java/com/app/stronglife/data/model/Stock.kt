@@ -13,3 +13,4 @@ data class Stock(
     val productStatus: String,
     val storeName: String
 )
+

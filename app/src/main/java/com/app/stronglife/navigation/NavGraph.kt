@@ -82,7 +82,7 @@ fun NavGraph(
             PayingScreen(viewModel = cartViewModel, userViewModel = userViewModel, navController)
         }
         composable("End") {
-            EndScreen(navController = navController, apiKey = apiKey)
+            EndScreen(navController = navController, productViewModel, cartViewModel, apiKey = apiKey)
         }
 
     }

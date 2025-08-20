@@ -33,7 +33,7 @@ interface ApiService {
     @GET("products")
     suspend fun getProducts(): List<Product>
 
-    @GET("api/stocks/kiosk")
+    @GET("stocks/kiosk")
     suspend fun getStocks(): List<Stock>
 
     @POST("user/login")

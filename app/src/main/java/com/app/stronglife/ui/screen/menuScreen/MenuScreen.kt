@@ -50,7 +50,6 @@ fun MenuScreen(
 
     LaunchedEffect(Unit) {
         viewModel.fetchProducts()
-        viewModel.fetchStocks()
     }
 
     val density = LocalDensity.current
@@ -88,8 +87,7 @@ fun MenuScreen(
                         products = viewModel.products,
                         onProductClick = { product ->
                             viewModel.openProductDetail(product)
-                        },
-                        viewModel = viewModel
+                        }
                     )
                 }
             }
