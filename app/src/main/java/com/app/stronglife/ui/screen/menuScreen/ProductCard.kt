@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -34,9 +35,14 @@ import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
-fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
+fun ProductCard(
+    products: List<Product>, 
+    onProductClick: (Product) -> Unit,
+    viewModel: ProductViewModel
+) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 45.toDp() }
@@ -65,6 +71,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                     modifier = Modifier
                         .width(widthtoDp)
                         .height(heighttoDp)
+                        .alpha(if (viewModel.isProductSoldOut(product.id)) 0.5f else 1f) // 품절 시 투명도 적용
                         .shadow(
                             2.dp,
                             shape = RoundedCornerShape(
@@ -79,6 +86,14 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                         )
                         .padding(vertical = spaceDp)
                 ) {
+                    // SoldOutBox 표시 (품절인 경우)
+                    if (viewModel.isProductSoldOut(product.id)) {
+                        SoldOutBox(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 20.dp)
+                        )
+                    }
 
                     TimeCategory(
                         product.timing,

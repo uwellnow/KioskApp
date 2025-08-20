@@ -6,6 +6,7 @@ import com.app.stronglife.data.model.ProductPurchaseRequest
 import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
+import com.app.stronglife.data.model.Stock
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -31,6 +32,9 @@ interface ApiService {
 
     @GET("products")
     suspend fun getProducts(): List<Product>
+
+    @GET("api/stocks/kiosk")
+    suspend fun getStocks(): List<Stock>
 
     @POST("user/login")
     suspend fun postUserLogin(
