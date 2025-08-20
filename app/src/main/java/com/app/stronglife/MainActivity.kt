@@ -3,6 +3,7 @@ package com.app.stronglife
 import CartViewModel
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -58,6 +59,26 @@ class MainActivity : ComponentActivity() {
                     apiKey = newApiKey
                 }
             )
+        }
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // 네비게이션 바 숨기기 (Android 11+)
+        hideNavigationBar()
+    }
+    
+    private fun hideNavigationBar() {
+        // Android 11 (API 30) 이상용 - 안전한 방법
+        try {
+            window.setDecorFitsSystemWindows(false)
+            window.insetsController?.let { controller ->
+                controller.hide(android.view.WindowInsets.Type.navigationBars())
+                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } catch (e: Exception) {
+            // 에러 발생 시 무시
+            android.util.Log.w("MainActivity", "Failed to hide navigation bar: ${e.message}")
         }
     }
 }

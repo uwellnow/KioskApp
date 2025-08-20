@@ -114,3 +114,4 @@ fun CouponErrorBox(navController: NavController) {
 fun CouponErrorBoxPreview() {
     CouponErrorBox(navController = rememberNavController())
 }
+

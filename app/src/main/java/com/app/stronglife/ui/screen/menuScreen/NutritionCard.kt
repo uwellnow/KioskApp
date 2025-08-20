@@ -42,11 +42,11 @@ import getNutrientMeta
 fun NutrientCard(nutrition: Nutrition) {
     val meta = getNutrientMeta(nutrition.name)
     val density = LocalDensity.current
-    val horWidth = with(density) { 202f.toDp()}
+    val horWidth = with(density) { 190f.toDp()}
     val verWidth = with(density) { 204f.toDp()}
     val iconSize = with(density) { 26f.toDp()}
     val typeText = with(density) {16f.toSp()}
-    val unitText = with(density) {36f.toSp()}
+    val unitText = with(density) {30f.toSp()}
     val nutText = with(density) {18f.toSp()}
     val descText = with(density) {14f.toSp()}
     val spaceDp = with(density) { 24f.toDp()}
@@ -90,6 +90,13 @@ fun NutrientCard(nutrition: Nutrition) {
 
             Spacer(modifier = Modifier.height(space3Dp))
 
+        val showValue = try {
+            nutrition.value.toDouble() != 0.0
+        } catch (e: NumberFormatException) {
+            true
+        }
+
+        if (showValue) {
             Text(
                 text = "${NumberWithComma(nutrition.value)}${nutrition.unit}",
                 style = TextStyle(
@@ -101,6 +108,7 @@ fun NutrientCard(nutrition: Nutrition) {
             )
 
             Spacer(modifier = Modifier.height(10.dp))
+        }
 
             Text(
                 text = nutrition.name,

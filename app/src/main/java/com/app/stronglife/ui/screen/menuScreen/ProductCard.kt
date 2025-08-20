@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -37,13 +39,13 @@ import com.app.stronglife.ui.theme.lightGray
 fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
-    val horPadding = with(density) { 20.toDp() }
+    val horPadding = with(density) { 45.toDp() }
     val widthtoDp = with(density) { 513f.toDp() }
     val heighttoDp = with(density) { 787f.toDp() }
-    val imageSize = with(density) { 448f.toDp() }
+    val imageSize = with(density) { 440f.toDp() }
     val desfont = with(density) { 20f.toSp() }
     val titlefont = with(density) { 30f.toSp() }
-    val textSpace = with(density) { 60f.toDp() }
+    val roundDp = with(density) { 12f.toDp() }
     val horpadDp = with(density) {80f.toDp()}
     val textdp = with (density) {65f.toDp()}
     val spaceDp = with (density) {18f.toDp()}
@@ -66,22 +68,23 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                         .shadow(
                             2.dp,
                             shape = RoundedCornerShape(
-                                horPadding
+                                roundDp
                             ),
                             ambientColor = lightGray,
                             spotColor = lightGray
                         )
                         .background(
                             color = Color.White,
-                            shape = RoundedCornerShape(horPadding)
+                            shape = RoundedCornerShape(roundDp)
                         )
+                        .padding(vertical = spaceDp)
                 ) {
 
                     TimeCategory(
                         product.timing,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(30.dp)
+                            .padding(top = spaceDp,end  = 40.dp)
                     )
 
 
@@ -94,23 +97,22 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             model = product.companyImagePath,
                             contentDescription = product.name,
                             modifier = Modifier
-                                .padding(start = textSpace)
+                                .padding(start = horPadding)
                                 .width(imagePadding)
                                 .height(imagePadding)
                         )
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = textdp),
+                                .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             AsyncImage(
                                 model = product.productImagePath,
                                 contentDescription = product.name,
+                                contentScale = ContentScale.Fit,
                                 modifier = Modifier
-                                    .width(imageSize)
-                                    .height(imageSize)
+                                    .size(imageSize)
                             )
 
                         }
@@ -138,7 +140,7 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             Text(
                                 text = product.name.replace("\\n", "\n"),
                                 modifier = Modifier
-                                    .padding(top = horPadding),
+                                    .padding(top = spaceDp),
                                 textAlign = TextAlign.Center,
                                 style = TextStyle(
                                     fontSize = titlefont,
