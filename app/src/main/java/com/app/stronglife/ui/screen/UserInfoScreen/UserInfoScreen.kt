@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.DisposableEffect
+import android.util.Log
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +42,7 @@ import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.PayScreen.UserBox
+import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.desc2Gray
@@ -57,10 +60,13 @@ fun UserInfoScreen(
 ) {
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     val loginResponse = userCodeViewModel.loginResponse.value
+    val errorState by userCodeViewModel.errorState
 
-    // 화면 진입 시 결제 에러 상태 초기화
-    LaunchedEffect(Unit) {
-        userCodeViewModel.clearPurchaseError()
+    // 화면을 떠날 때 에러 상태 초기화
+    DisposableEffect(Unit) {
+        onDispose {
+            userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+        }
     }
 
     val density = LocalDensity.current
@@ -69,14 +75,71 @@ fun UserInfoScreen(
     val heightDp = with(density) {91f.toDp()}
     val roundDp = with(density) {46f.toDp()}
 
-    // 결제 실패 시 ErrorBox 표시
-    if (userCodeViewModel.isPurchaseError.value) {
-        ErrorBox(
-            errorMsg = "재고 부족", //Todo: 재고 부족으로 변경 -> 409 에러 (컵이랑 물 구분)
-            desMsg = "결제 중 오류가 발생했습니다. 다시 시도해 주세요.",
-            navController = navController
-        )
-        return
+
+
+    // 에러 상태 로깅
+    LaunchedEffect(errorState) {
+        Log.d("UserInfoScreen", "Error state changed: $errorState")
+        when (val error = errorState) {
+            is UserCodeViewModel.UiError.None -> Log.d("UserInfoScreen", "No error")
+            is UserCodeViewModel.UiError.NotFound -> Log.d("UserInfoScreen", "NotFound error")
+            is UserCodeViewModel.UiError.InsufficientBalance -> Log.d("UserInfoScreen", "InsufficientBalance error")
+            is UserCodeViewModel.UiError.OutOfStock -> Log.d("UserInfoScreen", "OutOfStock error")
+            is UserCodeViewModel.UiError.Generic -> Log.d("UserInfoScreen", "Generic error: ${error.message}")
+            is UserCodeViewModel.UiError.Exception -> Log.d("UserInfoScreen", "Exception error: ${error.throwable.message}")
+        }
+    }
+
+    // 에러 상태 변화를 실시간으로 모니터링
+    Log.d("UserInfoScreen", "Current error state: $errorState")
+    
+    // 에러 상태가 None이 아닌 경우 로그 출력
+    if (errorState !is UserCodeViewModel.UiError.None) {
+        Log.d("UserInfoScreen", "Non-None error state detected: $errorState")
+    }
+
+    // 에러 상태에 따른 처리
+    when (val error = errorState) {
+        is UserCodeViewModel.UiError.None -> {
+            Log.d("UserInfoScreen", "No error state")
+        }
+        is UserCodeViewModel.UiError.NotFound -> {
+            Log.d("UserInfoScreen", "Showing NotFound error")
+            MemberErrorBox(onConfirm = {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                navController.popBackStack()
+            })
+            return
+        }
+        is UserCodeViewModel.UiError.InsufficientBalance -> {
+            Log.d("UserInfoScreen", "Showing InsufficientBalance error")
+            ErrorBox("결제 실패", "잔여 잔 수가 부족합니다") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                navController.navigate("cart")
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.OutOfStock -> {
+            Log.d("UserInfoScreen", "Showing OutOfStock error")
+            ErrorBox("결제 실패", "재고가 부족합니다") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.Generic -> {
+            Log.d("UserInfoScreen", "Showing Generic error: ${error.message}")
+            ErrorBox("오류", error.message) {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.Exception -> {
+            Log.d("UserInfoScreen", "Showing Exception error: ${error.throwable.message}")
+            ErrorBox("예외 발생", error.throwable.message ?: "알 수 없는 오류") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
     }
 
     Column (
@@ -156,10 +219,13 @@ fun UserInfoScreen(
                         .background(mainRed, RoundedCornerShape(roundDp))
                         .border(2.dp, mainRed, RoundedCornerShape(roundDp))
                         .clickable{
+                            Log.d("UserInfoScreen", "결제 버튼 클릭됨")
                             // 장바구니 정보 가져오기
                             val cartItems = cartViewModel.cartItems.value
                             val productIds = cartItems.map { it.product.id }
                             val productCounts = cartItems.map { it.quantity }
+                            
+                            Log.d("UserInfoScreen", "상품 IDs: $productIds, 수량: $productCounts")
                             
                             // 구매 요청
                             userCodeViewModel.purchaseProductByOrder(
@@ -168,8 +234,11 @@ fun UserInfoScreen(
                                 productIds = productIds,
                                 productCounts = productCounts
                             ) { success ->
+                                Log.d("UserInfoScreen", "결제 결과: $success")
                                 if (success) {
                                     navController.navigate("paying")
+                                } else {
+                                    Log.d("UserInfoScreen", "결제 실패, 현재 에러 상태: ${userCodeViewModel.errorState.value}")
                                 }
                             }
                         },

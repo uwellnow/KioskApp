@@ -88,7 +88,7 @@ fun UserBox(
 
             if (showInfo && loginResponse != null) {
                 Text(
-                    text = "${loginResponse.name} 고객님 (${loginResponse.user_code})",
+                    text = "${loginResponse.name} 고객님 (${loginResponse.phone.takeLast(4)})",
                     style = TextStyle(
                         fontSize = textBolSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),

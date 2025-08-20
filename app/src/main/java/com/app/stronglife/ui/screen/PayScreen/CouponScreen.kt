@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +32,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
+import com.app.stronglife.ui.screen.PayScreen.CouponInputCard
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.lightGray
@@ -47,9 +51,11 @@ fun CouponScreen(
 ) {
     val userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
-    // 화면 진입 시 404 에러 상태 초기화
-    LaunchedEffect(Unit) {
-        userCodeViewModel.clear404Error()
+    // 화면을 떠날 때 에러 상태 초기화
+    DisposableEffect(Unit) {
+        onDispose {
+            userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+        }
     }
 
     val density = LocalDensity.current
@@ -64,10 +70,42 @@ fun CouponScreen(
     val spacerDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
-    // 404 오류 시 MemberErrorBox 표시
-    if (userCodeViewModel.is404Error.value) {
-        MemberErrorBox(navController = navController)
-        return
+    val errorState by userCodeViewModel.errorState
+
+    // 에러 상태에 따른 처리
+    when (val error = errorState) {
+        is UserCodeViewModel.UiError.None -> {}
+        is UserCodeViewModel.UiError.NotFound -> {
+            MemberErrorBox(onConfirm = {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            })
+            return
+        }
+        is UserCodeViewModel.UiError.InsufficientBalance -> {
+            ErrorBox("결제 실패", "쿠폰이 유효하지 않습니다") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                navController.navigate("cart")
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.OutOfStock -> {
+            ErrorBox("결제 실패", "재고가 부족합니다") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.Generic -> {
+            ErrorBox("오류", error.message) {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.Exception -> {
+            ErrorBox("예외 발생", error.throwable.message ?: "알 수 없는 오류") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
     }
 
     Column (
@@ -87,7 +125,7 @@ fun CouponScreen(
             verticalArrangement = Arrangement.Center
         ){
             Text(
-                text = "결제 바코드를 인식시켜 주세요",
+                text = "쿠폰 바코드를 인식시켜 주세요",
                 style = TextStyle(
                     fontSize = titleSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -107,12 +145,12 @@ fun CouponScreen(
 
             Spacer(modifier = Modifier.height(spaceDp))
 
-            PhonePayCard(
+            CouponInputCard(
                 navController = navController,
                 viewModel = userCodeViewModel,
                 apiKey = apiKey,
-                onUserFound = { navController.navigate("userInfo") },
-                cartViewModel = cartViewModel
+                cartViewModel = cartViewModel,
+                onCouponSuccess = { navController.navigate("paying") }
             )
         }
         Spacer(modifier = Modifier.weight(1f)) // 아래로 밀기

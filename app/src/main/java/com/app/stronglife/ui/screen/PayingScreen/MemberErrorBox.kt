@@ -45,7 +45,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
-fun MemberErrorBox(navController: NavController) {
+fun MemberErrorBox(onConfirm: () -> Unit) {
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     
     val density = LocalDensity.current
@@ -102,7 +102,7 @@ fun MemberErrorBox(navController: NavController) {
                     .background(color = mainRed, shape = RoundedCornerShape(round2dp))
                     .clickable {
                         userCodeViewModel.clear404Error()
-                        navController.popBackStack()
+                        onConfirm()
                     },
 
                 contentAlignment = Alignment.Center

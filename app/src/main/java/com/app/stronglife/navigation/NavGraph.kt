@@ -69,7 +69,7 @@ fun NavGraph(
             PaySelectScreen(navController = navController, cartViewModel = cartViewModel)
         }
 
-        composable("pay_barcode") {
+        composable("pay_coupon") {
             CouponScreen(navController = navController, apiKey = apiKey, cartViewModel = cartViewModel)
         }
         composable("pay_number") {

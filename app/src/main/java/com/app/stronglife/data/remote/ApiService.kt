@@ -3,6 +3,7 @@ package com.app.stronglife.data.remote
 import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.data.model.Product
 import com.app.stronglife.data.model.ProductPurchaseRequest
+import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import okhttp3.RequestBody
@@ -26,7 +27,7 @@ interface ApiService {
     @POST("kiosk")
     suspend fun postApiKey(
         @Body request: ApiKeyRequest
-    ): ResponseBody
+    ): Response<ResponseBody>
 
     @GET("products")
     suspend fun getProducts(): List<Product>
@@ -49,6 +50,12 @@ interface ApiService {
         @Header("x-api-key") apiKey: String,
         @Query("orderNumber") orderNumber: String,
         @Body body: ProductPurchaseRequest
+    ) : retrofit2.Response<okhttp3.ResponseBody>
+
+    @POST("user/purchase/purchase-by-coupon")
+    suspend fun postPurchaseByCoupon(
+        @Header("x-api-key") apiKey: String,
+        @Body body: CouponPurchaseRequest
     ) : retrofit2.Response<okhttp3.ResponseBody>
   
 

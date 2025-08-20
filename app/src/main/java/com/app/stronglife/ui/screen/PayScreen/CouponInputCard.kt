@@ -16,9 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,49 +36,35 @@ import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
-
 @Composable
-fun  PhonePayCard (
+fun CouponInputCard(
     navController: NavController,
-    viewModel: UserCodeViewModel, 
-    apiKey: String, 
-    onUserFound: () -> Unit,
-    cartViewModel: CartViewModel
+    viewModel: UserCodeViewModel,
+    apiKey: String,
+    cartViewModel: CartViewModel,
+    onCouponSuccess: () -> Unit
 ) {
-    // 화면을 떠날 때 에러 상태 초기화
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.errorState.value = UserCodeViewModel.UiError.None
-        }
-    }
-
     val density = LocalDensity.current
-    val widDp = with(density) {584f.toDp()}
-    val textSp = with(density) {36f.toSp()}
-    val roundDp = with(density) {12f.toDp()}
-    val boxWidDp = with(density) {97f.toDp()}
-    val boxHeiDp = with(density) {44f.toDp()}
-    val boxTextSp = with(density) {24f.toSp()}
-    val spacerDp = with(density) {60f.toDp()}
-    val spacer2Dp = with(density) {17f.toDp()}
+    val widDp = with(density) { 584f.toDp() }
+    val textSp = with(density) { 36f.toSp() }
+    val roundDp = with(density) { 12f.toDp() }
+    val boxWidDp = with(density) { 97f.toDp() }
+    val boxHeiDp = with(density) { 44f.toDp() }
+    val boxTextSp = with(density) { 24f.toSp() }
+    val spacerDp = with(density) { 60f.toDp() }
+    val spacer2Dp = with(density) { 17f.toDp() }
 
-    val titleSp = with(density) {36f.toSp()}
-    val spaceDp = with(density) {16f.toDp()}
-    val descSp = with(density) {20f.toSp()}
-
-
-    Column (
+    Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
-
-        Row (
+    ) {
+        Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
-        ){
+        ) {
             Text(
-                text = if (viewModel.userCode.value.isEmpty()) "주문번호를 입력하세요" else viewModel.userCode.value,
+                text = if (viewModel.userCode.value.isEmpty()) "쿠폰 코드를 입력하세요" else viewModel.userCode.value,
                 style = TextStyle(
                     fontSize = textSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -95,23 +78,34 @@ fun  PhonePayCard (
             val isFilled = viewModel.userCode.value.isNotEmpty()
 
             Box(
-                modifier = Modifier.background(if (viewModel.userCode.value.isNotEmpty()) mainRed else background, shape = RoundedCornerShape(roundDp))
+                modifier = Modifier
+                    .background(
+                        if (viewModel.userCode.value.isNotEmpty()) mainRed else background,
+                        shape = RoundedCornerShape(roundDp)
+                    )
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (viewModel.userCode.value.isNotEmpty()) {
-                            // 사용자 조회 요청
-                            viewModel.fetchUser(apiKey) { success ->
+                            // 쿠폰 구매 요청
+                            val productIds = cartViewModel.cartItems.value.map { it.product.id }
+                            val productCounts = cartViewModel.cartItems.value.map { it.quantity }
+                            
+                            viewModel.purchaseByCoupon(
+                                apiKey = apiKey,
+                                couponCode = viewModel.userCode.value,
+                                productIds = productIds,
+                                productCounts = productCounts
+                            ) { success ->
                                 if (success) {
-                                    onUserFound()
+                                    onCouponSuccess()
                                 }
                             }
                         }
-                    }
-                ,
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "조회",
+                    text = "사용",
                     style = TextStyle(
                         fontSize = boxTextSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -122,17 +116,29 @@ fun  PhonePayCard (
             }
         }
 
-        Divider(modifier = Modifier.width(widDp).padding(top = spacer2Dp),
-            color = lightGray)
+        Divider(
+            modifier = Modifier.width(widDp).padding(top = spacer2Dp),
+            color = lightGray
+        )
 
         Spacer(modifier = Modifier.height(spacerDp))
 
-        KeyPad(onNumberClick = { digit -> viewModel.addDigit(digit) },
+        KeyPad(
+            onNumberClick = { digit -> viewModel.addDigit(digit) },
             onDeleteClick = { viewModel.removeLast() },
-            onClearClick = {viewModel.clear()})
-
-
+            onClearClick = { viewModel.clear() }
+        )
     }
-
 }
 
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
+@Composable
+fun CouponInputCardPreview() {
+    CouponInputCard(
+        navController = rememberNavController(),
+        viewModel = UserCodeViewModel.getInstance(com.app.stronglife.data.remote.RetrofitClient.api),
+        apiKey = "test",
+        cartViewModel = CartViewModel(),
+        onCouponSuccess = {}
+    )
+}

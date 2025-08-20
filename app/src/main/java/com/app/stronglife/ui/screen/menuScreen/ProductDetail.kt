@@ -52,84 +52,84 @@ fun ProductDetail (image:String, title:String, desc:String, nut:String , onClose
 
 
 
-        Column(
-            modifier = Modifier
-                .width(widthtoDp)
-                .height(heighttoDp)
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().asFrameworkPaint().apply {
-                            color = lightRed.toArgb()
-                            maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
-                        }
-                        canvas.nativeCanvas.drawRoundRect(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
-                            blurRadiusPx,
-                            blurRadiusPx,
-                            paint
-                        )
+    Column(
+        modifier = Modifier
+            .width(widthtoDp)
+            .height(heighttoDp)
+            .drawBehind {
+                drawIntoCanvas { canvas ->
+                    val paint = Paint().asFrameworkPaint().apply {
+                        color = lightRed.toArgb()
+                        maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
                     }
-                }
-                .background(Color.White, RoundedCornerShape(roundtoDp))
-                .padding(spacertoDp) // 전체 여백
-        ) {
-            Row(
-                verticalAlignment = Alignment.Top
-            ) {
-                AsyncImage(
-                    model = image,
-                    contentDescription = title,
-                    modifier = Modifier
-                        .width(imagetoDp)
-                        .height(imagetoDp)
-                        .padding(top = imagetoTextDp)
-                )
-                Column(
-                    modifier = Modifier.padding(start = imagetoTextDp, top = imagetoTextDp * 2)
-                ) {
-                    Text(
-                        text = title,
-                        style = TextStyle(
-                            fontSize = titletoSp,
-                            fontFamily = FontFamily(Font(R.font.pretendard_bold)),
-                            fontWeight = FontWeight.Bold,
-                            color = black
-                        )
+                    canvas.nativeCanvas.drawRoundRect(
+                        0f,
+                        0f,
+                        size.width,
+                        size.height,
+                        blurRadiusPx,
+                        blurRadiusPx,
+                        paint
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = desc.replace("\\n", "\n"),
-                        style = TextStyle(
-                            fontSize = desctoSp,
-                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                            fontWeight = FontWeight.Normal,
-                            color = lightGray
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(space2Dp))
-
-                    NutritionCardRow(functional)
                 }
             }
-
-            // 남은 공간 차지해서 버튼을 아래로 밀기
-            Spacer(modifier = Modifier.weight(1f))
-
-            // 하단 고정 버튼
-            MenuScreenBtn(
-                onBackClick = onClose,
-                onCartClick = {
-                    onAddToCart()
-                    onClose()
-                    onGoCart()
-                }
+            .background(Color.White, RoundedCornerShape(roundtoDp))
+            .padding(spacertoDp) // 전체 여백
+    ) {
+        Row(
+            verticalAlignment = Alignment.Top
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = title,
+                modifier = Modifier
+                    .width(imagetoDp)
+                    .height(imagetoDp)
+                    .padding(top = imagetoTextDp)
             )
-    }
+            Column(
+                modifier = Modifier.padding(start = imagetoTextDp, top = imagetoTextDp * 2)
+            ) {
+                Text(
+                    text = title,
+                    style = TextStyle(
+                        fontSize = titletoSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_bold)),
+                        fontWeight = FontWeight.Bold,
+                        color = black
+                    )
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = desc.replace("\\n", "\n"),
+                    style = TextStyle(
+                        fontSize = desctoSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                        fontWeight = FontWeight.Normal,
+                        color = lightGray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(space2Dp))
+
+                NutritionCardRow(functional)
+            }
+        }
+
+        // 남은 공간 차지해서 버튼을 아래로 밀기
+        Spacer(modifier = Modifier.weight(1f))
+
+        // 하단 고정 버튼
+        MenuScreenBtn(
+            onBackClick = onClose,
+            onCartClick = {
+                onAddToCart()
+                onClose()
+                onGoCart()
+            }
+        )
+}
 
 
-    }
+}
 

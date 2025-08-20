@@ -38,36 +38,7 @@ fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navC
     val spaceDp = with(density) {81f.toDp()}
     val space2Dp = with(density) {134f.toDp()}
 
-    val cartItems by viewModel.cartItems
-    val loginData = userViewModel.loginResponse.value
 
-    LaunchedEffect(Unit) {
-        val userPurchase = UserPurchase(
-            productId = cartItems.map { it.product.id },
-            productCount = cartItems.map { it.quantity },
-            userId = "asdf",
-            userCode = "asdf",
-        )
-
-        try {
-            val response = RetrofitClient.api.postPurchaseProduct(
-                apiKey = "발급받은_API_KEY",
-                body = userPurchase
-            )
-
-            if (response.isSuccessful) {
-                // 성공 시 처리
-                navController.navigate("end")
-            } else {
-                // 실패 시 처리
-                // 예: 로그 출력
-                println("결제 요청 실패: ${response.errorBody()?.string()}")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            // 네트워크 오류 처리
-        }
-    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
