@@ -44,7 +44,16 @@ import com.app.stronglife.ui.theme.superLightGray
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ProductDetail (image:String, title:String, desc:String, nut:String , onClose: () -> Unit, onAddToCart: () -> Unit, onGoCart: () -> Unit) {
+fun ProductDetail (
+    image:String, 
+    title:String, 
+    desc:String, 
+    nut:String,
+    isSoldOut: Boolean = false,
+    onClose: () -> Unit, 
+    onAddToCart: () -> Unit, 
+    onGoCart: () -> Unit
+) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
@@ -63,6 +72,13 @@ fun ProductDetail (image:String, title:String, desc:String, nut:String , onClose
     val functional = filterFunctionalNutrients(allNutrients)
     var showDialog by remember { mutableStateOf(false) }
 
+    if (showDialog) {
+        NutritionDialog(
+            nutritions = parseNutritionInfo(nut),
+            onDismiss = { showDialog = false }
+        )
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -164,10 +180,13 @@ fun ProductDetail (image:String, title:String, desc:String, nut:String , onClose
         MenuScreenBtn(
             onBackClick = onClose,
             onCartClick = {
-                onAddToCart()
-                onClose()
-                onGoCart()
-            }
+                if (!isSoldOut) {
+                    onAddToCart()
+                    onClose()
+                    onGoCart()
+                }
+            },
+            isCartEnabled = !isSoldOut
         )
 }
 

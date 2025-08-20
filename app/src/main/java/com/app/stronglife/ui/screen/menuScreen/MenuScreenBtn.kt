@@ -29,7 +29,8 @@ import com.app.stronglife.ui.theme.superLightGray
 @Composable
 fun MenuScreenBtn(
     onBackClick: () -> Unit = {},
-    onCartClick: () -> Unit = {}
+    onCartClick: () -> Unit = {},
+    isCartEnabled: Boolean = true
 ) {
     val density = LocalDensity.current
     val roundtoDp = with(density) { 12f.toDp() }
@@ -70,10 +71,10 @@ fun MenuScreenBtn(
                 .width(cartwidtoDp)
                 .height(heighttoDp)
                 .background(
-                    color = mainRed,
+                    color = if (isCartEnabled) mainRed else superLightGray,
                     shape = RoundedCornerShape(roundtoDp)
                 )
-                .clickable{ onCartClick()},
+                .clickable(enabled = isCartEnabled) { onCartClick() },
             contentAlignment = Alignment.Center
         ) {
 
@@ -88,12 +89,12 @@ fun MenuScreenBtn(
 
                 Spacer(modifier = Modifier.width(btnSpacetoDp))
                 Text(
-                    text = "장바구니에 담기",
+                    text = if (isCartEnabled) "장바구니에 담기" else "품절",
                     style = TextStyle(
                         fontSize = texttoSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = if (isCartEnabled) Color.White else black
                     )
                 )
             }
