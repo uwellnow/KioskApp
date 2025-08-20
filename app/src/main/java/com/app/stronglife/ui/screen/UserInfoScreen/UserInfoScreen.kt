@@ -61,6 +61,18 @@ fun UserInfoScreen(
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     val loginResponse = userCodeViewModel.loginResponse.value
     val errorState by userCodeViewModel.errorState
+    val userCode by userCodeViewModel.userCode
+
+    // 화면 진입 시 주문번호 확인
+    LaunchedEffect(Unit) {
+        Log.d("UserInfoScreen", "화면 진입 - 주문번호: ${userCodeViewModel.userCode.value}")
+        Log.d("UserInfoScreen", "화면 진입 - paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
+    }
+
+    // userCode 상태 변화 모니터링
+    LaunchedEffect(userCode) {
+        Log.d("UserInfoScreen", "userCode 상태 변화: $userCode")
+    }
 
     // 화면을 떠날 때 에러 상태 초기화
     DisposableEffect(Unit) {
@@ -220,6 +232,9 @@ fun UserInfoScreen(
                         .border(2.dp, mainRed, RoundedCornerShape(roundDp))
                         .clickable{
                             Log.d("UserInfoScreen", "결제 버튼 클릭됨")
+                            Log.d("UserInfoScreen", "주문번호: ${userCodeViewModel.userCode.value}")
+                            Log.d("UserInfoScreen", "paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
+                            
                             // 장바구니 정보 가져오기
                             val cartItems = cartViewModel.cartItems.value
                             val productIds = cartItems.map { it.product.id }

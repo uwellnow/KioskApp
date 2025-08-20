@@ -41,7 +41,7 @@ class UserCodeViewModel(
     }
 
     var userCode = mutableStateOf("")
-    var paymentMethodId = mutableStateOf(0)
+    var paymentMethodId = mutableStateOf(1)
     var loginResponse = mutableStateOf<LoginResponse?>(null)
         private set
     var errorMessage = mutableStateOf<String?>(null)
@@ -65,7 +65,6 @@ class UserCodeViewModel(
 
     fun resetAll() {
         userCode.value = ""
-        paymentMethodId.value = 0
         loginResponse.value = null
         errorMessage.value = null
         is404Error.value = false

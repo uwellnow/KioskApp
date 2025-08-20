@@ -57,9 +57,8 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel, user
         // 입력 감지 타이머
         LaunchedEffect(Unit) {
             userViewModel.sendApiKey(apiKey) // API Key 전송
-            if (cartViewModel.cartItems.value.isNotEmpty()) {
-                cartViewModel.clearCart()
-            }
+            userViewModel.resetAll()
+            cartViewModel.clearCart()
         }
 
         val density = LocalDensity.current

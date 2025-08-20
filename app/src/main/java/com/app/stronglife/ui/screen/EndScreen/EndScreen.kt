@@ -125,8 +125,7 @@ fun EndScreen(
                         if (sent) {
                             kioskLogger.logEvent("DrinkCompleted (accepted)", false, responseHex = ev.hex)
                             // DrinkCompleted 발생 시 products를 제외한 모든 정보 초기화
-                            userCodeViewModel.resetAll()
-                            cartViewModel.clearCart()
+
                         } else {
                             kioskLogger.logEvent("DrinkCompleted (ignored: buffered)", false, responseHex = ev.hex)
                         }
@@ -265,6 +264,7 @@ fun EndScreen(
         if (currentIndex == totalJobs && lastError == null) {
             kioskLogger.logEvent("All jobs completed -> home", false)
             navController.navigate("hello")
+
         } else {
             kioskLogger.logEvent("Jobs ended with error: $lastError", true)
             // 필요시 오류 화면/재시도

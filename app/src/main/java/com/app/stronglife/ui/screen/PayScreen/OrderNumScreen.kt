@@ -57,16 +57,11 @@ fun OrderNumScreen(
     var showError by remember { mutableStateOf(false) }
     var currentError by remember { mutableStateOf<UserCodeViewModel.UiError>(UserCodeViewModel.UiError.None) }
 
-    // 화면 진입 시 모든 상태 초기화
-    LaunchedEffect(Unit) {
-        userCodeViewModel.resetAll()
-    }
-
-    // 화면을 떠날 때 에러 상태 초기화
+    // 화면을 떠날 때 에러 상태만 초기화 (주문번호는 유지)
     DisposableEffect(Unit) {
         onDispose {
             userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
-            userCodeViewModel.clear() // 입력된 번호 초기화
+            // userCodeViewModel.clear() 제거 - 주문번호 유지
             showError = false
             currentError = UserCodeViewModel.UiError.None
         }

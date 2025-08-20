@@ -52,9 +52,7 @@ fun CouponScreen(
     val userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
     // 화면 진입 시 모든 상태 초기화
-    LaunchedEffect(Unit) {
-        userCodeViewModel.resetAll()
-    }
+
 
     // 화면을 떠날 때 에러 상태 초기화
     DisposableEffect(Unit) {
