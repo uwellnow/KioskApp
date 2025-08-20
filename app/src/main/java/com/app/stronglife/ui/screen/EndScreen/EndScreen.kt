@@ -31,8 +31,12 @@ import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
+import com.app.stronglife.viewmodel.UserCodeViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 @Composable
 fun EndScreen(
@@ -45,6 +49,7 @@ fun EndScreen(
     val scope = rememberCoroutineScope()
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
+    val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
 
     Finish(navController, cartViewModel)
@@ -119,6 +124,9 @@ fun EndScreen(
                         val sent = completedCh.trySend(Unit).isSuccess
                         if (sent) {
                             kioskLogger.logEvent("DrinkCompleted (accepted)", false, responseHex = ev.hex)
+                            // DrinkCompleted 발생 시 products를 제외한 모든 정보 초기화
+                            userCodeViewModel.resetAll()
+                            cartViewModel.clearCart()
                         } else {
                             kioskLogger.logEvent("DrinkCompleted (ignored: buffered)", false, responseHex = ev.hex)
                         }
