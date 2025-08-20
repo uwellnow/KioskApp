@@ -37,6 +37,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,7 +88,7 @@ fun RegisterStoreScreen(
 
     val density = LocalDensity.current
     val barbtnSpace = with(density) {81f.toDp()}
-    val widDp = with(density) {1231f.toDp()}
+    val widDp = with(density) {700f.toDp()}
     val heightDp = with(density) {824f.toDp()}
     val space1dp = with(density) {30f.toDp()}
     val spaceDp = with(density) {98f.toDp()}
@@ -133,34 +134,32 @@ fun RegisterStoreScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
         ){
-            // 바코드 스캐너 입력을 위한 숨겨진 텍스트 필드
-            BasicTextField(
-                value = storeCode,
-                onValueChange = { newValue ->
-                    storeCode = newValue
-                },
-                modifier = Modifier
-                    .size(100.dp)
-                    .focusRequester(focusRequester)
-                    .focusable(),
-                textStyle = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Transparent
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 바코드 스캐너 및 키패드 입력을 위한 텍스트 필드
+                BasicTextField(
+                    value = storeCode,
+                    onValueChange = { newValue ->
+                        // 숫자만 입력 가능하도록 제한
+                        if (newValue.all { it.isDigit() } && newValue.length <= 10) {
+                            storeCode = newValue
+                        }
+                    },
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .focusable(),
+                    textStyle = TextStyle(
+                        fontSize = textSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                        fontWeight = FontWeight.Medium,
+                        color = black,
+                        textAlign = TextAlign.Center
+                    ),
+
+
                 )
-            )
-            
-            // 표시용 텍스트
-            Text(
-                text = if (storeCode.isEmpty()) "헬스장 QR 코드 또는 번호를 입력하세요" else storeCode,
-                style = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontWeight = FontWeight.Medium,
-                    color = if (storeCode.isEmpty()) lightGray else black
-                )
-            )
+            }
 
             Spacer(modifier = Modifier.width(spacerDp))
 
