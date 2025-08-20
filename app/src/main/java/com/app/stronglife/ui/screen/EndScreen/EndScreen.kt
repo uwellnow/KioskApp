@@ -67,65 +67,98 @@ fun EndScreen(
         )
     }
 
-        // --- 제조 완료 이벤트를 기다리기 위한 채널 ---
-    val drinkCompletedCh = remember { kotlinx.coroutines.channels.Channel<Unit>(capacity = kotlinx.coroutines.channels.Channel.BUFFERED) }
+    // 1) 완료 신호(1회성), 2) 컵 치움 신호(정적 구간)
+    val completedCh = remember { kotlinx.coroutines.channels.Channel<Unit>(capacity = 1) }
+    val cupClearedCh = remember { kotlinx.coroutines.channels.Channel<Unit>(capacity = 1) }
 
-    // --- 진행상태 ---
+    // 상태
     var totalJobs by remember { mutableStateOf(0) }
     var currentIndex by remember { mutableStateOf(0) }
     var inProgress by remember { mutableStateOf(false) }
     var lastError by remember { mutableStateOf<String?>(null) }
 
+    // 플래그
+    var awaitingCompletion by remember { mutableStateOf(false) }
+    var awaitingCupClear by remember { mutableStateOf(false) }
 
-    // ----- 비동기 이벤트 수신부 -----
+    // 정적 구간 길이/타임아웃
+    val QUIET_MS = 1500L           // DrinkCompleted가 이 시간 이상 안 오면 컵 수거로 간주
+    val MAKE_TIMEOUT_MS = 120_000L // 제조 완료 대기
+    val CUP_TIMEOUT_MS  = 180_000L // 컵 수거 대기
+
+    // 드레인 함수
+    suspend fun drainChannels() {
+        while (!completedCh.isEmpty) completedCh.tryReceive().getOrNull() ?: break
+        while (!cupClearedCh.isEmpty) cupClearedCh.tryReceive().getOrNull() ?: break
+    }
+
+    // 이벤트 수신: DrinkCompleted 스팸 억제 + 정적 구간 타이머
     LaunchedEffect(Unit) {
+        var quietJob: kotlinx.coroutines.Job? = null
+
+        fun armQuietTimer() {
+            quietJob?.cancel()
+            // DrinkCompleted가 막 왔으니, QUIET_MS 동안 추가 신호가 없으면 컵 수거로 본다
+            quietJob = launch {
+                delay(QUIET_MS)
+                if (awaitingCupClear) {
+                    cupClearedCh.trySend(Unit)
+                    kioskLogger.logEvent("CupCleared (quiet ${QUIET_MS}ms)", false)
+                }
+            }
+        }
+
         vm.events.collectLatest { ev ->
             when (ev) {
                 is Gs805ViewModel.MachineEvent.RawDataReceived -> {
-                    kioskLogger.logEvent(detail = "RawDataReceived", isError = false, responseHex = ev.hex)
+                    kioskLogger.logEvent("RawDataReceived", false, responseHex = ev.hex)
                 }
                 is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
-                    kioskLogger.logEvent(detail = "Event: DrinkCompleted", isError = false, responseHex = ev.hex)
-                    // 제조 루프에서 대기 중인 receive()를 깨워줌
-                    drinkCompletedCh.trySend(Unit)
+                    // 1) 제조 완료 인정 단계
+                    if (awaitingCompletion) {
+                        val sent = completedCh.trySend(Unit).isSuccess
+                        if (sent) {
+                            kioskLogger.logEvent("DrinkCompleted (accepted)", false, responseHex = ev.hex)
+                        } else {
+                            kioskLogger.logEvent("DrinkCompleted (ignored: buffered)", false, responseHex = ev.hex)
+                        }
+                    } else {
+                        kioskLogger.logEvent("DrinkCompleted (ignored: not awaiting)", false, responseHex = ev.hex)
+                    }
+
+                    // 2) 컵 수거 감지 단계: 반복 송출을 이용해 ‘정적 구간’ 판단
+                    if (awaitingCupClear) {
+                        // 신호가 또 왔으니 아직 컵이 안 치워진 것 → 타이머를 리셋
+                        armQuietTimer()
+                        kioskLogger.logEvent("DrinkCompleted (keep-alive, waiting quiet)", false)
+                    }
                 }
                 is Gs805ViewModel.MachineEvent.CupDropped -> {
-                    kioskLogger.logEvent(detail = "Event: CupDropped", isError = false, responseHex = ev.hex)
+                    kioskLogger.logEvent("CupDropped", false, responseHex = ev.hex)
                 }
                 is Gs805ViewModel.MachineEvent.Offline -> {
-                    kioskLogger.logEvent(detail = "Offline cmd=0x${ev.cmd.toString(16)}", isError = true)
+                    kioskLogger.logEvent("Offline cmd=0x${ev.cmd.toString(16)}", true)
                 }
                 is Gs805ViewModel.MachineEvent.ErrorCode -> {
                     val msg = if (ev.code == -1) "SerialCommunicationError"
-                              else "MachineErrorCode=0x${ev.code.toString(16)}"
-                    kioskLogger.logEvent(detail = msg, isError = true)
+                    else "MachineErrorCode=0x${ev.code.toString(16)}"
+                    kioskLogger.logEvent(msg, true)
                 }
             }
         }
     }
 
-
-    // ----- 제조 오케스트레이션 -----
+    // 제조 오케스트레이션
     LaunchedEffect(cartItems, products) {
-        // 카트/상품 로깅
-        kioskLogger.logEvent(
-            detail = "Cart count=${cartItems.size}, Products count=${products.size}",
-            isError = false
-        )
+        kioskLogger.logEvent("Cart=${cartItems.size}, Products=${products.size}", false)
 
-        // 작업 큐(flatten): (product, 1) * quantity
         val queue = buildList {
             cartItems.forEach { ci ->
                 val p = products.find { it.id == ci.product.id }
                 if (p == null) {
-                    kioskLogger.logEvent(
-                        detail = "Product not found in products list: id=${ci.product.id}",
-                        isError = true
-                    )
+                    kioskLogger.logEvent("Product not found: id=${ci.product.id}", true)
                 } else {
-                    repeat(ci.quantity) {
-                        add(p)
-                    }
+                    repeat(ci.quantity) { add(p) }
                 }
             }
         }
@@ -135,105 +168,98 @@ fun EndScreen(
         lastError = null
 
         if (queue.isEmpty()) {
-            kioskLogger.logEvent(detail = "Queue is empty; navigating back", isError = false)
-            navController.navigate("hello")
-            return@LaunchedEffect
+            kioskLogger.logEvent("Queue empty -> home", false)
+            navController.navigate("hello"); return@LaunchedEffect
         }
 
-        // 시리얼 연결 1회
         inProgress = true
+
         val serialOk = vm.startSerial()
-        kioskLogger.logEvent(
-            detail = "SerialStart",
-            isError = !serialOk,
-            responseHex = if (serialOk) "Connection successful" else null
-        )
-        if (!serialOk) {
-            lastError = "시리얼 연결 실패"
-            inProgress = false
-            return@LaunchedEffect
-        }
+        kioskLogger.logEvent("SerialStart", !serialOk, responseHex = if (serialOk) "OK" else null)
+        if (!serialOk) { lastError = "시리얼 연결 실패"; inProgress = false; return@LaunchedEffect }
 
-        delay(120L)
+        delay(120)
 
-        // 상태 확인 1회
         val queryResult = vm.queryErrorCode()
         kioskLogger.logEvent(
-            detail = "QueryErrorCode",
-            isError = (queryResult.responseHex == null || queryResult.businessResult == -1),
+            "QueryErrorCode",
+            (queryResult.responseHex == null || queryResult.businessResult == -1),
             commandHex = queryResult.sentHex,
             responseHex = queryResult.responseHex
         )
 
-        // 개별 제조 루프
         outer@ for ((idx, product) in queue.withIndex()) {
             currentIndex = idx + 1
 
-            // 레시피 재구성: 서버에서 오는 recipeSlots: List<List<Int>> 형태라고 가정
-            val slotsPairs: List<Pair<Int, Int>> =
-                product.recipeSlots.map { (it.getOrNull(0) ?: 0) to (it.getOrNull(1) ?: 0) }
+            // 이전 잔 잔여 신호 제거
+            awaitingCompletion = false
+            awaitingCupClear = false
+            drainChannels()
 
-            // 3. 레시피 저장
-            val recipeResult = vm.saveRecipe3(0x11, slotsPairs)
+            // 레시피 저장
+            val slotsPairs = product.recipeSlots.map { (it.getOrNull(0) ?: 0) to (it.getOrNull(1) ?: 0) }
+            val recipeOk = vm.saveRecipe3(0x11, slotsPairs)
             kioskLogger.logEvent(
-                detail = "SaveRecipe for ${product.name} (job $currentIndex/$totalJobs)",
-                isError = !recipeResult.businessResult,
-                commandHex = recipeResult.sentHex,
-                responseHex = recipeResult.responseHex
+                "SaveRecipe ${product.name} ($currentIndex/$totalJobs)",
+                !recipeOk.businessResult,
+                commandHex = recipeOk.sentHex,
+                responseHex = recipeOk.responseHex
             )
-            if (!recipeResult.businessResult) {
-                lastError = "레시피 저장 실패: ${product.name}"
-                // 실패 시: 다음 항목 시도할지 중단할지 정책 선택
-                // 여기서는 '중단' 선택
-                break@outer
-            }
+            if (!recipeOk.businessResult) { lastError = "레시피 저장 실패: ${product.name}"; break@outer }
 
-            delay(120L)
+            delay(120)
 
-            // 4. 제조 시작
-            val makeResult = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
+            // 제조 시작
+            val make = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
             kioskLogger.logEvent(
-                detail = "MakeDrink for ${product.name} (job $currentIndex/$totalJobs)",
-                isError = !makeResult.businessResult,
-                commandHex = makeResult.sentHex,
-                responseHex = makeResult.responseHex
+                "MakeDrink ${product.name} ($currentIndex/$totalJobs)",
+                !make.businessResult,
+                commandHex = make.sentHex,
+                responseHex = make.responseHex
             )
-            if (!makeResult.businessResult) {
-                lastError = "제조 시작 실패: ${product.name}"
-                break@outer
-            }
+            if (!make.businessResult) { lastError = "제조 시작 실패: ${product.name}"; break@outer }
 
-            // 5. 이 음료가 완료될 때까지 DrinkCompleted 대기 (타임아웃 포함)
+            // 1) 제조 완료(첫 DrinkCompleted)까지 대기
+            awaitingCompletion = true
             try {
-                withTimeout(120_000L) { // 필요 시 조정
-                    drinkCompletedCh.receive()
-                }
-                kioskLogger.logEvent(
-                    detail = "Completed ${product.name} (job $currentIndex/$totalJobs)",
-                    isError = false
-                )
+                withTimeout(MAKE_TIMEOUT_MS) { completedCh.receive() }
+                kioskLogger.logEvent("Completed ${product.name} ($currentIndex/$totalJobs)", false)
             } catch (t: TimeoutCancellationException) {
                 lastError = "제조 완료 타임아웃: ${product.name}"
-                kioskLogger.logEvent(detail = lastError!!, isError = true)
+                kioskLogger.logEvent(lastError!!, true)
                 break@outer
+            } finally {
+                awaitingCompletion = false
+                // 혹시 남아있으면 제거
+                while (!completedCh.isEmpty) completedCh.tryReceive().getOrNull() ?: break
             }
 
-            // 다음 항목으로 진행
-            delay(150L)
+            // 2) 컵 수거(DrinkCompleted가 QUIET_MS 동안 더 이상 안 옴)까지 대기
+            awaitingCupClear = true
+            try {
+                withTimeout(CUP_TIMEOUT_MS) { cupClearedCh.receive() }
+                kioskLogger.logEvent("Cup taken for ${product.name}", false)
+            } catch (t: TimeoutCancellationException) {
+                lastError = "컵 수거 타임아웃: ${product.name}"
+                kioskLogger.logEvent(lastError!!, true)
+                break@outer
+            } finally {
+                awaitingCupClear = false
+                // 안전 드레인
+                while (!cupClearedCh.isEmpty) cupClearedCh.tryReceive().getOrNull() ?: break
+            }
+
+            delay(150)
         }
 
         inProgress = false
 
-        // 모두 완료 & 에러 없음 -> 초기 화면
         if (currentIndex == totalJobs && lastError == null) {
-            kioskLogger.logEvent(detail = "All jobs completed -> navigate home", isError = false)
+            kioskLogger.logEvent("All jobs completed -> home", false)
             navController.navigate("hello")
         } else {
-            // 에러 발생 시: 여기서 에러 화면으로 보내거나 재시도 UI 노출 등
-            kioskLogger.logEvent(detail = "Jobs ended with error: $lastError", isError = true)
-            // 선택 1) 그대로 유지
-            // 선택 2) navController.navigate("error") 등
+            kioskLogger.logEvent("Jobs ended with error: $lastError", true)
+            // 필요시 오류 화면/재시도
         }
     }
-}// private suspend fun sendLog(...)  <- 이 함수는 삭제합니다.
-
+}
