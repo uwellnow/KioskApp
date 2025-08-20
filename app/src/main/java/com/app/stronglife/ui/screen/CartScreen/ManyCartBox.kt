@@ -45,45 +45,44 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
 
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
-
-
-
-        Column(
-            modifier = Modifier
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().asFrameworkPaint().apply {
-                            color = shadowGray.toArgb()
-                            maskFilter = android.graphics.BlurMaskFilter(blurRadiusPx, android.graphics.BlurMaskFilter.Blur.NORMAL)
-                        }
-                        canvas.nativeCanvas.drawRoundRect(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
+    Column(
+        modifier = Modifier
+            .drawBehind {
+                drawIntoCanvas { canvas ->
+                    val paint = Paint().asFrameworkPaint().apply {
+                        color = shadowGray.toArgb()
+                        maskFilter = android.graphics.BlurMaskFilter(
                             blurRadiusPx,
-                            blurRadiusPx,
-                            paint
+                            android.graphics.BlurMaskFilter.Blur.NORMAL
                         )
                     }
-                }
-                .background(Color.White, shape = RoundedCornerShape(roundDp))
-                .padding(horizontal = horPad, vertical = verPad)
-                .verticalScroll(rememberScrollState())
-
-        ) {
-            cartItems.forEachIndexed { index, item ->
-                OneOfCartBox(item, viewModel)
-
-                if (index != cartItems.lastIndex) {
-                    Spacer(modifier = Modifier.height(16.dp)) // 위아래 여백
-                    Divider(color = Color.LightGray, thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    canvas.nativeCanvas.drawRoundRect(
+                        0f,
+                        0f,
+                        size.width,
+                        size.height,
+                        blurRadiusPx,
+                        blurRadiusPx,
+                        paint
+                    )
                 }
             }
-        }
+            .background(Color.White, shape = RoundedCornerShape(roundDp))
+            .padding(horizontal = horPad, vertical = verPad)
+            .verticalScroll(rememberScrollState())
+    ) {
+        cartItems.forEachIndexed { index, item ->
+            OneOfCartBox(item, viewModel)
 
+            if (index != cartItems.lastIndex) {
+                Spacer(modifier = Modifier.height(16.dp)) // 위아래 여백
+                Divider(color = Color.LightGray, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
     }
+
+}
 
 
 

@@ -21,7 +21,7 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
 
 @Composable
-fun SoldOutBox() {
+fun SoldOutBox(modifier: Modifier = Modifier) {
     val density = LocalDensity.current
     val widDp = with (density) {325f.toDp()}
     val heiDp = with(density) {66f.toDp()}
@@ -29,7 +29,7 @@ fun SoldOutBox() {
     val textSp = with (density) {40f.toSp()}
 
     Box(
-       modifier = Modifier.size(widDp, heiDp)
+       modifier = modifier.size(widDp, heiDp)
            .graphicsLayer(rotationZ = -7f)
            .background(mainRed, RoundedCornerShape(roundDp))
            .graphicsLayer(rotationZ = -7f),

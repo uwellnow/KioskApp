@@ -22,7 +22,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
@@ -32,13 +31,12 @@ import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.viewmodel.UserCodeViewModel
-import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 
 
 @Composable
 fun CartScreen(viewModel: CartViewModel, navController: NavController) {
     val cartItems by viewModel.cartItems
-    
+
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
     val density = LocalDensity.current
@@ -111,7 +109,9 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                 }
             }
         } else {
-            // ✅ cartItems 있을 때
+            /**
+             * cartItems 있을 때
+             */
             Column(
                 modifier = Modifier
                     .width(widthDp)

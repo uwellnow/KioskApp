@@ -29,19 +29,31 @@ import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
+import com.app.stronglife.viewmodel.ProductViewModel
+import com.app.stronglife.viewmodel.ProductViewModelFactory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun EndScreen(
     navController: NavController,
+    productViewModel: ProductViewModel,
+    cartViewModel: CartViewModel,
     vm: Gs805ViewModel = viewModel(),
     apiKey: String
 ) {
 
-    val cartViewModel: CartViewModel = viewModel()
+    val cartItems = cartViewModel.cartItems.value
+    val products = productViewModel.products
+
 
     Finish(navController, cartViewModel)
+
+    LaunchedEffect(Unit) {
+        if (products.isEmpty()) {
+            productViewModel.fetchProducts()
+        }
+    }
 
 
     // KioskLogger 인스턴스 생성 (1번 코드 방식)
@@ -51,9 +63,35 @@ fun EndScreen(
             apiKey = apiKey,
             service = RetrofitClient.api,
             externalScope = scope,
-            machineId = 12345L,      // 실제 단말 ID로 교체 필요
+            machineId = apiKey.toLong(),
             storeName = "스트롱라이프 GFC점" // 실제 매장명으로 교체 필요
         )
+    }
+
+    LaunchedEffect(cartItems, products) {
+        kioskLogger.logEvent(
+            detail = "Cart items count: ${cartItems.size}, Products count: ${products.size}",
+            isError = false
+        )
+
+        cartItems.forEach { cartItem ->
+            val product = products.find { it.id == cartItem.product.id }
+            if (product != null) {
+                kioskLogger.logEvent(
+                    detail = "Cart item: ${product.name} (ID: ${product.id}, Quantity: ${cartItem.quantity})",
+                    isError = false
+                )
+                kioskLogger.logEvent(
+                    detail = "Recipe slots for ${product.name}: ${product.recipeSlots}",
+                    isError = false
+                )
+            } else {
+                kioskLogger.logEvent(
+                    detail = "Product not found for cart item ID: ${cartItem.product.id}",
+                    isError = true
+                )
+            }
+        }
     }
 
 
@@ -134,6 +172,5 @@ fun EndScreen(
             }
         }
     }
-}
+}// private suspend fun sendLog(...)  <- 이 함수는 삭제합니다.
 
-// private suspend fun sendLog(...)  <- 이 함수는 삭제합니다.

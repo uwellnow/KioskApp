@@ -40,7 +40,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
         ){
             NumberBtn("1"){ onNumberClick("1") }
             NumberBtn("2"){ onNumberClick("2") }
-            NumberBtn("3"){ onNumberClick("2") }
+            NumberBtn("3"){ onNumberClick("3") }
         }
 
 

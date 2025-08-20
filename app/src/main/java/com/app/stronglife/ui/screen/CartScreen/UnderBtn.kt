@@ -77,7 +77,7 @@ fun UnderBtn(navController: NavController, userCodeViewModel: UserCodeViewModel)
                 .border(2.dp, color = mainRed, shape = RoundedCornerShape(roundDp))
                 .clickable { 
                     userCodeViewModel.setPaymentMethodId(1)
-                    navController.navigate("pay_barcode")
+                    navController.navigate("pay_coupon")
                 },
             contentAlignment = Alignment.Center
         ) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,8 +19,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -32,18 +35,23 @@ import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
+import com.app.stronglife.viewmodel.ProductViewModel
 
 @Composable
-fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
+fun ProductCard(
+    products: List<Product>, 
+    onProductClick: (Product) -> Unit,
+    viewModel: ProductViewModel
+) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
-    val horPadding = with(density) { 20.toDp() }
+    val horPadding = with(density) { 45.toDp() }
     val widthtoDp = with(density) { 513f.toDp() }
     val heighttoDp = with(density) { 787f.toDp() }
-    val imageSize = with(density) { 448f.toDp() }
+    val imageSize = with(density) { 440f.toDp() }
     val desfont = with(density) { 20f.toSp() }
     val titlefont = with(density) { 30f.toSp() }
-    val textSpace = with(density) { 60f.toDp() }
+    val roundDp = with(density) { 12f.toDp() }
     val horpadDp = with(density) {80f.toDp()}
     val textdp = with (density) {65f.toDp()}
     val spaceDp = with (density) {18f.toDp()}
@@ -63,25 +71,35 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                     modifier = Modifier
                         .width(widthtoDp)
                         .height(heighttoDp)
+                        .alpha(if (viewModel.isProductSoldOut(product.id)) 0.5f else 1f) // 품절 시 투명도 적용
                         .shadow(
                             2.dp,
                             shape = RoundedCornerShape(
-                                horPadding
+                                roundDp
                             ),
                             ambientColor = lightGray,
                             spotColor = lightGray
                         )
                         .background(
                             color = Color.White,
-                            shape = RoundedCornerShape(horPadding)
+                            shape = RoundedCornerShape(roundDp)
                         )
+                        .padding(vertical = spaceDp)
                 ) {
+                    // SoldOutBox 표시 (품절인 경우)
+                    if (viewModel.isProductSoldOut(product.id)) {
+                        SoldOutBox(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(top = 20.dp)
+                        )
+                    }
 
                     TimeCategory(
                         product.timing,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(30.dp)
+                            .padding(top = spaceDp,end  = 40.dp)
                     )
 
 
@@ -94,23 +112,22 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                             model = product.companyImagePath,
                             contentDescription = product.name,
                             modifier = Modifier
-                                .padding(start = textSpace)
+                                .padding(start = horPadding)
                                 .width(imagePadding)
                                 .height(imagePadding)
                         )
                         Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = textdp),
+                                .fillMaxWidth(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             AsyncImage(
                                 model = product.productImagePath,
                                 contentDescription = product.name,
+                                contentScale = ContentScale.Fit,
                                 modifier = Modifier
-                                    .width(imageSize)
-                                    .height(imageSize)
+                                    .size(imageSize)
                             )
 
                         }
@@ -136,9 +153,10 @@ fun ProductCard(products: List<Product>, onProductClick: (Product) -> Unit) {
                                 )
                             )
                             Text(
-                                text = product.name,
+                                text = product.name.replace("\\n", "\n"),
                                 modifier = Modifier
-                                    .padding(top = horPadding),
+                                    .padding(top = spaceDp),
+                                textAlign = TextAlign.Center,
                                 style = TextStyle(
                                     fontSize = titlefont,
                                     fontFamily = FontFamily(Font(R.font.pretendard_bold)),

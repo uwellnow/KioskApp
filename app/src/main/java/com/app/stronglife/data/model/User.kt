@@ -21,7 +21,7 @@ data class Membership(
 
 data class LoginResponse(
     val id: Int,
-    val user_code: String,
+    val phone: String,
     val name: String,
     val age: Int,
     val gender: String,
@@ -36,6 +36,12 @@ data class UserPurchase(
 )
 
 data class ProductPurchaseRequest(
+    val productIds: List<Int>,
+    val productCounts: List<Int>
+)
+
+data class CouponPurchaseRequest(
+    val couponCode: String,
     val productIds: List<Int>,
     val productCounts: List<Int>
 )

@@ -9,5 +9,6 @@ data class Product(
     val description: String,
     @SerializedName("nutrition_info") val nutritionInfo: String,
     @SerializedName("company_image_path") val companyImagePath: String,
-    @SerializedName("product_image_path") val productImagePath: String
+    @SerializedName("product_image_path") val productImagePath: String,
+    @SerializedName("recipe_slots") val recipeSlots: List<List<Int>> = emptyList()
 )

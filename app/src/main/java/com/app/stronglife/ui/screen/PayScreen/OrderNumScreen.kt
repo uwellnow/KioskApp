@@ -19,6 +19,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.DisposableEffect
+import android.util.Log
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
@@ -50,6 +53,82 @@ fun OrderNumScreen(
     cartViewModel: CartViewModel = viewModel(),
     userCodeViewModel: UserCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 ) {
+    val errorState by userCodeViewModel.errorState
+    var showError by remember { mutableStateOf(false) }
+    var currentError by remember { mutableStateOf<UserCodeViewModel.UiError>(UserCodeViewModel.UiError.None) }
+
+    // 화면을 떠날 때 에러 상태 초기화
+    DisposableEffect(Unit) {
+        onDispose {
+            userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            showError = false
+            currentError = UserCodeViewModel.UiError.None
+        }
+    }
+
+    // 에러 상태 로깅 및 로컬 상태 업데이트
+    LaunchedEffect(errorState) {
+        Log.d("OrderNumScreen", "Error state changed: $errorState")
+        if (errorState !is UserCodeViewModel.UiError.None) {
+            currentError = errorState
+            showError = true
+        }
+    }
+
+    // 에러 상태에 따른 처리
+    if (showError) {
+        when (val error = currentError) {
+            is UserCodeViewModel.UiError.None -> {
+                Log.d("OrderNumScreen", "No error state")
+            }
+            is UserCodeViewModel.UiError.NotFound -> {
+                Log.d("OrderNumScreen", "Showing NotFound error")
+                MemberErrorBox(onConfirm = {
+                    userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                    showError = false
+                    currentError = UserCodeViewModel.UiError.None
+                })
+                return
+            }
+            is UserCodeViewModel.UiError.InsufficientBalance -> {
+                Log.d("OrderNumScreen", "Showing InsufficientBalance error")
+                ErrorBox("결제 실패", "보유 잔수가 부족합니다") {
+                    userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                    showError = false
+                    currentError = UserCodeViewModel.UiError.None
+                    navController.navigate("cart")
+                }
+                return
+            }
+            is UserCodeViewModel.UiError.OutOfStock -> {
+                Log.d("OrderNumScreen", "Showing OutOfStock error")
+                ErrorBox("결제 실패", "재고가 부족합니다") {
+                    userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                    showError = false
+                    currentError = UserCodeViewModel.UiError.None
+                }
+                return
+            }
+            is UserCodeViewModel.UiError.Generic -> {
+                Log.d("OrderNumScreen", "Showing Generic error: ${error.message}")
+                ErrorBox("결제 실패", error.message) {
+                    userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                    showError = false
+                    currentError = UserCodeViewModel.UiError.None
+                }
+                return
+            }
+            is UserCodeViewModel.UiError.Exception -> {
+                Log.d("OrderNumScreen", "Showing Exception error: ${error.throwable.message}")
+                ErrorBox("예외 발생", error.throwable.message ?: "알 수 없는 오류") {
+                    userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+                    showError = false
+                    currentError = UserCodeViewModel.UiError.None
+                }
+                return
+            }
+        }
+    }
 
     val density = LocalDensity.current
     val barbtnSpace = with(density) {81f.toDp()}
@@ -63,16 +142,7 @@ fun OrderNumScreen(
     val spacerDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
-    // 화면이 처음 로드될 때 userCode 초기화
-    LaunchedEffect(Unit) {
-        userCodeViewModel.clear()
-    }
 
-    // 404 오류 시 MemberErrorBox 표시
-    if (userCodeViewModel.is404Error.value) {
-        MemberErrorBox(navController = navController)
-        return
-    }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
