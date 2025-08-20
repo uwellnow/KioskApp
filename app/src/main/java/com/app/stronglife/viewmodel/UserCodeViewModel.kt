@@ -63,6 +63,17 @@ class UserCodeViewModel(
         userCode.value = ""
     }
 
+    fun resetAll() {
+        userCode.value = ""
+        paymentMethodId.value = 0
+        loginResponse.value = null
+        errorMessage.value = null
+        is404Error.value = false
+        is400Error.value = false
+        is409Error.value = false
+        errorState.value = UiError.None
+    }
+
     fun clear404Error() {
         errorState.value = UiError.None
         loginResponse.value = null

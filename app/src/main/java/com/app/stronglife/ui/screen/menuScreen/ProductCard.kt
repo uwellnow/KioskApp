@@ -30,12 +30,14 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.model.Product
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.viewmodel.ProductViewModel
+import com.app.stronglife.ui.screen.menuScreen.SoldOutBox
 
 @Composable
 fun ProductCard(
@@ -63,7 +65,10 @@ fun ProductCard(
             .horizontalScroll(scrollState)
             .padding(horizontal = horpadDp)
     ) {
-        products.forEach { product ->
+        products.filter { it.id < 100 }.forEach { product ->
+            val isSoldOut = viewModel.isProductSoldOut(product.id)
+            println("ProductCard: 상품 ${product.name} (ID: ${product.id}) 품절 상태: $isSoldOut")
+            
             Column(
                 modifier = Modifier.padding(horizontal = spaceDp)
             ) {
@@ -88,10 +93,12 @@ fun ProductCard(
                 ) {
                     // SoldOutBox 표시 (품절인 경우)
                     if (viewModel.isProductSoldOut(product.id)) {
+                        println("ProductCard: SoldOutBox 표시 - 상품 ${product.name} (ID: ${product.id})")
                         SoldOutBox(
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .padding(top = 20.dp)
+                                .zIndex(2f)
                         )
                     }
 
@@ -106,7 +113,9 @@ fun ProductCard(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onProductClick(product) }
+                            .clickable(enabled = !viewModel.isProductSoldOut(product.id)) { 
+                                onProductClick(product) 
+                            }
                     ) {
                         AsyncImage(
                             model = product.companyImagePath,
@@ -168,10 +177,6 @@ fun ProductCard(
 
 
                     }
-
-
-
-
                 }
             }
         }

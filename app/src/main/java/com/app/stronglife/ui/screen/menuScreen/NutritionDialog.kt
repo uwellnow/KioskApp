@@ -2,12 +2,14 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,6 +19,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -48,18 +51,45 @@ fun NutritionDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("닫기")
+        confirmButton = { },
+        title = { 
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "영양정보",
+                    style = TextStyle(
+                        fontSize = titleSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                        color = black
+                    ),
+                    modifier = Modifier.padding(top = 80.dp, start = 40.dp)
+                )
+                
+                // 닫기 버튼을 오른쪽 상단에 위치
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 8.dp, end = 8.dp)
+                ) {
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(100.dp, 70.dp)
+                    ) {
+                        Text(
+                            "닫기",
+                            style = TextStyle(
+                                fontSize = 30.sp,
+                                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                                color = black
+                            )
+                        )
+                    }
+                }
             }
         },
-        title = { Text(text = "영양정보",
-            style = TextStyle(
-                fontSize = titleSp,
-                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                color = black
-            ),
-            modifier = Modifier.padding(top = 80.dp, start = 40.dp)) },
+
+        containerColor = Color.White,
 
 
         text = {

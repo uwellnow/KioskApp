@@ -34,7 +34,9 @@ interface ApiService {
     suspend fun getProducts(): List<Product>
 
     @GET("stocks/kiosk")
-    suspend fun getStocks(): List<Stock>
+    suspend fun getStocks(
+        @Header("x-api-key") apiKey: String
+    ): List<Stock>
 
     @POST("user/login")
     suspend fun postUserLogin(
@@ -56,7 +58,7 @@ interface ApiService {
         @Body body: ProductPurchaseRequest
     ) : retrofit2.Response<okhttp3.ResponseBody>
 
-    @POST("user/purchase/purchase-by-coupon")
+    @POST("user/purchase/product-by-coupon")
     suspend fun postPurchaseByCoupon(
         @Header("x-api-key") apiKey: String,
         @Body body: CouponPurchaseRequest

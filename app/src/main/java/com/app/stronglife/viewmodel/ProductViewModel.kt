@@ -15,6 +15,23 @@ class ProductViewModel(
     private val apiService: ApiService,
 ) : ViewModel() {
 
+    private var apiKey: String = ""
+
+    fun setApiKey(key: String) {
+        apiKey = key
+    }
+
+    var selectedNutritionProduct by mutableStateOf<Product?>(null)
+        private set
+
+    fun openNutrition(product: Product) {
+        selectedNutritionProduct = product
+    }
+
+    fun closeNutrition() {
+        selectedNutritionProduct = null
+    }
+
     var products by mutableStateOf<List<Product>>(emptyList())
         private set
 
@@ -62,19 +79,35 @@ class ProductViewModel(
             return
         }
 
+        if (apiKey.isEmpty()) {
+            println("API 키가 설정되지 않아 재고 정보를 가져올 수 없습니다.")
+            return
+        }
+
         viewModelScope.launch {
             try {
-                val result = apiService.getStocks()
+                println("재고 정보 API 호출 시작 - API 키: $apiKey")
+                val result = apiService.getStocks(apiKey)
                 stocks = result
+                println("재고 정보 로드 완료: ${stocks.size}개 상품")
+                if (stocks.isEmpty()) {
+                    println("재고 정보가 비어있습니다. 서버에 재고 데이터가 없을 수 있습니다.")
+                } else {
+                    stocks.forEach { stock ->
+                        println("상품 ID: ${stock.productId}, 재고: ${stock.productCount}")
+                    }
+                }
             } catch (e: Exception) {
                 // 재고 정보 로딩 실패는 무시 (상품 목록은 정상 표시)
                 println("Failed to fetch stocks: ${e.message}")
+                e.printStackTrace()
             }
         }
     }
 
-    // 특정 상품이 품절인지 확인하는 함수
     fun isProductSoldOut(productId: Int): Boolean {
-        return stocks.any { it.productId == productId && it.productCount == 0 }
+        val isSoldOut = stocks.any { it.productId == productId && it.productCount == 0 }
+        return isSoldOut
     }
+
 }

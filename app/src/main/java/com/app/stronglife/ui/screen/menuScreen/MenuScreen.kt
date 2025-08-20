@@ -35,12 +35,14 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.ProductViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun MenuScreen(
     viewModel: ProductViewModel,
     cartViewModel: CartViewModel = viewModel(),
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    apiKey: String = ""
 ) {
 
 
@@ -49,7 +51,16 @@ fun MenuScreen(
     val currentDetail = viewModel.currentDetail
 
     LaunchedEffect(Unit) {
+        println("MenuScreen: 제품 정보 로드 시작")
         viewModel.fetchProducts()
+        if (apiKey.isNotEmpty()) {
+            viewModel.setApiKey(apiKey)
+            println("MenuScreen: 재고 정보 로드 시작")
+            viewModel.fetchStocks()
+
+        } else {
+            println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
+        }
     }
 
     val density = LocalDensity.current
@@ -87,7 +98,8 @@ fun MenuScreen(
                         products = viewModel.products,
                         onProductClick = { product ->
                             viewModel.openProductDetail(product)
-                        }
+                        },
+                        viewModel
                     )
                 }
             }
@@ -121,9 +133,12 @@ fun MenuScreen(
                     title = productDetail.name,
                     desc = productDetail.description,
                     nut = productDetail.nutritionInfo,
+                    isSoldOut = viewModel.isProductSoldOut(productDetail.id),
                     onClose = viewModel::closeProductDetail,
                     onAddToCart = {
-                        cartViewModel.addProduct(productDetail)
+                        if (!viewModel.isProductSoldOut(productDetail.id)) {
+                            cartViewModel.addProduct(productDetail)
+                        }
                     },
                     onGoCart = {
                         navController.navigate("addOrCart")
