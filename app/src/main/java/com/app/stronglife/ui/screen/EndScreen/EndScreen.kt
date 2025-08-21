@@ -103,12 +103,13 @@ fun EndScreen(
 
         fun armQuietTimer() {
             quietJob?.cancel()
+            kioskLogger.logEvent("QuietTimer ARM (${QUIET_MS}ms)", false /* high=true 권장 */)
             // DrinkCompleted가 막 왔으니, QUIET_MS 동안 추가 신호가 없으면 컵 수거로 본다
             quietJob = launch {
                 delay(QUIET_MS)
                 if (awaitingCupClear) {
-                    cupClearedCh.trySend(Unit)
                     kioskLogger.logEvent("CupCleared (quiet ${QUIET_MS}ms)", false)
+                    cupClearedCh.trySend(Unit)
                 }
             }
         }
@@ -176,6 +177,7 @@ fun EndScreen(
 
         if (queue.isEmpty()) {
             kioskLogger.logEvent("Queue empty -> home", false)
+            runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
             navController.navigate("hello"); return@LaunchedEffect
         }
 
@@ -246,6 +248,7 @@ fun EndScreen(
             try {
                 withTimeout(CUP_TIMEOUT_MS) { cupClearedCh.receive() }
                 kioskLogger.logEvent("Cup taken for ${product.name}", false)
+                runCatching { withTimeout(400) { kioskLogger.flush() } }
             } catch (t: TimeoutCancellationException) {
                 lastError = "컵 수거 타임아웃: ${product.name}"
                 kioskLogger.logEvent(lastError!!, true)

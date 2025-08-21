@@ -123,7 +123,7 @@ class Gs805ViewModel : ViewModel(), SerialListener {
 
     // ===== SerialListener =====
     override fun onFrame(hex: String) {
-//        _events.tryEmit(MachineEvent.RawDataReceived(hex)) // 디버깅용 전체 메시지 로깅
+        _events.tryEmit(MachineEvent.RawDataReceived(hex)) // 디버깅용 전체 메시지 로깅
 
         val b = hexToBytes(hex)
         if (b.size < 5 || b[0] != 0xA5.toByte() || b[1] != 0x5A.toByte()) return
