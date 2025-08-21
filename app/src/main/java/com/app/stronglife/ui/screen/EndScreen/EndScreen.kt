@@ -89,6 +89,8 @@ fun EndScreen(
     var awaitingCompletion by remember { mutableStateOf(false) }
     var awaitingCupClear by remember { mutableStateOf(false) }
 
+    
+
     // 정적 구간 길이/타임아웃
     val QUIET_MS = 1500L           // DrinkCompleted가 이 시간 이상 안 오면 컵 수거로 간주
     val MAKE_TIMEOUT_MS = 120_000L // 제조 완료 대기
@@ -100,17 +102,33 @@ fun EndScreen(
         while (!cupClearedCh.isEmpty) cupClearedCh.tryReceive().getOrNull() ?: break
     }
 
+
+    val LOG_RAW = true                 // RawDataReceived 로깅 끄기
+    val LOG_KEEPALIVE = false           // DrinkCompleted keep-alive 로깅 끄기
+
+    val CUPDROPPED_COOLDOWN_MS = 5_000L // 같은 컵감지 로그 5초에 한 번만
+    val IGNORED_COMPLETED_COOLDOWN_MS = 2_000L // not awaiting 중복 로그 2초에 한 번
+
+    var lastCupDroppedLogAt by remember { mutableStateOf(0L) }
+    var lastIgnoredCompletedLogAt by remember { mutableStateOf(0L) }
+    var lastKeepAliveLogAt by remember { mutableStateOf(0L) }
+    var suppressedKeepAlive by remember { mutableStateOf(0) } // 억제된 keep-alive 개수
+
+
     // 이벤트 수신: DrinkCompleted 스팸 억제 + 정적 구간 타이머
     LaunchedEffect(Unit) {
         var quietJob: kotlinx.coroutines.Job? = null
 
         fun armQuietTimer() {
             quietJob?.cancel()
-            // kioskLogger.logEvent("QuietTimer ARM (${QUIET_MS}ms)", false /* high=true 권장 */)
-            // DrinkCompleted가 막 왔으니, QUIET_MS 동안 추가 신호가 없으면 컵 수거로 본다
             quietJob = launch {
                 delay(QUIET_MS)
                 if (awaitingCupClear) {
+                    // 필요하면 억제된 keep-alive 개수를 한 줄로 보고
+                    if (suppressedKeepAlive > 0) {
+                        kioskLogger.logEvent("DrinkCompleted keep-alives suppressed=$suppressedKeepAlive", false)
+                        suppressedKeepAlive = 0
+                    }
                     kioskLogger.logEvent("CupCleared (quiet ${QUIET_MS}ms)", false)
                     cupClearedCh.trySend(Unit)
                 }
@@ -120,33 +138,49 @@ fun EndScreen(
         vm.events.collectLatest { ev ->
             when (ev) {
                 is Gs805ViewModel.MachineEvent.RawDataReceived -> {
-                    kioskLogger.logEvent("RawDataReceived", false, responseHex = ev.hex)
+                    if (LOG_RAW) kioskLogger.logEvent("RawDataReceived", false, responseHex = ev.hex)
                 }
+
                 is Gs805ViewModel.MachineEvent.DrinkCompleted -> {
-                    // 1) 제조 완료 인정 단계
+                    val now = System.currentTimeMillis()
+
+                    // 1) 제조 완료 인정 (채널에 한번만 들어가므로 사실상 1회)
                     if (awaitingCompletion) {
                         val sent = completedCh.trySend(Unit).isSuccess
-                        if (sent) {
-                            kioskLogger.logEvent("DrinkCompleted (accepted)", false, responseHex = ev.hex)
-                            // DrinkCompleted 발생 시 products를 제외한 모든 정보 초기화
-
-                        } else {
-                            kioskLogger.logEvent("DrinkCompleted (ignored: buffered)", false, responseHex = ev.hex)
-                        }
+                        if (sent) kioskLogger.logEvent("DrinkCompleted (accepted)", false, responseHex = ev.hex)
+                        // buffered/ignored 로그는 굳이 안 남김
                     } else {
-                        kioskLogger.logEvent("DrinkCompleted (ignored: not awaiting)", false, responseHex = ev.hex)
+                        // not awaiting 중복 로그는 쿨다운
+                        if (now - lastIgnoredCompletedLogAt > IGNORED_COMPLETED_COOLDOWN_MS) {
+                            kioskLogger.logEvent("DrinkCompleted (ignored: not awaiting)", false, responseHex = ev.hex)
+                            lastIgnoredCompletedLogAt = now
+                        }
                     }
 
-                    // 2) 컵 수거 감지 단계: 반복 송출을 이용해 ‘정적 구간’ 판단
+                    // 2) 컵 수거 감지: 타이머만 리셋(로그 스팸 방지)
                     if (awaitingCupClear) {
-                        // 신호가 또 왔으니 아직 컵이 안 치워진 것 → 타이머를 리셋
                         armQuietTimer()
-                        kioskLogger.logEvent("DrinkCompleted (keep-alive, waiting quiet)", false)
+                        if (LOG_KEEPALIVE) {
+                            // 켜고 싶으면: 쿨다운으로 제한
+                            if (now - lastKeepAliveLogAt > 5_000) {
+                                kioskLogger.logEvent("DrinkCompleted (keep-alive, waiting quiet)", false)
+                                lastKeepAliveLogAt = now
+                            }
+                        } else {
+                            suppressedKeepAlive++
+                        }
                     }
                 }
+
                 is Gs805ViewModel.MachineEvent.CupDropped -> {
-                    kioskLogger.logEvent("CupDropped", false, responseHex = ev.hex)
+                    val now = System.currentTimeMillis()
+                    // 같은 이벤트가 수초 동안 계속 오므로 쿨다운으로 1줄만
+                    if (now - lastCupDroppedLogAt > CUPDROPPED_COOLDOWN_MS) {
+                        kioskLogger.logEvent("CupDropped", false, responseHex = ev.hex)
+                        lastCupDroppedLogAt = now
+                    }
                 }
+
                 is Gs805ViewModel.MachineEvent.Offline -> {
                     kioskLogger.logEvent("Offline cmd=0x${ev.cmd.toString(16)}", true)
                 }
@@ -158,6 +192,7 @@ fun EndScreen(
             }
         }
     }
+
 
     // 제조 오케스트레이션
     LaunchedEffect(cartItems, products) {
