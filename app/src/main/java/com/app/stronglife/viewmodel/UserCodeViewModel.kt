@@ -30,11 +30,23 @@ class UserCodeViewModel(
     fun sendApiKey(apiKey: String, onResult: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
             try {
-                val result = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
-                Log.d("api key", "API Key 등록 성공: $result")
-                onResult(true)
+                val response = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
+                if (response.isSuccessful) {
+                    Log.d("api key", "API Key 등록 성공: ${response.body()}")
+                    errorState.value = UiError.None
+                    onResult(true)
+                } else {
+                    Log.e("api key", "API Key 전송 실패 - 코드: ${response.code()}")
+                    val error = when (response.code()) {
+                        401 -> UiError.Generic("유효하지 않은 API 키입니다. 다시 확인해주세요.")
+                        else -> UiError.Generic("API 키 검증 실패 (${response.code()})")
+                    }
+                    errorState.value = error
+                    onResult(false)
+                }
             } catch (e: Exception) {
                 Log.e("api key", "API Key 전송 오류", e)
+                errorState.value = UiError.Exception(e)
                 onResult(false)
             }
         }
