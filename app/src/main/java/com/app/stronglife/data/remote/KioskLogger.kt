@@ -15,31 +15,33 @@ class KioskLogger(
     private val apiKey: String,
     private val service: ApiService,
     externalScope: CoroutineScope,
-    private val machineId: Long,              // ★ 필수로 변경 (null 금지)
+    private val machineId: Long,              // ★ 필수
     private val storeName: String? = null
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val queue = Channel<KioskLogPayload>(capacity = Channel.BUFFERED)
+    // === 내부 큐 아이템: Payload or Flush 배리어 ===
+    private sealed interface QueueItem {
+        data class Payload(val payload: KioskLogPayload) : QueueItem
+        data class Flush(val ack: CompletableDeferred<Unit>) : QueueItem
+    }
 
-    // 단말 식별 해시(16비트) + 시간(36비트) + 카운터(12비트) = 64비트 고유 ID
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val queue = Channel<QueueItem>(capacity = Channel.BUFFERED)
+
+    // 단말 식별 해시(16비트) + 시간(36비트) + 카운터(12비트)
     private val deviceHash16 = (apiKey.hashCode() and 0xFFFF).toLong()
     private val counter = AtomicInteger(0)
 
     init {
+        // 소비 루프: 순서를 보장하기 위해 "재시도는 여기서만" 처리(큐로 되돌려 넣지 않음)
         scope.launch {
-            var backoffMs = 1_000L
-            for (payload in queue) {
-                try {
-                    val r: Response<ResponseBody> = service.postKioskLog(apiKey, payload)
-                    if (!r.isSuccessful) error("HTTP ${r.code()}")
-                    backoffMs = 1_000L
-                } catch (_: Throwable) {
-                    delay(backoffMs)
-                    backoffMs = min(backoffMs * 2, 60_000L)
-                    queue.send(payload) // 재시도
+            for (item in queue) {
+                when (item) {
+                    is QueueItem.Payload -> postWithRetry(item.payload)
+                    is QueueItem.Flush -> item.ack.complete(Unit) // 앞선 payload가 모두 처리된 시점
                 }
             }
         }
+        // 화면 스코프가 끝나면 같이 정리하고 싶을 경우 유지
         externalScope.coroutineContext[Job]?.invokeOnCompletion { scope.cancel() }
     }
 
@@ -52,12 +54,24 @@ class KioskLogger(
         return (deviceHash16 shl 48) or (t36 shl 12) or c12
     }
 
+    // 서버 전송(지수 백오프, 무손실 재시도; 순서 보장)
+    private suspend fun postWithRetry(payload: KioskLogPayload) {
+        var backoffMs = 1_000L
+        while (true) {
+            try {
+                val r: Response<ResponseBody> = service.postKioskLog(apiKey, payload)
+                if (!r.isSuccessful) error("HTTP ${r.code()}")
+                return // 성공 시 종료
+            } catch (_: Throwable) {
+                delay(backoffMs)
+                backoffMs = min(backoffMs * 2, 60_000L)
+                // 큐로 재삽입하지 않음(순서/flush 보장)
+            }
+        }
+    }
+
     /**
-     * [개선] 모든 로그를 처리하는 단일 함수
-     * @param detail 로그의 상세 설명 (예: "QueryErrorCode")
-     * @param isError 성공(FRAME)인지 실패(ERROR)인지 여부
-     * @param commandHex 전송한 명령어
-     * @param responseHex 수신한 응답
+     * 이벤트 로그 적재 (비동기)
      */
     fun logEvent(
         detail: String,
@@ -71,10 +85,36 @@ class KioskLogger(
             machineId = machineId,
             storeName = storeName,
             errorType = if (isError) "ERROR" else "FRAME",
-            errorDetail = detail, // 상세 설명을 errorDetail 필드에 저장
+            errorDetail = detail,
             commandSent = commandHex,
-            response = responseHex // 응답을 response 필드에 저장
+            response = responseHex
         )
-        queue.trySend(payload)
+        queue.trySend(QueueItem.Payload(payload))
+    }
+
+    /**
+     * flush(): 현재까지 큐에 들어간 모든 로그가 서버 전송될 때까지 대기.
+     * @param timeoutMs 최댓 대기 시간(네트워크 지연 보호)
+     */
+    suspend fun flush(timeoutMs: Long = 500L) {
+        // 채널이 이미 닫혔거나 scope가 취소되었으면 그냥 반환(또는 예외를 던지도록 바꿔도 됨)
+        if (!scope.isActive) return
+
+        val ack = CompletableDeferred<Unit>()
+        // 배리어를 큐에 넣는다: 이 배리어가 소비될 때, 앞선 Payload는 모두 전송 완료 상태
+        // 실패 시(채널 닫힘 등) 조용히 리턴하거나 예외 처리 선택
+        if (!queue.trySend(QueueItem.Flush(ack)).isSuccess) return
+
+        withTimeout(timeoutMs) { ack.await() }
+    }
+
+    /**
+     * (선택) 종료: 큐를 닫고 내부 작업 종료를 기다림
+     */
+    suspend fun closeAndJoin(timeoutMs: Long = 1_000L) {
+        queue.close()
+        withTimeout(timeoutMs) {
+            scope.coroutineContext[Job]?.join()
+        }
     }
 }

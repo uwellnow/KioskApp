@@ -263,6 +263,7 @@ fun EndScreen(
 
         if (currentIndex == totalJobs && lastError == null) {
             kioskLogger.logEvent("All jobs completed -> home", false)
+            runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
             navController.navigate("hello")
 
         } else {
