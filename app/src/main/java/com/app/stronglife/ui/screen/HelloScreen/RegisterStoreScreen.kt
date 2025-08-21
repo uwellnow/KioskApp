@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.PrefsManager
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.screen.PayScreen.KeyPad
 import com.app.stronglife.ui.screen.PayingScreen.MemberErrorBox
@@ -67,11 +68,11 @@ fun RegisterStoreScreen(
 ) {
     val context = LocalContext.current
     val prefsManager = remember { PrefsManager(context) }
+    val errorState by userCodeViewModel.errorState
 
     
     var storeCode by remember { mutableStateOf("") }
     var isFilled by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
@@ -81,6 +82,27 @@ fun RegisterStoreScreen(
         focusRequester.requestFocus()
     }
 
+    // 에러 상태에 따른 처리
+    when (val error = errorState) {
+        is UserCodeViewModel.UiError.None -> {
+            // 에러 없음 - 정상 화면 표시
+        }
+        is UserCodeViewModel.UiError.Generic -> {
+            ErrorBox("매장 등록 오류", "발급 받으신 키를 정확히 입력해 주세요") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        is UserCodeViewModel.UiError.Exception -> {
+            ErrorBox("연결 오류", "서버 연결에 실패했습니다. 다시 시도해주세요.") {
+                userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
+            }
+            return
+        }
+        else -> {
+            // 다른 에러 타입은 무시
+        }
+    }
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
@@ -164,7 +186,6 @@ fun RegisterStoreScreen(
             Spacer(modifier = Modifier.width(spacerDp))
 
             isFilled = storeCode.isNotEmpty()
-            var errorMessage by remember { mutableStateOf<String?>(null) }
 
             Box(
                 modifier = Modifier.background(if (isFilled) mainRed else background, shape = RoundedCornerShape(roundDp))
@@ -174,10 +195,9 @@ fun RegisterStoreScreen(
                             userCodeViewModel.sendApiKey(storeCode) { success ->
                                 if (success) {
                                     prefsManager.saveApiKey(storeCode)
-                                    onApiKeySet(storeCode)  //
-                                } else {
-                                    errorMessage = "등록에 실패했습니다. 다시 시도해주세요."
+                                    onApiKeySet(storeCode)
                                 }
+                                // 실패 시 에러는 errorState를 통해 처리됨
                             }
                         }
                     }
@@ -193,11 +213,6 @@ fun RegisterStoreScreen(
                         color = if (isFilled) Color.White else midGray
                     )
                 )
-            }
-
-            errorMessage?.let {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = it, color = Color.Red, fontSize = 20.sp)
             }
         }
 
