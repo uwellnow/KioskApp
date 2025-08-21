@@ -48,35 +48,39 @@ class Gs805ViewModel : ViewModel(), SerialListener {
     private suspend fun sendAndAwait(
         cmd: Int,
         data: ByteArray = byteArrayOf(),
-        retries: Int = 2,
-        timeoutMs: Long = 100L   // 기존 100ms -> 현실적인 기본값으로 상향
+        retries: Int = 100,
+        timeoutMs: Long = 300L
     ): ByteArray? = withContext(Dispatchers.IO) {
-        repeat(retries + 1) {
-            val waiter = CompletableDeferred<ByteArray>()
-            pending[cmd]?.cancel()
-            pending[cmd] = waiter
 
-            // 데이터소스가 CMD+DATA를 받아 프레임 빌드/전송
+        // 하나의 waiter로 모든 재시도를 관통
+        val waiter = CompletableDeferred<ByteArray>()
+        pending[cmd]?.cancel()
+        pending[cmd] = waiter
+
+        repeat(retries + 1) { attempt ->
             dataSource.send(cmd, data)
-
-            // write 직후 짧은 틱 (일부 칩셋에서 안정적)
+            // HW 드라이버 특성상 아주 짧은 틱 정도만
             delay(2)
 
-            try {
-                return@withContext withTimeout(timeoutMs) { waiter.await() }
-            } catch (_: Throwable) {
-                // 재시도
+            val resp = withTimeoutOrNull(timeoutMs) { waiter.await() }
+            if (resp != null) {
+                pending.remove(cmd)
+                return@withContext resp
             }
+            // 타임아웃 → 다음 재시도
         }
+        val grace = withTimeoutOrNull(300) { waiter.await() }
         pending.remove(cmd)
+        if (grace != null) return@withContext grace
+
         _events.tryEmit(MachineEvent.Offline(cmd))
         null
-    }
+}
 
     suspend fun queryErrorCode(): SerialResult<Int> {
         val frame = Gs805Protocol.queryErrorCode()
         val dataOnly = frame.copyOfRange(4, frame.size - 1)
-        val respBytes = sendAndAwait(0x0C, dataOnly, timeoutMs = 1500L)
+        val respBytes = sendAndAwait(0x0C, dataOnly, timeoutMs = 300L)
 
         val errCode = if (respBytes != null && respBytes.size > 4) {
             respBytes[4].toInt() and 0xFF
@@ -92,7 +96,7 @@ class Gs805ViewModel : ViewModel(), SerialListener {
     suspend fun saveRecipe3(drinkNo: Int, slots: List<Pair<Int, Int>>): SerialResult<Boolean> {
         val frame = Gs805Protocol.recipeSeries3(drinkNo, slots)
         val dataOnly = frame.copyOfRange(4, frame.size - 1)
-        val respBytes = sendAndAwait(0x15, dataOnly, timeoutMs = 2500L)
+        val respBytes = sendAndAwait(0x15, dataOnly, timeoutMs = 300L)
 
         val isSuccess = if (respBytes != null && respBytes.size > 4) {
             (respBytes[4].toInt() and 0x7F) == 0x00
@@ -108,7 +112,7 @@ class Gs805ViewModel : ViewModel(), SerialListener {
     suspend fun makeDrinkNow(drinkNo: Int, localOrCmd: Int = 0x02): SerialResult<Boolean> {
         val frame = Gs805Protocol.makeDrink(drinkNo, localOrCmd)
         val dataOnly = frame.copyOfRange(4, frame.size - 1)
-        val respBytes = sendAndAwait(0x01, dataOnly, timeoutMs = 2500L)
+        val respBytes = sendAndAwait(0x01, dataOnly, timeoutMs = 300L)
 
         val isSuccess = if (respBytes != null && respBytes.size > 4) {
             (respBytes[4].toInt() and 0x7F) == 0x00
@@ -123,26 +127,30 @@ class Gs805ViewModel : ViewModel(), SerialListener {
 
     // ===== SerialListener =====
     override fun onFrame(hex: String) {
-        _events.tryEmit(MachineEvent.RawDataReceived(hex)) // 디버깅용 전체 메시지 로깅
-
         val b = hexToBytes(hex)
         if (b.size < 5 || b[0] != 0xA5.toByte() || b[1] != 0x5A.toByte()) return
         val cmd = b[3].toInt() and 0xFF
 
-        val waiter = pending.remove(cmd)
-        if (waiter != null) {
-            waiter.complete(b)
-            return
-        }
-
-        // 비동기 이벤트 처리
         if (cmd == 0x0C) {
             val code = b[4].toInt() and 0xFF
-            when (code) {
-                0x05 -> _events.tryEmit(MachineEvent.CupDropped(hex))
-                0x10 -> _events.tryEmit(MachineEvent.DrinkCompleted(hex))
-                else -> _events.tryEmit(MachineEvent.ErrorCode(code))
+            if (code == 0x00) {
+                // 0x0C 응답만 waiter에 전달
+                pending.remove(cmd)?.complete(b)
+                return
+            } else {
+                // 비동기 이벤트
+                when (code) {
+                    0x05 -> _events.tryEmit(MachineEvent.CupDropped(hex))
+                    0x10 -> _events.tryEmit(MachineEvent.DrinkCompleted(hex))
+                    else -> _events.tryEmit(MachineEvent.ErrorCode(code))
+                }
+                return
             }
+        }
+
+        // 그 외 명령의 응답
+        pending.remove(cmd)?.complete(b) ?: run {
+            _events.tryEmit(MachineEvent.RawDataReceived(hex)) // 디버깅용 전체 메시지 로깅
         }
     }
 

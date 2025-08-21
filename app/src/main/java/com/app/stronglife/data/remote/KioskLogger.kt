@@ -42,7 +42,7 @@ class KioskLogger(
             }
         }
         // 화면 스코프가 끝나면 같이 정리하고 싶을 경우 유지
-        externalScope.coroutineContext[Job]?.invokeOnCompletion { scope.cancel() }
+        // externalScope.coroutineContext[Job]?.invokeOnCompletion { scope.cancel() }
     }
 
     private fun nowIso(): String =
@@ -89,7 +89,11 @@ class KioskLogger(
             commandSent = commandHex,
             response = responseHex
         )
-        queue.trySend(QueueItem.Payload(payload))
+        // queue.trySend(QueueItem.Payload(payload))
+        val item = QueueItem.Payload(payload)
+        if (!queue.trySend(item).isSuccess) {
+            scope.launch { queue.send(item) }   // ★ 드랍 방지: 현재 스레드 블로킹 없이 보장 enqueue
+        }
     }
 
     /**
@@ -97,14 +101,18 @@ class KioskLogger(
      * @param timeoutMs 최댓 대기 시간(네트워크 지연 보호)
      */
     suspend fun flush(timeoutMs: Long = 500L) {
-        // 채널이 이미 닫혔거나 scope가 취소되었으면 그냥 반환(또는 예외를 던지도록 바꿔도 됨)
         if (!scope.isActive) return
 
         val ack = CompletableDeferred<Unit>()
-        // 배리어를 큐에 넣는다: 이 배리어가 소비될 때, 앞선 Payload는 모두 전송 완료 상태
-        // 실패 시(채널 닫힘 등) 조용히 리턴하거나 예외 처리 선택
-        if (!queue.trySend(QueueItem.Flush(ack)).isSuccess) return
+        val barrier = QueueItem.Flush(ack)
 
+        // 1) 배리어를 반드시 큐에 싣는다 (trySend 실패 시 send로 보강)
+        if (!queue.trySend(barrier).isSuccess) {
+            // 내부 scope 컨텍스트에서 보장 enqueue
+            withContext(scope.coroutineContext) { queue.send(barrier) }
+        }
+
+        // 2) 앞선 Payload들이 모두 postWithRetry를 통과하면 소비 루프가 complete 해줌
         withTimeout(timeoutMs) { ack.await() }
     }
 

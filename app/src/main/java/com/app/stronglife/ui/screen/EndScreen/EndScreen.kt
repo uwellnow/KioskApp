@@ -37,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun EndScreen(
@@ -76,11 +77,13 @@ fun EndScreen(
     val completedCh = remember { kotlinx.coroutines.channels.Channel<Unit>(capacity = 1) }
     val cupClearedCh = remember { kotlinx.coroutines.channels.Channel<Unit>(capacity = 1) }
 
+
     // 상태
     var totalJobs by remember { mutableStateOf(0) }
     var currentIndex by remember { mutableStateOf(0) }
     var inProgress by remember { mutableStateOf(false) }
     var lastError by remember { mutableStateOf<String?>(null) }
+    val runOnce = remember { mutableStateOf(false) }
 
     // 플래그
     var awaitingCompletion by remember { mutableStateOf(false) }
@@ -103,7 +106,7 @@ fun EndScreen(
 
         fun armQuietTimer() {
             quietJob?.cancel()
-            kioskLogger.logEvent("QuietTimer ARM (${QUIET_MS}ms)", false /* high=true 권장 */)
+            // kioskLogger.logEvent("QuietTimer ARM (${QUIET_MS}ms)", false /* high=true 권장 */)
             // DrinkCompleted가 막 왔으니, QUIET_MS 동안 추가 신호가 없으면 컵 수거로 본다
             quietJob = launch {
                 delay(QUIET_MS)
@@ -158,6 +161,8 @@ fun EndScreen(
 
     // 제조 오케스트레이션
     LaunchedEffect(cartItems, products) {
+        if (runOnce.value) return@LaunchedEffect
+        runOnce.value = true
         kioskLogger.logEvent("Cart=${cartItems.size}, Products=${products.size}", false)
 
         val queue = buildList {
@@ -187,7 +192,7 @@ fun EndScreen(
         kioskLogger.logEvent("SerialStart", !serialOk, responseHex = if (serialOk) "OK" else null)
         if (!serialOk) { lastError = "시리얼 연결 실패"; inProgress = false; return@LaunchedEffect }
 
-        delay(120)
+        delay(500)
 
         val queryResult = vm.queryErrorCode()
         kioskLogger.logEvent(
@@ -216,7 +221,7 @@ fun EndScreen(
             )
             if (!recipeOk.businessResult) { lastError = "레시피 저장 실패: ${product.name}"; break@outer }
 
-            delay(120)
+            delay(500)
 
             // 제조 시작
             val make = vm.makeDrinkNow(0x11, localOrCmd = 0x02)
@@ -248,7 +253,6 @@ fun EndScreen(
             try {
                 withTimeout(CUP_TIMEOUT_MS) { cupClearedCh.receive() }
                 kioskLogger.logEvent("Cup taken for ${product.name}", false)
-                runCatching { withTimeout(400) { kioskLogger.flush() } }
             } catch (t: TimeoutCancellationException) {
                 lastError = "컵 수거 타임아웃: ${product.name}"
                 kioskLogger.logEvent(lastError!!, true)
@@ -259,7 +263,11 @@ fun EndScreen(
                 while (!cupClearedCh.isEmpty) cupClearedCh.tryReceive().getOrNull() ?: break
             }
 
-            delay(150)
+            delay(500)
+            if (idx < queue.lastIndex) {
+                kioskLogger.logEvent("Pause before next drink = 20s", false)
+                delay(20_000L)
+            }
         }
 
         inProgress = false
@@ -274,4 +282,18 @@ fun EndScreen(
             // 필요시 오류 화면/재시도
         }
     }
+
+
+    DisposableEffect(Unit) {
+        onDispose {
+            // 로그 유실 줄이기
+            vm.stopSerial()
+            runBlocking {
+                runCatching { withTimeout(1500) { kioskLogger.flush(1200) } }
+                runCatching { withTimeout(2000) { kioskLogger.closeAndJoin(1800) } }
+            }
+            
+        }
+    }
+
 }

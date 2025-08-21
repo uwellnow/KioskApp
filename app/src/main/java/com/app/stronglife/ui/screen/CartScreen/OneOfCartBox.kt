@@ -47,7 +47,7 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = product.name,
+                text = product.name.replace("\\n", " ").replace("\n", " "),
                 style = TextStyle(
                     fontSize = titleToSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_bold)),
