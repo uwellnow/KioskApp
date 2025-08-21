@@ -72,7 +72,7 @@ fun CouponInputCard(
             BasicTextField(
                 value = viewModel.userCode.value,
                 onValueChange = { newValue ->
-                    if (newValue.all { it.isDigit() } && newValue.length <= 10) {
+                    if (newValue.all { it.isDigit() } && newValue.length <= 12) {
                         viewModel.userCode.value = newValue
                     }
                 },
