@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -25,20 +26,20 @@ import com.app.stronglife.ui.theme.lightGray
 @Composable
 fun DeleteBtn(onDelete: () -> Unit) {
     val density = LocalDensity.current
-    val widthtoDp = with(density) {113f.toDp()}
+    val widthtoDp = with(density) {120f.toDp()}
     val heighttoDp = with(density) {58f.toDp()}
     val textSp = with(density) {32f.toSp()}
     val roundDp = with (density) {12f.toDp()}
 
     Box (
         modifier = Modifier
-            .height(heighttoDp)
             .background(
                 color = Color.White,
                 shape = RoundedCornerShape(roundDp)
             )
             .border(2.dp, lightGray, shape = RoundedCornerShape(roundDp))
-            .clickable{onDelete()},
+            .clickable{onDelete()}
+            .padding(horizontal = 25.dp, vertical = 10.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
