@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -95,7 +96,7 @@ fun AddOrCartScreen(
                 )
                 Spacer(modifier = Modifier.height(imagetoTextDp))
                 Text(
-                    text = "추가 주문하기",
+                    text = stringResource(R.string.add_order),
                     style = TextStyle(
                         fontSize = textToSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),
@@ -145,7 +146,7 @@ fun AddOrCartScreen(
                 )
                 Spacer(modifier = Modifier.height(imagetoTextDp))
                 Text(
-                    text = "장바구니로 이동",
+                    text = stringResource(R.string.go_cart),
                     style = TextStyle(
                         fontSize = textToSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -129,7 +130,7 @@ fun CouponScreen(
             verticalArrangement = Arrangement.Center
         ){
             Text(
-                text = "쿠폰 바코드를 인식시켜 주세요",
+                text = stringResource(R.string.pay_coupon_title),
                 style = TextStyle(
                     fontSize = titleSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -139,7 +140,7 @@ fun CouponScreen(
             Spacer(modifier = Modifier.height(spacerDp))
 
             Text(
-                text = "스캔이 원활하지 않을 경우, 바코드 번호를 입력해 주세요.",
+                text = stringResource(R.string.pay_coupon_desc),
                 style = TextStyle(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -166,7 +167,7 @@ fun CouponScreen(
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = "* 현재 카드결제, 간편결제는 지원되지 않습니다. 추후 업데이트 예정입니다.",
+                text = stringResource(R.string.pay_order_add),
                 style = TextStyle(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),

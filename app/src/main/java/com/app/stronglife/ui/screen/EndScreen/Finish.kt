@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,14 +51,14 @@ fun Finish() {
             Spacer(modifier = Modifier.height(space1Dp))
 
             Text(
-                text = "결제가 완료되었어요!",
+                text = stringResource(R.string.pay_done_title),
                 fontSize = titleSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = black,
             )
             Spacer(modifier = Modifier.height(space2Dp))
             Text(
-                text = "보충제 음료 제조가 시작되었습니다. 잠시만 기다려 주세요.",
+                text = stringResource(R.string.pay_done_desc),
                 fontSize = descSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,

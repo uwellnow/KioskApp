@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -70,7 +71,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "전체\n삭제",
+                    text = stringResource(R.string.keypad_delete_all),
                     style = TextStyle(
                         fontSize = deleteSp,
                         lineHeight = deleteSp * 1.1,
@@ -88,7 +89,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "지\n움",
+                    text = stringResource(R.string.keypad_delete_one),
                     style = TextStyle(
                         fontSize = removeSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

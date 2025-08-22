@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -122,7 +123,7 @@ fun ProductDetail (
                 )
 
                 Text(
-                    text = "영양정보 상세보기",
+                    text = stringResource(R.string.nutrition_info),
                     modifier = Modifier.clickable { showDialog = true },
                     style = TextStyle(
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

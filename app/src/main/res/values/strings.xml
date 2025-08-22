@@ -20,6 +20,7 @@
     <string name="nutrition">영양정보</string>
     <string name="add_order">추가 주문하기</string>
     <string name="go_cart">장바구니로 이동</string>
+    <string name="orders">주문 내역</string>
     <string name="use_coupon">쿠폰 사용</string>
     <string name="pay">결제하기</string>
     <string name="delete">삭제</string>
@@ -50,5 +51,7 @@
     <string name="error_pay_title">결제 실패</string>
     <string name="error_pay_desc">보유 잔 수가 부족합니다. 멤버십을 추가 구매해 주세요</string>
     <string name="go_first">처음으로 이동</string>
+    <string name="error_coupon_title">쿠폰 사용 실패</string>
+    <string name="error_coupon_desc">쿠폰 사용에 실패했습니다. 쿠폰 코드를 다시 확인해 주세요</string>
 
 </resources>

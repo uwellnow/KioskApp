@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -54,7 +55,7 @@ fun MenuScreenBtn(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "뒤로가기",
+                text = stringResource(R.string.go_back),
                 style = TextStyle(
                     fontSize = texttoSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -89,7 +90,7 @@ fun MenuScreenBtn(
 
                 Spacer(modifier = Modifier.width(btnSpacetoDp))
                 Text(
-                    text = if (isCartEnabled) "장바구니에 담기" else "품절",
+                    text = stringResource(R.string.add_cart),
                     style = TextStyle(
                         fontSize = texttoSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),

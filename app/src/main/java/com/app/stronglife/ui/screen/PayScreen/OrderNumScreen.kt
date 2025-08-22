@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -162,7 +163,7 @@ fun OrderNumScreen(
             verticalArrangement = Arrangement.Center
         ){
             Text(
-                text = "주문번호를 입력하세요",
+                text = stringResource(R.string.pay_order_title),
                 style = TextStyle(
                     fontSize = titleSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -172,7 +173,7 @@ fun OrderNumScreen(
             Spacer(modifier = Modifier.height(spacerDp))
 
             Text(
-                text = "결제 완료 후 카카오톡 채널로 발송된 메시지를 확인해 주세요",
+                text = stringResource(R.string.pay_order_desc),
                 style = TextStyle(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -199,7 +200,7 @@ fun OrderNumScreen(
             horizontalArrangement = Arrangement.Start
         ) {
             Text(
-                text = "* 현재 카드결제, 간편결제는 지원되지 않습니다. 추후 업데이트 예정입니다.",
+                text = stringResource(R.string.pay_order_add),
                 style = TextStyle(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),

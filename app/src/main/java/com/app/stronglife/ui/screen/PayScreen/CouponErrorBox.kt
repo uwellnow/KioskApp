@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -68,7 +69,7 @@ fun CouponErrorBox(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(spaceDp))
             Text(
-                text = "쿠폰 사용 실패",
+                text = stringResource(R.string.error_coupon_title),
                 style = TextStyle(
                     fontSize = ErrorSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -77,7 +78,7 @@ fun CouponErrorBox(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(roundDp))
             Text(
-                text = "쿠폰 사용에 실패했습니다. 쿠폰 코드를 다시 확인해 주세요",
+                text = stringResource(R.string.error_coupon_desc),
                 style = TextStyle(
                     fontSize = DesSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -96,7 +97,7 @@ fun CouponErrorBox(navController: NavController) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "재시도",
+                    text = stringResource(R.string.retry),
                     style = TextStyle(
                         fontSize = btnSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

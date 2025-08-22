@@ -20,6 +20,7 @@
     <string name="add_cart">Add to Cart</string>
     <string name="add_order">Add More Items</string>
     <string name="go_cart">Go to Cart</string>
+    <string name="orders">My orders</string>
     <string name="use_coupon">Use Coupon</string>
     <string name="pay">Proceed to Payment</string>
     <string name="delete">Remove</string>
@@ -50,5 +51,7 @@
     <string name="error_pay_title">Payment failed</string>
     <string name="error_pay_desc">Insufficient balance. Please purchase additional membership credits.</string>
     <string name="go_first">Back to Home</string>
+    <string name="error_coupon_title">Coupon failed</string>
+    <string name="error_coupon_desc">Using Coupon failed. Check the coupon code again.</string>
 
 </resources>
