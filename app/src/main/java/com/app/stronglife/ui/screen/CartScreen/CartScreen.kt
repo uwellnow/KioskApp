@@ -35,7 +35,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
-fun CartScreen(viewModel: CartViewModel, navController: NavController) {
+fun CartScreen(viewModel: CartViewModel, navController: NavController, languageManager: com.app.stronglife.util.LanguageManager) {
     val cartItems by viewModel.cartItems
 
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
@@ -125,7 +125,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                     ),
                 )
                 Spacer(modifier = Modifier.height(spaceDp))
-                ManyCartBox(cartItems, viewModel)
+                ManyCartBox(cartItems, viewModel, languageManager)
             }
             Spacer(modifier = Modifier.height(spacebtnDp))
             Column(

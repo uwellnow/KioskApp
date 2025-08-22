@@ -71,7 +71,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = stringResource(R.string.keypad_delete_all),
+                    text = "전체\n삭제",
                     style = TextStyle(
                         fontSize = deleteSp,
                         lineHeight = deleteSp * 1.1,
@@ -89,7 +89,7 @@ fun KeyPad(onNumberClick: (String) -> Unit,
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = stringResource(R.string.keypad_delete_one),
+                    text = "지\n움",
                     style = TextStyle(
                         fontSize = removeSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

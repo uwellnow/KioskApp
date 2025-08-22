@@ -63,14 +63,15 @@ fun NavGraph(
                 viewModel = productViewModel, 
                 navController = navController, 
                 cartViewModel = cartViewModel,
-                apiKey = apiKey
+                apiKey = apiKey,
+                languageManager = languageManager
             )
         }
         composable("addOrCart") {
             AddOrCartScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("cart") {
-            CartScreen(viewModel = cartViewModel,navController = navController)
+            CartScreen(viewModel = cartViewModel,navController = navController, languageManager = languageManager)
         }
         composable("paySelect") {
             PaySelectScreen(navController = navController, cartViewModel = cartViewModel)

@@ -4,6 +4,8 @@ import CartViewModel
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -18,9 +20,10 @@ import com.app.stronglife.data.model.CartItem
 import com.app.stronglife.ui.theme.black
 
 @Composable
-fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
+fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel, languageManager: com.app.stronglife.util.LanguageManager) {
     val product = cartItem.product
     val quantity = cartItem.quantity
+    val langTag by languageManager.languageTag.collectAsState()
 
     val density = LocalDensity.current
     val titleToSp = with(density) { 40f.toSp() }
@@ -47,7 +50,7 @@ fun OneOfCartBox(cartItem: CartItem, viewModel: CartViewModel) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = product.name.replace("\\n", " ").replace("\n", " "),
+                text = (if (langTag == "ko") product.name else (if (product.nameEng.isNotBlank()) product.nameEng else product.name)).replace("\\n", " ").replace("\n", " "),
                 style = TextStyle(
                     fontSize = titleToSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_bold)),

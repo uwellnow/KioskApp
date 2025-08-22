@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 
 @Composable
-fun NutritionCardRow(nutrients: List<Nutrition>) {
+fun NutritionCardRow(nutrients: List<Nutrition>, lang: String) {
     val density = LocalDensity.current
     val spaceDp = with(density) {14f.toDp()}
 
@@ -34,7 +34,7 @@ fun NutritionCardRow(nutrients: List<Nutrition>) {
             horizontalArrangement = Arrangement.spacedBy(spaceDp),
         ) {
             nutrients.forEach { nutrient ->
-                NutrientCard(nutrition = nutrient)
+                NutrientCard(nutrition = nutrient, lang = lang)
             }
         }
     }

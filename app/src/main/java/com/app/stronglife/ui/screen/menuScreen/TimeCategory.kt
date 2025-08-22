@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -25,6 +26,13 @@ fun TimeCategory(time:String, modifier: Modifier = Modifier) {
     val roundtoDp = with(density) {12f.toDp()}
     val texttoSp = with(density) {24f.toSp()}
 
+    val resId = when (time) {
+        "운동 전" -> R.string.time_pre
+        "운동 중" -> R.string.time_intra
+        "운동 후" -> R.string.time_post
+        else -> null
+    }
+
     Box (
        modifier = modifier
            .width(widthtoDp)
@@ -35,14 +43,17 @@ fun TimeCategory(time:String, modifier: Modifier = Modifier) {
            ),
         contentAlignment = Alignment.Center
     ){
-        Text(
-            text = time,
-            style = TextStyle(
-                fontSize = texttoSp,
-                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                color = Color.White ))
-
-                }
+        resId?.let {
+            Text(
+                text = stringResource(id = it),
+                style = TextStyle(
+                    fontSize = texttoSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                    color = Color.White
+                )
+            )
+        }
+    }
 
 
 }
