@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -28,10 +29,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.ProductViewModel
@@ -42,7 +45,8 @@ fun MenuScreen(
     viewModel: ProductViewModel,
     cartViewModel: CartViewModel = viewModel(),
     navController: NavController = rememberNavController(),
-    apiKey: String = ""
+    apiKey: String = "",
+    languageManager: com.app.stronglife.util.LanguageManager
 ) {
 
 
@@ -77,12 +81,9 @@ fun MenuScreen(
                 .fillMaxSize()
                 .background(background)
         ) {
-            TopBar(
-                step = 2,
-                listOf("섭취시점 선택", "메뉴선택"),
-                navController = navController,
-                cartViewModel = cartViewModel
-            )
+            TopBar(2, listOf(stringResource(R.string.top_1),
+                stringResource(R.string.top_2)
+            ), navController, cartViewModel = cartViewModel)
             Spacer(modifier = Modifier.height(spacertoDp))
             when {
                 isLoading -> {
@@ -99,7 +100,8 @@ fun MenuScreen(
                         onProductClick = { product ->
                             viewModel.openProductDetail(product)
                         },
-                        viewModel
+                        viewModel,
+                        languageManager = languageManager
                     )
                 }
             }
@@ -108,6 +110,7 @@ fun MenuScreen(
         // ProductDetail 오버레이
         val productDetail = viewModel.currentDetail
         val detailVisible = productDetail != null
+        val langTag by languageManager.languageTag.collectAsState()
 
         if (detailVisible) {
             // 배경 오버레이 (클릭 시 닫기)
@@ -129,10 +132,11 @@ fun MenuScreen(
                 exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
             ) {
                 ProductDetail(
-                    image = productDetail.productImagePath,
-                    title = productDetail.name,
-                    desc = productDetail.description,
+                    image = productDetail.productImagePath.ifBlank { "" },
+                    title = if (langTag == "ko") productDetail.name else (if (productDetail.nameEng.isNotBlank()) productDetail.nameEng else productDetail.name),
+                    desc = if (langTag == "ko") productDetail.description else (if (productDetail.descriptionEng.isNotBlank()) productDetail.descriptionEng else productDetail.description),
                     nut = productDetail.nutritionInfo,
+                    nut_eng = productDetail.nutritionInfoEng,
                     isSoldOut = viewModel.isProductSoldOut(productDetail.id),
                     onClose = viewModel::closeProductDetail,
                     onAddToCart = {
@@ -142,7 +146,8 @@ fun MenuScreen(
                     },
                     onGoCart = {
                         navController.navigate("addOrCart")
-                    }
+                    },
+                    languageManager = languageManager
                 )
             }
         }

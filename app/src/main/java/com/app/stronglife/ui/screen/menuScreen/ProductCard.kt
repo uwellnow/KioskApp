@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +45,8 @@ import com.app.stronglife.ui.screen.menuScreen.SoldOutBox
 fun ProductCard(
     products: List<Product>, 
     onProductClick: (Product) -> Unit,
-    viewModel: ProductViewModel
+    viewModel: ProductViewModel,
+    languageManager: com.app.stronglife.util.LanguageManager
 ) {
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
@@ -59,6 +62,7 @@ fun ProductCard(
     val spaceDp = with (density) {18f.toDp()}
 
     val scrollState = rememberScrollState()
+    val langTag by languageManager.languageTag.collectAsState()
 
     Row(
         modifier = Modifier
@@ -118,7 +122,7 @@ fun ProductCard(
                             }
                     ) {
                         AsyncImage(
-                            model = product.companyImagePath,
+                            model = product.companyImagePath.ifBlank { null },
                             contentDescription = product.name,
                             modifier = Modifier
                                 .padding(start = horPadding)
@@ -132,7 +136,7 @@ fun ProductCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             AsyncImage(
-                                model = product.productImagePath,
+                                model = product.productImagePath.ifBlank { null },
                                 contentDescription = product.name,
                                 contentScale = ContentScale.Fit,
                                 modifier = Modifier
@@ -151,7 +155,7 @@ fun ProductCard(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Text(
-                                text = product.description.replace("\\n", "\n"),
+                                text = if (langTag == "ko") product.description else (if (product.descriptionEng.isNotBlank()) product.descriptionEng else product.description),
                                 style = TextStyle(
                                     fontSize = desfont,
                                     textAlign = TextAlign.Center,
@@ -162,7 +166,7 @@ fun ProductCard(
                                 )
                             )
                             Text(
-                                text = product.name.replace("\\n", "\n"),
+                                text = (if (langTag == "ko") product.name else (if (product.nameEng.isNotBlank()) product.nameEng else product.name)).replace("\\n","\n"),
                                 modifier = Modifier
                                     .padding(top = spaceDp),
                                 textAlign = TextAlign.Center,

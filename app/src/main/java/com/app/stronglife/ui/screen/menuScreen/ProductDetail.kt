@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -49,10 +51,12 @@ fun ProductDetail (
     title:String, 
     desc:String, 
     nut:String,
+    nut_eng:String,
     isSoldOut: Boolean = false,
     onClose: () -> Unit, 
     onAddToCart: () -> Unit, 
-    onGoCart: () -> Unit
+    onGoCart: () -> Unit,
+    languageManager: com.app.stronglife.util.LanguageManager
 ) {
     val density = LocalDensity.current
     val widthtoDp = with(density) {1649f.toDp()}
@@ -68,9 +72,14 @@ fun ProductDetail (
     val space3Dp = with(density) { 100f.toDp()}
     val smalltextSp = with(density) {20f.toSp()}
 
-    val allNutrients = parseNutritionInfo(nut)
-    val functional = filterFunctionalNutrients(allNutrients)
+    val allNutrientsKo = parseNutritionInfo(nut)
+    val funNutrientsEng = parseNutritionInfo(nut_eng)
+    val functionalKo = filterFunctionalNutrients(allNutrientsKo)
+    val functionalEng = filterFunctionalNutrients(funNutrientsEng)
     var showDialog by remember { mutableStateOf(false) }
+
+    val langTag by languageManager.languageTag.collectAsState()
+    val nutrientsToShow = if (langTag == "ko") functionalKo else functionalEng
 
     if (showDialog) {
         NutritionDialog(
@@ -113,7 +122,7 @@ fun ProductDetail (
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
                 AsyncImage(
-                    model = image,
+                    model = image.ifBlank { null },
                     contentDescription = title,
                     modifier = Modifier
                         .width(imagetoDp)
@@ -122,7 +131,7 @@ fun ProductDetail (
                 )
 
                 Text(
-                    text = "영양정보 상세보기",
+                    text = stringResource(R.string.nutrition_info),
                     modifier = Modifier.clickable { showDialog = true },
                     style = TextStyle(
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -169,7 +178,7 @@ fun ProductDetail (
 
                 Spacer(modifier = Modifier.height(space2Dp))
 
-                NutritionCardRow(functional)
+                NutritionCardRow(nutrientsToShow, lang = langTag)
             }
         }
 

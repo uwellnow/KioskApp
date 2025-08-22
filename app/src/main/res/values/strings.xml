@@ -1,3 +1,61 @@
 <resources>
     <string name="app_name">StrongLife</string>
+    <string name="time_pre">운동 전</string>
+    <string name="time_intra">운동 중</string>
+    <string name="time_post">운동 후</string>
+
+    <string name="hello">화면을 터치하여 주문을 시작하세요</string>
+    <string name="top_1">섭취시점 선택</string>
+    <string name="top_2">메뉴선택</string>
+    <string name="top_3">주문 확인</string>
+    <string name="top_4">결제하기</string>
+    <string name="top_5">결제완료</string>
+    <string name="first_title">언제 드실 보충제인가요?</string>
+    <string name="first_desc">운동 각 단계에 필요한 보충제를 섭취해보세요</string>
+    <string name="first_before_title">운동 전</string>
+    <string name="first_before_desc">각성, 집중력 및 운동 퍼포먼스 향상에\n도움을 줄 수 있습니다</string>
+    <string name="first_during_title">운동 중</string>
+    <string name="first_during_desc">운동 지속성 향상, 피로지연,\n수분/미네랄/에너지 보충에 도움을 줄 수 있습니다</string>
+    <string name="first_after_title">운동 후</string>
+    <string name="first_after_desc">근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다</string>
+    <string name="go_back">뒤로가기</string>
+    <string name="add_cart">장바구니에 담기</string>
+    <string name="nutrition_info">영양정보 상세보기</string>
+    <string name="nutrition">영양정보</string>
+    <string name="add_order">추가 주문하기</string>
+    <string name="go_cart">장바구니로 이동</string>
+    <string name="orders">주문 내역</string>
+    <string name="use_coupon">쿠폰 사용</string>
+    <string name="pay">결제하기</string>
+    <string name="delete">삭제</string>
+    <string name="no_cart_title">장바구니에 담긴 상품이 없어요</string>
+    <string name="no_cart_desc">원하는 보충제를 장바구니에 담고 주문해 보세요</string>
+    <string name="go_menu">보충제 보러가기</string>
+    <string name="pay_coupon_title">쿠폰 바코드를 인식시켜 주세요</string>
+    <string name="pay_coupon_desc">스캔이 원활하지 않을 경우, 바코드 번호를 입력해 주세요</string>
+    <string name="number_btn">조회</string>
+    <string name="pay_order_title">주문 번호를 입력하세요</string>
+    <string name="pay_order_desc">결제 완료 후 카카오톡 채널로 발송된 메시지를 확인해 주세요</string>
+    <string name="pay_order_add">* 현재 카드결제, 간편결제는 지원되지 않습니다. 추후 업데이트 예정입니다. </string>
+    <string name="keypad_delete_all">전체\n삭제</string>
+    <string name="keypad_delete_one">지\n움</string>
+    <string name="info_title">조회된 회원 정보를 확인해 주세요</string>
+    <string name="info_desc">회원 정보가 일치하면, 결제를 완료해 주세요</string>
+    <string name="info_box_user">회원 정보</string>
+    <string name="info_box_total">현재 보유 수량</string>
+    <string name="info_box_remain">차감 후 수량</string>
+    <string name="not_me">제 정보가 아니예요</string>
+    <string name="yes_me">네, 맞아요</string>
+    <string name="pay_done_title">결제가 완료되었어요!</string>
+    <string name="pay_done_desc">보충제 음료 제조가 시작되었습니다. 잠시만 기다려주세요</string>
+
+    <string name="error_user_title">회원 인증 실패</string>
+    <string name="error_user_desc">회원 인증에 실패했습니다. 주문번호를 다시 확인해주세요</string>
+    <string name="retry">재시도</string>
+    <string name="error_pay_title">결제 실패</string>
+    <string name="error_pay_desc">보유 잔 수가 부족합니다. 멤버십을 추가 구매해 주세요</string>
+    <string name="go_first">처음으로 이동</string>
+    <string name="error_coupon_title">쿠폰 사용 실패</string>
+    <string name="error_coupon_desc">쿠폰 사용에 실패했습니다. 쿠폰 코드를 다시 확인해 주세요</string>
+
 </resources>

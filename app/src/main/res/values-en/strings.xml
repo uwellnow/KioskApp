@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">StrongLife</string>
+    <string name="time_pre">Pre</string>
+    <string name="time_intra">Intra</string>
+    <string name="time_post">Post</string>
+
+    <string name="hello">Touch the screen to start your order</string>
+    <string name="top_1">Intake Timing</string>
+    <string name="top_2">Menu Selection</string>
+    <string name="top_3">Order Confirmation</string>
+    <string name="top_4">Paying</string>
+    <string name="top_5">Done</string>
+    <string name="first_title">When do you take your supplements?</string>
+    <string name="first_desc">Take the right supplements for each stage of your workout.</string>
+    <string name="first_before_title">Pre-Workout</string>
+    <string name="first_before_desc">May help boost alertness, focus, and workout \nperformance.</string>
+    <string name="first_during_title">Intra-Workout</string>
+    <string name="first_during_desc">May support exercise sustainability, delay \nfatigue, and replenish fluids/minerals/energy.</string>
+    <string name="first_after_title">Post-Workout</string>
+    <string name="first_after_desc">May promote muscle recovery and synthesis, faster \nreplenishment, and glycogen restoration.</string>
+    <string name="go_back">Back</string>
+    <string name="nutrition_info">View Nutrition Info</string>
+    <string name="nutrition">Nutrition Info</string>
+    <string name="add_cart">Add to Cart</string>
+    <string name="add_order">Add More Items</string>
+    <string name="go_cart">Go to Cart</string>
+    <string name="orders">My orders</string>
+    <string name="use_coupon">Use Coupon</string>
+    <string name="pay">Proceed to Payment</string>
+    <string name="delete">Remove</string>
+    <string name="no_cart_title">Your cart is empty.</string>
+    <string name="no_cart_desc">Add your desired supplements to the cart and place an order.</string>
+    <string name="go_menu">Go to Menu</string>
+    <string name="pay_coupon_title">Please scan the coupon barcode</string>
+    <string name="pay_coupon_desc">If scanning does not work, enter the barcode number manually.</string>
+    <string name="number_btn">Check</string>
+    <string name="pay_order_title">Enter your order number</string>
+    <string name="pay_order_desc">Please check the message sent to your KakaoTalk channel \nafter payment completion.</string>
+    <string name="pay_order_add">*Currently, card payment and easy payment are not supported. Updates will be available soon.</string>
+    <string name="keypad_delete_all">Delete\nall</string>
+    <string name="keypad_delete_one">Delete</string>
+    <string name="info_title">Please check the retrieved membership information</string>
+    <string name="info_desc">If the information is correct, please proceed with payment</string>
+    <string name="info_box_user">Membership Information</string>
+    <string name="info_box_total">Current Balance</string>
+    <string name="info_box_remain">Balance After Deduction</string>
+    <string name="not_me">This is not my account</string>
+    <string name="yes_me">Yes, that\'s correct</string>
+    <string name="pay_done_title">Payment completed!</string>
+    <string name="pay_done_desc">Your supplement drink is being prepared. Please wait a moment.</string>
+
+    <string name="error_user_title">Membership authentication failed</string>
+    <string name="error_user_desc">Authentication failed. Please check your order number again.</string>
+    <string name="retry">Retry</string>
+    <string name="error_pay_title">Payment failed</string>
+    <string name="error_pay_desc">Insufficient balance. Please purchase additional membership credits.</string>
+    <string name="go_first">Back to Home</string>
+    <string name="error_coupon_title">Coupon failed</string>
+    <string name="error_coupon_desc">Using Coupon failed. Check the coupon code again.</string>
+
+</resources>

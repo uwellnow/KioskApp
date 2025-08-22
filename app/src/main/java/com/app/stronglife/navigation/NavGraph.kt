@@ -18,6 +18,7 @@ import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.ui.screen.HelloScreen.RegisterStoreScreen
+import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
@@ -28,7 +29,8 @@ fun NavGraph(
     productViewModel: ProductViewModel,
     userViewModel: UserCodeViewModel,
     apiKey: String,
-    onApiKeyChanged: (String) -> Unit
+    onApiKeyChanged: (String) -> Unit,
+    languageManager: LanguageManager
 ) {
 
     val start = if (apiKey.isNotEmpty()) "hello" else "register"
@@ -51,7 +53,7 @@ fun NavGraph(
             )
         }
         composable("hello") {
-            HelloScreen(navController = navController, cartViewModel, userViewModel, apiKey)
+            HelloScreen(navController = navController, cartViewModel, userViewModel, apiKey, languageManager)
         }
         composable("first") {
             FirstScreen(navController = navController, cartViewModel = cartViewModel)
@@ -61,14 +63,15 @@ fun NavGraph(
                 viewModel = productViewModel, 
                 navController = navController, 
                 cartViewModel = cartViewModel,
-                apiKey = apiKey
+                apiKey = apiKey,
+                languageManager = languageManager
             )
         }
         composable("addOrCart") {
             AddOrCartScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("cart") {
-            CartScreen(viewModel = cartViewModel,navController = navController)
+            CartScreen(viewModel = cartViewModel,navController = navController, languageManager = languageManager)
         }
         composable("paySelect") {
             PaySelectScreen(navController = navController, cartViewModel = cartViewModel)

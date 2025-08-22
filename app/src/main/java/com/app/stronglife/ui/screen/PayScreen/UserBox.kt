@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -77,7 +78,7 @@ fun UserBox(
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Text(
-                text = "회원 정보",
+                text = stringResource(R.string.info_box_user),
                 style = TextStyle(
                     fontSize = textRegSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -109,7 +110,7 @@ fun UserBox(
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Text(
-                text = "현재 보유 수량",
+                text = stringResource(R.string.info_box_total),
                 style = TextStyle(
                     fontSize = textRegSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -141,7 +142,7 @@ fun UserBox(
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Text(
-                text = "차감 후 수량",
+                text = stringResource(R.string.info_box_remain),
                 style = TextStyle(
                     fontSize = textRegSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),

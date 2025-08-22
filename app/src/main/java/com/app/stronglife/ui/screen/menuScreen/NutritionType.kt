@@ -1,4 +1,5 @@
 import com.app.stronglife.R
+import com.app.stronglife.ui.screen.menuScreen.NutrientMeta
 
 enum class NutritionType(
     val displayName: String,
@@ -57,19 +58,16 @@ enum class NutritionType(
     )
 }
 
-data class NutrientMeta(
-    val type: NutritionType,
-    val icon: Int,
-    val description: String
-)
-
-fun getNutrientMeta(name: String): NutrientMeta? {
+fun getNutrientMeta(name: String): NutrientMeta<NutritionType>? {
+    println("getNutrientMeta called with name: '$name'")
     val type = NutritionType.values().firstOrNull { it.nutrients.containsKey(name) }
+    println("Found type: ${type?.displayName}")
     return type?.let {
         NutrientMeta(
             type = it,
             icon = it.icon,
-            description = it.nutrients[name] ?: ""
+            description = it.nutrients[name] ?: "",
+            displayName = it.displayName
         )
     }
 }

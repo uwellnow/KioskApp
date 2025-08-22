@@ -36,7 +36,7 @@ import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
-fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
+fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel, languageManager: com.app.stronglife.util.LanguageManager) {
     val density = LocalDensity.current
     val roundDp = with(density) { 28f.toDp() }
     val horPad = with(density) { 60f.toDp() }
@@ -72,7 +72,7 @@ fun ManyCartBox(cartItems: List<CartItem>, viewModel: CartViewModel) {
             .verticalScroll(rememberScrollState())
     ) {
         cartItems.forEachIndexed { index, item ->
-            OneOfCartBox(item, viewModel)
+            OneOfCartBox(item, viewModel, languageManager)
 
             if (index != cartItems.lastIndex) {
                 Spacer(modifier = Modifier.height(16.dp)) // 위아래 여백

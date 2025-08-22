@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,7 +32,6 @@ fun DeleteBtn(onDelete: () -> Unit) {
 
     Box (
         modifier = Modifier
-            .width(widthtoDp)
             .height(heighttoDp)
             .background(
                 color = Color.White,
@@ -42,7 +42,7 @@ fun DeleteBtn(onDelete: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "삭제",
+            text = stringResource(R.string.delete),
             style = TextStyle(
                 fontSize = textSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),

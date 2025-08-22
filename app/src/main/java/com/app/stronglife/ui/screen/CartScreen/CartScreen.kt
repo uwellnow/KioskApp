@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -34,7 +35,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 
 
 @Composable
-fun CartScreen(viewModel: CartViewModel, navController: NavController) {
+fun CartScreen(viewModel: CartViewModel, navController: NavController, languageManager: com.app.stronglife.util.LanguageManager) {
     val cartItems by viewModel.cartItems
 
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
@@ -63,12 +64,9 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopBar(
-            step = 3,
-            pageNames = listOf("섭취시점 선택", "메뉴선택", "주문 확인"),
-            navController = navController,
-            cartViewModel = viewModel
-        )
+        TopBar(3, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3)), navController, cartViewModel = viewModel)
         Spacer(modifier = Modifier.height(bigSpaceDp))
 
 
@@ -79,14 +77,14 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "장바구니에 담긴 상품이 없어요",
+                        text = stringResource(R.string.no_cart_title),
                         fontSize = textSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                         color = black,
                     )
                     Spacer(modifier = Modifier.height(verPad))
                     Text(
-                        text = "원하는 보충제를 장바구니에 담고 주문해 보세요",
+                        text = stringResource(R.string.no_cart_desc),
                         fontSize = smallTextSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         color = descGray
@@ -100,7 +98,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "보충제 보러가기",
+                            text = stringResource(R.string.go_menu),
                             fontSize = smallTextSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                             color = Color.White
@@ -118,7 +116,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                     .height(heighttoDp),
             ) {
                 Text(
-                    text = "주문 내역",
+                    text = stringResource(R.string.orders),
                     style = TextStyle(
                         fontSize = titleSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),
@@ -127,7 +125,7 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
                     ),
                 )
                 Spacer(modifier = Modifier.height(spaceDp))
-                ManyCartBox(cartItems, viewModel)
+                ManyCartBox(cartItems, viewModel, languageManager)
             }
             Spacer(modifier = Modifier.height(spacebtnDp))
             Column(

@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -52,7 +53,8 @@ fun AddOrCartScreen(
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Column {
-        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController, cartViewModel = cartViewModel)
+        TopBar(2, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2)), navController, cartViewModel = cartViewModel)
         Row (
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
@@ -95,7 +97,7 @@ fun AddOrCartScreen(
                 )
                 Spacer(modifier = Modifier.height(imagetoTextDp))
                 Text(
-                    text = "추가 주문하기",
+                    text = stringResource(R.string.add_order),
                     style = TextStyle(
                         fontSize = textToSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),
@@ -145,7 +147,7 @@ fun AddOrCartScreen(
                 )
                 Spacer(modifier = Modifier.height(imagetoTextDp))
                 Text(
-                    text = "장바구니로 이동",
+                    text = stringResource(R.string.go_cart),
                     style = TextStyle(
                         fontSize = textToSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_bold)),

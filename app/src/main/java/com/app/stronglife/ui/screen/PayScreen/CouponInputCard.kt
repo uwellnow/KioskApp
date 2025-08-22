@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -100,7 +101,7 @@ fun CouponInputCard(
                         if (viewModel.userCode.value.isNotEmpty()) mainRed else background,
                         shape = RoundedCornerShape(roundDp)
                     )
-                    .size(boxWidDp, boxHeiDp)
+                    .height(boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (viewModel.userCode.value.isNotEmpty()) {
                             // 쿠폰 구매 요청
@@ -122,7 +123,7 @@ fun CouponInputCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "사용",
+                    text = stringResource(R.string.number_btn),
                     style = TextStyle(
                         fontSize = boxTextSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),

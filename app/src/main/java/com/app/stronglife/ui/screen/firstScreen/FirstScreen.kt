@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -46,9 +47,9 @@ fun FirstScreen(
             .fillMaxSize()
             .background(background)
     ) {
-        TopBar(step = 1, pageNames = listOf("섭취시점 선택"), navController = navController, cartViewModel = cartViewModel)
+        TopBar(1, listOf(stringResource(R.string.top_1)), navController, cartViewModel = cartViewModel)
         Text(
-            text = "언제 드실 보충제인가요?",
+            text = stringResource(R.string.first_title),
             style = TextStyle(
                 fontSize = titleInSp,
                 lineHeight = titleInSp * 1.25,
@@ -61,7 +62,7 @@ fun FirstScreen(
         )
         Spacer(modifier = Modifier.height(horInDp))
         Text(
-            text = "운동 각 단계에 필요한 보충제를 섭취해 보세요",
+            text = stringResource(R.string.first_desc),
             style = TextStyle(
                 fontSize = contentInSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -75,9 +76,9 @@ fun FirstScreen(
             modifier = Modifier.padding(start = paddingInDp, top = paddingInDp),
             horizontalArrangement = Arrangement.spacedBy(spaceDp)
         ){
-            TimeSelectBtn("운동 전", "각성, 집중력 및 운동 퍼포먼스 향상에\n도움을 줄 수 있습니다", "Pre-\nworkout", navController)
-            TimeSelectBtn("운동 중", "운동 지속성 향상, 피로지연\n수분/미네랄/ 에너지 보충에 도움을 줄 수 있습니다", "Intra-\nworkout", navController)
-            TimeSelectBtn("운동 후", "근육 회복 및 합성 촉진, 빠른 회복,\n글리코겐 보충에 도움을 줄 수 있습니다", "Post-\nworkout", navController)
+            TimeSelectBtn(stringResource(R.string.first_before_title), stringResource(R.string.first_before_desc), "Pre-\nworkout", navController)
+            TimeSelectBtn(stringResource(R.string.first_during_title), stringResource(R.string.first_during_desc), "Intra-\nworkout", navController)
+            TimeSelectBtn(stringResource(R.string.first_after_title), stringResource(R.string.first_after_desc), "Post-\nworkout", navController)
         }
     }
 }

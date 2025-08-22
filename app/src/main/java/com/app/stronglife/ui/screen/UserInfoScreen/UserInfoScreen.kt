@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -157,7 +158,10 @@ fun UserInfoScreen(
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
+        TopBar(4, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3),
+            stringResource(R.string.top_4)), navController, cartViewModel = cartViewModel)
         
         Column (
             modifier = Modifier
@@ -175,7 +179,7 @@ fun UserInfoScreen(
             val btnTextSp = with(density) {32f.toSp()}
 
             Text(
-                text = "조회된 회원 정보를 확인해 주세요",
+                text = stringResource(R.string.info_title),
                 style = TextStyle(
                     fontSize = titleSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -186,7 +190,7 @@ fun UserInfoScreen(
             Spacer(modifier = Modifier.height(title2descDp))
 
             Text(
-                text = "회원 정보가 일치하면, 결제를 완료해 주세요.",
+                text = stringResource(R.string.info_desc),
                 style = TextStyle(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -215,7 +219,7 @@ fun UserInfoScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "제 정보가 아니예요",
+                        text = stringResource(R.string.not_me),
                         style = TextStyle(
                             fontSize = btnTextSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -260,7 +264,7 @@ fun UserInfoScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "네, 맞아요",
+                        text = stringResource(R.string.yes_me),
                         style = TextStyle(
                             fontSize = btnTextSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),

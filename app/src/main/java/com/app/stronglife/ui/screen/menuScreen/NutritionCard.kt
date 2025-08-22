@@ -39,11 +39,18 @@ import getNutrientMeta
 
 
 @Composable
-fun NutrientCard(nutrition: Nutrition) {
-    val meta = getNutrientMeta(nutrition.name)
+fun NutrientCard(nutrition: Nutrition, lang: String) {
+    println("NutrientCard: nutrition.name='${nutrition.name}', lang='$lang'")
+    val meta = if (lang == "ko") {
+        getNutrientMeta(nutrition.name)
+    } else {
+        getNutrientMetaEng(nutrition.name)
+    }
+
+
+    println("NutrientCard: meta=${meta?.displayName}")
     val density = LocalDensity.current
     val horWidth = with(density) { 190f.toDp()}
-    val verWidth = with(density) { 204f.toDp()}
     val iconSize = with(density) { 26f.toDp()}
     val typeText = with(density) {16f.toSp()}
     val unitText = with(density) {30f.toSp()}
@@ -53,14 +60,17 @@ fun NutrientCard(nutrition: Nutrition) {
     val space2Dp = with(density) { 8f.toDp()}
     val space3Dp = with(density) {20f.toDp()}
 
+    val verWidth = with(density) {
+        if (lang == "ko") 200f.toDp() else 240f.toDp()
+    }
+
     Column(
         modifier = Modifier
-            .size(horWidth, verWidth)
+            .size(horWidth,verWidth)
             .background(Color.White, RoundedCornerShape(18.dp))
             .border(2.dp, color = lightRed, shape = RoundedCornerShape(18.dp))
             .padding(spaceDp, spaceDp),
 
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start
 
     ) {
@@ -73,13 +83,13 @@ fun NutrientCard(nutrition: Nutrition) {
                     // 아이콘
                     Image(
                         painter = painterResource(id = it.icon),
-                        contentDescription = it.type.displayName,
+                        contentDescription = it.displayName,
                         modifier = Modifier.size(iconSize)
                     )
 
                     // 타입 이름
                     Text(
-                        text = it.type.displayName,
+                        text = it.displayName,
                         style = TextStyle(
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                             fontSize = typeText
@@ -119,7 +129,7 @@ fun NutrientCard(nutrition: Nutrition) {
                 )
             )
 
-            Spacer(modifier = Modifier.height(spaceDp))
+            Spacer(modifier = Modifier.weight(1f))
 
             // 영양소 설명
             meta?.let {

@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -79,7 +80,7 @@ fun MemberErrorBox(onConfirm: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(spaceDp))
             Text(
-                text = "회원 인증 실패",
+                text = stringResource(R.string.error_user_title),
                 style = TextStyle(
                     fontSize = ErrorSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -88,7 +89,7 @@ fun MemberErrorBox(onConfirm: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(roundDp))
             Text(
-                text = "회원 인증에 실패했습니다. 주문번호를 다시 확인해 주세요",
+                text = stringResource(R.string.error_user_desc),
                 style = TextStyle(
                     fontSize = DesSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -108,7 +109,7 @@ fun MemberErrorBox(onConfirm: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "재시도",
+                    text = stringResource(R.string.retry),
                     style = TextStyle(
                         fontSize = btnSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
