@@ -26,7 +26,7 @@ import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
 
 @Composable
-fun Finish(navController: NavController, cartViewModel: CartViewModel = viewModel() ) {
+fun Finish() {
     val density = LocalDensity.current
     val imageDp = with(density) {178f.toDp()}
     val titleSp = with(density) {70f.toSp()}
@@ -36,7 +36,6 @@ fun Finish(navController: NavController, cartViewModel: CartViewModel = viewMode
     val space2Dp = with(density) {32f.toDp()}
 
     Column {
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
 
         Column (
             modifier = Modifier.fillMaxSize(),

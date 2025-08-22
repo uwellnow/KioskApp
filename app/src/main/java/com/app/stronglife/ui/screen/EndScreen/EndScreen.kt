@@ -53,7 +53,7 @@ fun EndScreen(
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
 
-    Finish(navController, cartViewModel)
+    Finish()
 
     LaunchedEffect(Unit) {
         if (products.isEmpty()) {

@@ -1,15 +1,20 @@
 package com.app.stronglife
 
 import CartViewModel
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +27,7 @@ import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import com.app.stronglife.viewmodel.UserCodeViewModelFactory
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     private lateinit var languageManager: LanguageManager
@@ -29,15 +35,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        languageManager = LanguageManager(application)
-        languageManager.applySavedLanguage()
-
         val prefsManager = PrefsManager(this)
-
         prefsManager.clearApiKey()
         
         var apiKey by mutableStateOf(prefsManager.getApiKey())
-        Log.d("API_KEY", "Current API Key: $apiKey")
 
         if (prefsManager.hasApiKey()) {
             val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
@@ -54,37 +55,55 @@ class MainActivity : ComponentActivity() {
             val userViewModel: UserCodeViewModel = viewModel(
                 factory = UserCodeViewModelFactory(RetrofitClient.api)
             )
-            
-            NavGraph(
-                navController = navController,
-                cartViewModel = cartViewModel,
-                productViewModel = productViewModel,
-                userViewModel = userViewModel,
-                apiKey = apiKey,
-                onApiKeyChanged = { newApiKey ->
-                    apiKey = newApiKey
+
+            val languageManager: LanguageManager = viewModel()
+            if (savedInstanceState == null) {
+                languageManager.applySavedLanguage()
+            }
+
+            val lang by languageManager.languageTag.collectAsState()
+
+            key(lang) {
+                val context = LocalContext.current
+                val config = Configuration(context.resources.configuration)
+                config.setLocale(Locale(lang))
+                val localizedContext = context.createConfigurationContext(config)
+
+                CompositionLocalProvider(
+                    LocalContext provides localizedContext
+                ) {
+                    NavGraph(
+                        navController = navController,
+                        cartViewModel = cartViewModel,
+                        productViewModel = productViewModel,
+                        userViewModel = userViewModel,
+                        apiKey = apiKey,
+                        onApiKeyChanged = { newApiKey ->
+                            apiKey = newApiKey
+                            prefsManager.saveApiKey(newApiKey)
+                        },
+                        languageManager = languageManager
+                    )
                 }
-            )
+            }
         }
     }
-    
+
     override fun onResume() {
         super.onResume()
-        // 네비게이션 바 숨기기 (Android 11+)
         hideNavigationBar()
     }
-    
+
     private fun hideNavigationBar() {
-        // Android 11 (API 30) 이상용 - 안전한 방법
         try {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.let { controller ->
                 controller.hide(android.view.WindowInsets.Type.navigationBars())
-                controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } catch (e: Exception) {
-            // 에러 발생 시 무시
-            android.util.Log.w("MainActivity", "Failed to hide navigation bar: ${e.message}")
+            Log.w("MainActivity", "Failed to hide navigation bar: ${e.message}")
         }
     }
 }

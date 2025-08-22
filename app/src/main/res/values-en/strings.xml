@@ -40,7 +40,7 @@
     <string name="info_box_total">Current Balance</string>
     <string name="info_box_remain">Balance After Deduction</string>
     <string name="not_me">This is not my account</string>
-    <string name="yes_me">Yes, that's correct</string>
+    <string name="yes_me">Yes, that\'s correct</string>
     <string name="pay_done_title">Payment completed!</string>
     <string name="pay_done_desc">Your supplement drink is being prepared. Please wait a moment.</string>
 
