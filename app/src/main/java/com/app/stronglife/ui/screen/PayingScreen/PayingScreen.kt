@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -43,7 +44,10 @@ fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navC
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = viewModel)
+        TopBar(4, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3),
+            stringResource(R.string.top_4)), navController, cartViewModel = viewModel)
 
         Spacer(modifier = Modifier.height(spaceDp))
         Column (

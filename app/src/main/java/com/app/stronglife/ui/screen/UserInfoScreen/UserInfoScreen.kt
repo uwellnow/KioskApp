@@ -158,7 +158,10 @@ fun UserInfoScreen(
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
+        TopBar(4, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3),
+            stringResource(R.string.top_4)), navController, cartViewModel = cartViewModel)
         
         Column (
             modifier = Modifier

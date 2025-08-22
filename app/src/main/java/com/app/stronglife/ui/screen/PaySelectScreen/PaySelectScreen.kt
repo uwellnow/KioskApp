@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -69,7 +70,10 @@ fun PaySelectScreen(
             .fillMaxSize().background(background),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        TopBar(4, listOf("섭취시점 선택", "메뉴선택", "주문 확인", "결제하기"), navController, cartViewModel = cartViewModel)
+        TopBar(4, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3),
+            stringResource(R.string.top_4)), navController, cartViewModel = cartViewModel)
         Spacer(modifier = Modifier.height(space1Dp))
         Text(
             text = "결제 방법을 선택해주세요",

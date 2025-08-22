@@ -47,7 +47,7 @@ fun FirstScreen(
             .fillMaxSize()
             .background(background)
     ) {
-        TopBar(step = 1, pageNames = listOf("섭취시점 선택"), navController = navController, cartViewModel = cartViewModel)
+        TopBar(1, listOf(stringResource(R.string.top_1)), navController, cartViewModel = cartViewModel)
         Text(
             text = stringResource(R.string.first_title),
             style = TextStyle(

@@ -64,12 +64,9 @@ fun CartScreen(viewModel: CartViewModel, navController: NavController) {
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TopBar(
-            step = 3,
-            pageNames = listOf("섭취시점 선택", "메뉴선택", "주문 확인"),
-            navController = navController,
-            cartViewModel = viewModel
-        )
+        TopBar(3, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2),
+            stringResource(R.string.top_3)), navController, cartViewModel = viewModel)
         Spacer(modifier = Modifier.height(bigSpaceDp))
 
 

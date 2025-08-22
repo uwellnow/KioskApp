@@ -28,10 +28,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.ProductViewModel
@@ -77,12 +79,9 @@ fun MenuScreen(
                 .fillMaxSize()
                 .background(background)
         ) {
-            TopBar(
-                step = 2,
-                listOf("섭취시점 선택", "메뉴선택"),
-                navController = navController,
-                cartViewModel = cartViewModel
-            )
+            TopBar(2, listOf(stringResource(R.string.top_1),
+                stringResource(R.string.top_2)
+            ), navController, cartViewModel = cartViewModel)
             Spacer(modifier = Modifier.height(spacertoDp))
             when {
                 isLoading -> {

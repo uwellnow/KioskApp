@@ -53,7 +53,8 @@ fun AddOrCartScreen(
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     Column {
-        TopBar(step = 2, listOf("섭취지점 선택", "메뉴선택"), navController = navController, cartViewModel = cartViewModel)
+        TopBar(2, listOf(stringResource(R.string.top_1),
+            stringResource(R.string.top_2)), navController, cartViewModel = cartViewModel)
         Row (
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
