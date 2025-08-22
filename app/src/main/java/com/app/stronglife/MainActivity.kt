@@ -17,14 +17,20 @@ import com.app.stronglife.data.remote.ApiService
 import com.app.stronglife.data.remote.PrefsManager
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.navigation.NavGraph
+import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 
 class MainActivity : ComponentActivity() {
+    private lateinit var languageManager: LanguageManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        languageManager = LanguageManager(application)
+        languageManager.applySavedLanguage()
 
         val prefsManager = PrefsManager(this)
 
