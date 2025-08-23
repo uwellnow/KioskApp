@@ -43,7 +43,9 @@ fun MakingBar(
     val titles = listOf("물\n보충", "보충제 투출", "믹싱", "제조 완료")
     var completed by remember { mutableStateOf(0) }
 
+
     LaunchedEffect(Unit) {
+        completed = 0
         repeat(titles.size) {
             delay(stepSeconds * 1000L)
             completed += 1
