@@ -46,8 +46,13 @@
     <string name="info_box_remain">Balance After Deduction</string>
     <string name="not_me">This is not my account</string>
     <string name="yes_me">Yes, that\'s correct</string>
-    <string name="pay_done_title">Payment completed!</string>
-    <string name="pay_done_desc">Your supplement drink is being prepared. Please wait a moment.</string>
+    <string name="pay_done_title">Preparing your drink</string>
+    <string name="pay_done_desc">It takes about 1 minute to complete. Please wait a moment.</string>
+
+    <string name="make_1">Water Supply</string>
+    <string name="make_2">Dispensing</string>
+    <string name="make_3">Mixing</string>
+    <string name="make_4">Complete</string>
 
     <string name="error_user_title">Membership authentication failed</string>
     <string name="error_user_desc">Authentication failed. Please check your order number again.</string>
