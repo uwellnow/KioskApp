@@ -25,6 +25,7 @@ import kotlin.math.min
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,7 +41,10 @@ fun MakingBar(
     idleColor: Color = Color(0xFFAFAFAF),
     onFinished: (() -> Unit)? = null
 ) {
-    val titles = listOf("물\n보충", "보충제 투출", "믹싱", "제조 완료")
+    val titles = listOf(stringResource(R.string.make_1),
+        stringResource(R.string.make_2),
+        stringResource(R.string.make_3),
+        stringResource(R.string.make_4))
     var completed by remember { mutableStateOf(0) }
 
 
@@ -56,7 +60,7 @@ fun MakingBar(
     val density = LocalDensity.current
     val circleDp = with(density) { 100f.toDp() }
     val numSp = with(density) { 56f.toSp() }
-    val textSp = with(density) { 36f.toSp() }
+    val textSp = with(density) { 30f.toSp() }
     val spaceDp = with(density) { 54f.toDp() }
     val sidePad = 32.dp
 
