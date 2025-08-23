@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,11 +31,11 @@ import com.app.stronglife.ui.theme.descGray
 @Composable
 fun Finish() {
     val density = LocalDensity.current
-    val imageDp = with(density) {178f.toDp()}
+    val barWidDp = with(density) {1140f.toDp()}
     val titleSp = with(density) {70f.toSp()}
     val descSp = with(density) {32f.toSp()}
 
-    val space1Dp = with(density) {60f.toDp()}
+    val space1Dp = with(density) {142f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
 
     Column {
@@ -43,12 +45,6 @@ fun Finish() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
-            Image(
-                painter = painterResource(R.drawable.pay_done),
-                contentDescription = "결제 완료",
-                modifier = Modifier.size(imageDp)
-            )
-            Spacer(modifier = Modifier.height(space1Dp))
 
             Text(
                 text = stringResource(R.string.pay_done_title),
@@ -63,6 +59,9 @@ fun Finish() {
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,
             )
+            Spacer(modifier = Modifier.height(space1Dp))
+            MakingBar(modifier = Modifier.width(barWidDp),stepSeconds = 20)
+
         }
     }
 }
