@@ -166,7 +166,7 @@ fun ProductCard(
                                 )
                             )
                             Text(
-                                text = (if (langTag == "ko") product.name else (if (product.nameEng.isNotBlank()) product.nameEng else product.name)).replace("\\n","\n"),
+                                text = (if (langTag == "ko") product.name else (if (product.nameEng.isNotBlank()) product.nameEng else product.name)).replace("\\n","\n").replace("\n", " "),
                                 modifier = Modifier
                                     .padding(top = spaceDp),
                                 textAlign = TextAlign.Center,

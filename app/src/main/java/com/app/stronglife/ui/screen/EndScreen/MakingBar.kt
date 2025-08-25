@@ -39,7 +39,8 @@ fun MakingBar(
     stepSeconds: Int = 20,
     activeColor: Color = mainRed,
     idleColor: Color = Color(0xFFAFAFAF),
-    onFinished: (() -> Unit)? = null
+    onFinished: (() -> Unit)? = null,
+    resetKey: Any?= null  //변경되면 리셋
 ) {
     val titles = listOf(stringResource(R.string.make_1),
         stringResource(R.string.make_2),
@@ -48,7 +49,7 @@ fun MakingBar(
     var completed by remember { mutableStateOf(0) }
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(resetKey, stepSeconds) {
         completed = 0
         repeat(titles.size) {
             delay(stepSeconds * 1000L)

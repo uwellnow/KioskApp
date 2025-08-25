@@ -53,8 +53,6 @@ fun EndScreen(
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
 
-    Finish()
-
     LaunchedEffect(Unit) {
         if (products.isEmpty()) {
             productViewModel.fetchProducts()
@@ -88,6 +86,14 @@ fun EndScreen(
     // 플래그
     var awaitingCompletion by remember { mutableStateOf(false) }
     var awaitingCupClear by remember { mutableStateOf(false) }
+
+    val isCurrentlyMaking = inProgress && totalJobs > 0
+
+    Finish(
+        currentDrinkIndex = currentIndex,
+        totalDrinkCount = totalJobs,
+        isInProgress = isCurrentlyMaking
+    )
 
     // 정적 구간 길이/타임아웃
     val QUIET_MS = 1500L           // DrinkCompleted가 이 시간 이상 안 오면 컵 수거로 간주

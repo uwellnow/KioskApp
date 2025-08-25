@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -81,14 +86,25 @@ fun  PhonePayCard (
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
         ){
-            Text(
-                text = if (viewModel.userCode.value.isEmpty()) stringResource(R.string.pay_order_title) else viewModel.userCode.value,
-                style = TextStyle(
+            BasicTextField(
+                value = viewModel.userCode.value,
+                onValueChange = { newValue ->
+                    if (newValue.all { it.isDigit() }) {
+                        viewModel.userCode.value = newValue
+                    }
+                },
+                textStyle = TextStyle(
                     fontSize = textSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                     fontWeight = FontWeight.Medium,
-                    color = lightGray
-                )
+                    color = black,
+                    textAlign = TextAlign.Center
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp) // 사용 버튼과 간격을 고려한 너비
             )
 
             Spacer(modifier = Modifier.width(spacerDp))

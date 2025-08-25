@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,7 +20,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.packInts
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -29,13 +32,17 @@ import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
 
 @Composable
-fun Finish() {
+fun Finish(
+    currentDrinkIndex: Int,
+    totalDrinkCount: Int,
+    isInProgress: Boolean
+) {
     val density = LocalDensity.current
     val barWidDp = with(density) {1140f.toDp()}
     val titleSp = with(density) {70f.toSp()}
     val descSp = with(density) {32f.toSp()}
-
-    val space1Dp = with(density) {142f.toDp()}
+    val counterSp = with(density) { 36f.toSp() }
+    val space1Dp = with(density) {80f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
 
     Column {
@@ -60,7 +67,29 @@ fun Finish() {
                 color = descGray,
             )
             Spacer(modifier = Modifier.height(space1Dp))
-            MakingBar(modifier = Modifier.width(barWidDp),stepSeconds = 20)
+
+            if (isInProgress) {
+                Column(
+                    modifier = Modifier.width(barWidDp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "${currentDrinkIndex}/${maxOf(totalDrinkCount, 1)}",
+                        fontSize = counterSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                        color = black,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(12.dp))
+
+                    MakingBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        stepSeconds = 20,
+                        resetKey = currentDrinkIndex
+                    )
+                }
+            }
+
 
         }
     }
