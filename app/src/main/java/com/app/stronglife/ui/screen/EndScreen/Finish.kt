@@ -42,7 +42,7 @@ fun Finish(
     val titleSp = with(density) {70f.toSp()}
     val descSp = with(density) {32f.toSp()}
     val counterSp = with(density) { 36f.toSp() }
-    val space1Dp = with(density) {80f.toDp()}
+    val space1Dp = with(density) {120f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
 
     Column {
@@ -66,21 +66,25 @@ fun Finish(
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,
             )
-            Spacer(modifier = Modifier.height(space1Dp))
+            Spacer(modifier = Modifier.height(space2Dp))
 
             if (isInProgress) {
                 Column(
                     modifier = Modifier.width(barWidDp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "${currentDrinkIndex}/${maxOf(totalDrinkCount, 1)}",
-                        fontSize = counterSp,
-                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                        color = black,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(Modifier.height(12.dp))
+                    if (totalDrinkCount > 1) {
+                        Text(
+                            text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
+                            fontSize = counterSp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                            color = black,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(Modifier.height(space1Dp))
+                    } else {
+                        Spacer(Modifier.height(space1Dp))
+                    }
 
                     MakingBar(
                         modifier = Modifier.fillMaxWidth(),
