@@ -92,7 +92,11 @@ fun EndScreen(
     Finish(
         currentDrinkIndex = currentIndex,
         totalDrinkCount = totalJobs,
-        isInProgress = isCurrentlyMaking
+        isInProgress = isCurrentlyMaking,
+        errorMessage = lastError,
+        onErrorConfirm = {
+            navController.navigate("hello")
+        }
     )
 
     // 정적 구간 길이/타임아웃

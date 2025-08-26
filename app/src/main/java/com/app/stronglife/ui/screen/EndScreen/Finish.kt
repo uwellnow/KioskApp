@@ -2,7 +2,9 @@ package com.app.stronglife.ui.screen.EndScreen
 
 import CartViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -27,6 +30,7 @@ import androidx.compose.ui.util.packInts
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.app.stronglife.R
+import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
@@ -35,7 +39,9 @@ import com.app.stronglife.ui.theme.descGray
 fun Finish(
     currentDrinkIndex: Int,
     totalDrinkCount: Int,
-    isInProgress: Boolean
+    isInProgress: Boolean,
+    errorMessage: String? = null,
+    onErrorConfirm: (() -> Unit)? = null
 ) {
     val density = LocalDensity.current
     val barWidDp = with(density) {1140f.toDp()}
@@ -45,6 +51,24 @@ fun Finish(
     val space1Dp = with(density) {120f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
 
+    if (errorMessage != null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            // ErrorBox 시그니처에 맞춤
+            ErrorBox(
+                errorMsg = "출하 실패",
+                desMsg = "제품 출하에 실패했습니다. 환불을 위해 유웰나우 카카오채널로 문의해 주세요"
+            ) {
+                onErrorConfirm?.invoke()
+            }
+        }
+        return
+    }
+
     Column {
 
         Column (
@@ -52,6 +76,8 @@ fun Finish(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
+
+
 
             Text(
                 text = stringResource(R.string.pay_done_title),
@@ -93,6 +119,8 @@ fun Finish(
                     )
                 }
             }
+
+
 
 
         }

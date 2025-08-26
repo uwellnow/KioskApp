@@ -103,7 +103,7 @@ fun UnderBtn(navController: NavController, userCodeViewModel: UserCodeViewModel)
                 )
                 .clickable { 
                     userCodeViewModel.setPaymentMethodId(2)
-                    navController.navigate("pay_number")
+                    navController.navigate("paySelect")
                 },
             contentAlignment = Alignment.Center
         ) {

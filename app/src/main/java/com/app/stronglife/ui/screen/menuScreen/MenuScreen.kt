@@ -77,11 +77,6 @@ fun MenuScreen(
         derivedStateOf { viewModel.stocks.any { it.productId == 101 && it.productCount == 0 } }
     }
 
-    var dismissedCup by remember { mutableStateOf(false) }
-    var dismissedWater by remember { mutableStateOf(false) }
-
-    LaunchedEffect(cupShortage) { if (!cupShortage) dismissedCup = false }
-    LaunchedEffect(waterShortage) { if (!waterShortage) dismissedWater = false }
 
     val density = LocalDensity.current
     val spacertoDp = with(density) { 80f.toDp() }
@@ -128,11 +123,11 @@ fun MenuScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.5f)), // 뒷배경 흐리게
+                        .background(Color.White), // 뒷배경 흐리게
                     contentAlignment = Alignment.Center
                 ) {
                     ErrorBox("컵 부족", "컵이 부족합니다. 관리자에게 문의해 주세요"){
-                        dismissedCup = true
+                        navController.popBackStack()
                     }
                 }
             }
@@ -140,11 +135,11 @@ fun MenuScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.5f)),
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     ErrorBox("물 부족", "물이 부족합니다. 관리자에게 문의해 주세요"){
-                        dismissedWater = true
+                        navController.popBackStack()
                     }
                 }
             }
