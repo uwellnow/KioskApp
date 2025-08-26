@@ -122,7 +122,7 @@ fun OrderNumScreen(
             }
             is UserCodeViewModel.UiError.Exception -> {
                 Log.d("OrderNumScreen", "Showing Exception error: ${error.throwable.message}")
-                ErrorBox("예외 발생", error.throwable.message ?: "알 수 없는 오류") {
+                ErrorBox("예외 발생", "다시 한 번 시도해 주세요") {
                     userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
                     showError = false
                     currentError = UserCodeViewModel.UiError.None

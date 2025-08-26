@@ -49,10 +49,10 @@
     <string name="pay_done_title">음료 제조 중입니다</string>
     <string name="pay_done_desc">제조까지 1분 정도의 시간이 소요됩니다. 잠시만 기다려주세요</string>
 
-    <string name="make_1">물 보충</string>
+    <string name="make_1">물\n보충</string>
     <string name="make_2">보충제 투출</string>
     <string name="make_3">믹싱</string>
-    <string name="make_4">제조 완료</string>
+    <string name="make_4">제조\n완료</string>
 
     <string name="error_user_title">회원 인증 실패</string>
     <string name="error_user_desc">회원 인증에 실패했습니다. 주문번호를 다시 확인해주세요</string>

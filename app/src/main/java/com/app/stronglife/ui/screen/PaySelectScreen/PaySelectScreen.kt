@@ -146,7 +146,7 @@ fun PaySelectScreen(
                     .background(color = Color.White,
                         shape = RoundedCornerShape(space3Dp))
                     .border(2.dp, color = mainRed, shape = RoundedCornerShape(space3Dp))
-                    .clickable{navController.navigate("pay")},
+                    .clickable{navController.navigate("pay_number")},
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ){

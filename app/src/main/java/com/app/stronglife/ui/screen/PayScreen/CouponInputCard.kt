@@ -101,7 +101,7 @@ fun CouponInputCard(
                         if (viewModel.userCode.value.isNotEmpty()) mainRed else background,
                         shape = RoundedCornerShape(roundDp)
                     )
-                    .height(boxHeiDp)
+                    .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (viewModel.userCode.value.isNotEmpty()) {
                             // 쿠폰 구매 요청

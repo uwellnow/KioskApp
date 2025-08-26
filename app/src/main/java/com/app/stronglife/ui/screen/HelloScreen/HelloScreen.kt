@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.PrefsManager
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.UserCodeViewModel
@@ -60,7 +61,7 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
     // 입력 감지 타이머
     LaunchedEffect(Unit) {
         userViewModel.sendApiKey(apiKey) // API Key 전송
-        userViewModel.resetAll()
+        UserCodeViewModel.getInstance(RetrofitClient.api).resetAll()
         cartViewModel.clearCart()
     }
 
