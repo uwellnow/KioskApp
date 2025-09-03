@@ -63,7 +63,7 @@ fun MenuScreen(
         if (apiKey.isNotEmpty()) {
             viewModel.setApiKey(apiKey)
             println("MenuScreen: 재고 정보 로드 시작")
-            viewModel.fetchStocks()
+            viewModel.fetchStocks(forceRefresh = true)  // 매번 최신 재고 정보 갱신
 
         } else {
             println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
