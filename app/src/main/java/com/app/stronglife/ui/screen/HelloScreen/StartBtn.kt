@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -40,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.selects.select
 
 
@@ -64,7 +67,18 @@ fun StartBtn(navController: NavController) {
     val spaceDp = with(density) { 44f.toDp() }
     val space2Dp = with(density) { 52f.toDp() }
 
-    val selected by remember { mutableStateOf<String?>(null) }
+    var selected by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(selected) {
+        if (selected == "mix") {
+            delay(700)
+            navController.navigate("menu")
+            }
+        if (selected == "recipe") {
+            delay(700)
+            navController.navigate("recipe")
+        }
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -91,8 +105,7 @@ fun StartBtn(navController: NavController) {
                         )
                     }
                 }
-                .clickable{ selected == "recipe"
-                navController.navigate("recipe")}
+                .clickable{ selected = "recipe" }
                 .background(color = if (selected == "recipe") mainRed else Color.White, shape = RoundedCornerShape(roundDp))
                 .padding(horizontal = horDp, vertical = verDp),
             horizontalArrangement = Arrangement.spacedBy(spaceDp)
@@ -151,9 +164,7 @@ fun StartBtn(navController: NavController) {
                         )
                     }
                 }
-                .clickable {
-                    selected == "mix"
-                    navController.navigate("first")}
+                .clickable { selected = "mix"}
                 .background(color = if (selected == "mix") mainRed else Color.White, shape = RoundedCornerShape(roundDp))
                 .padding(horizontal = horDp, vertical = verDp),
             horizontalArrangement = Arrangement.spacedBy(spaceDp)
