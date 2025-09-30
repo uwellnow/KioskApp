@@ -60,7 +60,13 @@ fun NavGraph(
             FirstScreen(navController = navController, cartViewModel = cartViewModel)
         }
         composable("recipe") {
-            RecipeScreen(navController = navController, cartViewModel = cartViewModel, userViewModel, apiKey)
+            RecipeScreen(
+                navController = navController, 
+                cartViewModel = cartViewModel, 
+                userCodeViewModel = userViewModel,
+                productViewModel = productViewModel,
+                apiKey = apiKey
+            )
         }
         composable("menu") {
             MenuScreen(

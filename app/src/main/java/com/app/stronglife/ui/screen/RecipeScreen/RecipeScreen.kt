@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
-import com.app.stronglife.ui.screen.PayScreen.CouponInputCard
 import com.app.stronglife.ui.screen.PayScreen.PaymentTab
+import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.cardPayGray
 import com.app.stronglife.ui.theme.lightGray
@@ -49,7 +50,13 @@ import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
-fun RecipeScreen(navController: NavController, cartViewModel: CartViewModel, userCodeViewModel: UserCodeViewModel, apiKey: String) {
+fun RecipeScreen(
+    navController: NavController, 
+    cartViewModel: CartViewModel, 
+    userCodeViewModel: UserCodeViewModel, 
+    productViewModel: ProductViewModel,
+    apiKey: String
+) {
 
     val density = LocalDensity.current
 
@@ -65,6 +72,13 @@ fun RecipeScreen(navController: NavController, cartViewModel: CartViewModel, use
     val blurRadiusPx = with(density) { 24.dp.toPx() }
 
     var selected by remember { mutableStateOf("QR") }
+
+    // 상품 정보 미리 로드
+    LaunchedEffect(Unit) {
+        if (productViewModel.products.isEmpty()) {
+            productViewModel.fetchProducts()
+        }
+    }
 
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -137,12 +151,13 @@ fun RecipeScreen(navController: NavController, cartViewModel: CartViewModel, use
 
             Spacer(modifier = Modifier.height(spaceDp))
 
-            CouponInputCard(
+            RecipeInputCard(
                 navController = navController,
                 viewModel = userCodeViewModel,
+                productViewModel = productViewModel,
                 apiKey = apiKey,
                 cartViewModel = cartViewModel,
-                onCouponSuccess = { navController.navigate("paying") }
+                onRecipeSuccess = { navController.navigate("paying") }
             )
         }
     }

@@ -7,6 +7,8 @@ import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import com.app.stronglife.data.model.Stock
+import com.app.stronglife.data.model.RecipeRequest
+import com.app.stronglife.data.model.RecipeResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -70,5 +72,11 @@ interface ApiService {
         @Header("x-api-key") apiKey: String,
         @Body payload: KioskLogPayload
     ): Response<ResponseBody>
+
+    @POST("user/recipe")
+    suspend fun getRecipe(
+        @Header("x-api-key") apiKey: String,
+        @Body request: RecipeRequest
+    ): retrofit2.Response<RecipeResponse>
 
 }
