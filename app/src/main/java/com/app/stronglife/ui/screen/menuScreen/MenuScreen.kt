@@ -107,7 +107,7 @@ fun MenuScreen(
 
                 else -> {
                     ProductCard(
-                        products = viewModel.products,
+                        products = viewModel.products.filter { it.id in 1..7 },
                         onProductClick = { product ->
                             viewModel.openProductDetail(product)
                         },
