@@ -22,8 +22,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -77,16 +78,11 @@ fun  PhonePayCard (
     val spaceDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
-    LaunchedEffect(viewModel.userCode.value) {
-        if (viewModel.userCode.value.isNotEmpty()) {
-            delay(700)
-            // 사용자 조회 요청
-            viewModel.fetchUser(apiKey) { success ->
-                if (success) {
-                    onUserFound()
-                }
-            }
-        }
+    val focusRequester = remember { FocusRequester() }
+
+    // 화면이 표시되면 자동으로 포커스
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     Column (
@@ -117,7 +113,9 @@ fun  PhonePayCard (
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp) // 사용 버튼과 간격을 고려한 너비
+                modifier = Modifier
+                    .width(widDp - boxWidDp - spacerDp - 80.dp)
+                    .focusRequester(focusRequester) // 포커스 리퀘스터 추가
             )
 
             Spacer(modifier = Modifier.width(spacerDp))
