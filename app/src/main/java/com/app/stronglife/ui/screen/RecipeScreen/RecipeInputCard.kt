@@ -18,7 +18,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
@@ -62,6 +64,59 @@ fun RecipeInputCard(
     val boxTextSp = with(density) { 24f.toSp() }
     val spacerDp = with(density) { 60f.toDp() }
     val spacer2Dp = with(density) { 17f.toDp() }
+
+    // 바코드 입력 완료 후 0.5초 뒤 자동 조회
+    LaunchedEffect(viewModel.userCode.value) {
+        if (viewModel.userCode.value.isNotEmpty()) {
+            delay(700) // 0.5초 대기
+            Log.d("RecipeInputCard", "자동 조회 시작 - recipe_code: ${viewModel.userCode.value}")
+            
+            // 레시피 조회 요청
+            viewModel.getRecipe(
+                apiKey = apiKey,
+                recipeCode = viewModel.userCode.value
+            ) { recipeResponse ->
+                Log.d("RecipeInputCard", "레시피 응답: $recipeResponse")
+                
+                if (recipeResponse != null) {
+                    Log.d("RecipeInputCard", "상품 ID: ${recipeResponse.productId}, 사용자: ${recipeResponse.userName}")
+                    
+                    // product_id로 상품 찾기
+                    val product = productViewModel.products.find { 
+                        it.id == recipeResponse.productId 
+                    }
+                    
+                    if (product != null) {
+                        Log.d("RecipeInputCard", "상품 찾음: ${product.name}")
+                        
+                        // 장바구니 비우고 레시피 상품 추가
+                        Log.d("RecipeInputCard", "장바구니 비우기 전: ${cartViewModel.cartItems.value.size}개 상품")
+                        cartViewModel.clearCart()
+                        Log.d("RecipeInputCard", "장바구니 비운 후: ${cartViewModel.cartItems.value.size}개 상품")
+                        
+                        cartViewModel.addProduct(product)
+                        Log.d("RecipeInputCard", "상품 추가 후: ${cartViewModel.cartItems.value.size}개 상품")
+                        Log.d("RecipeInputCard", "장바구니 내용: ${cartViewModel.cartItems.value.map { "${it.product.name} x${it.quantity}" }}")
+                        
+                        Log.d("RecipeInputCard", "PayingScreen으로 이동 시작")
+                        
+                        // PayingScreen으로 이동
+                        try {
+                            navController.navigate("paying")
+                            Log.d("RecipeInputCard", "navigate 호출 완료")
+                        } catch (e: Exception) {
+                            Log.e("RecipeInputCard", "Navigate 실패: ${e.message}", e)
+                        }
+                    } else {
+                        Log.e("RecipeInputCard", "상품을 찾을 수 없음 - product_id: ${recipeResponse.productId}")
+                        Log.e("RecipeInputCard", "사용 가능한 상품들: ${productViewModel.products.map { it.id }}")
+                    }
+                } else {
+                    Log.e("RecipeInputCard", "레시피 응답이 null입니다")
+                }
+            }
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.Center,

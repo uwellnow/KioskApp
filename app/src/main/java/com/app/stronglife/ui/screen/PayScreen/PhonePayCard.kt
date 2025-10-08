@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -75,6 +77,17 @@ fun  PhonePayCard (
     val spaceDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
+    LaunchedEffect(viewModel.userCode.value) {
+        if (viewModel.userCode.value.isNotEmpty()) {
+            delay(700)
+            // 사용자 조회 요청
+            viewModel.fetchUser(apiKey) { success ->
+                if (success) {
+                    onUserFound()
+                }
+            }
+        }
+    }
 
     Column (
         verticalArrangement = Arrangement.Center,
