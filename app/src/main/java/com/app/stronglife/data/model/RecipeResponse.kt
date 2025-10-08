@@ -10,3 +10,4 @@ data class RecipeResponse(
 data class RecipeRequest(
     @SerializedName("recipe_code") val recipeCode: String
 )
+
