@@ -21,8 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -44,6 +47,7 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -75,6 +79,13 @@ fun  PhonePayCard (
     val spaceDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
+    val focusRequster = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequster.requestFocus()
+    }
+
 
     Column (
         verticalArrangement = Arrangement.Center,
@@ -104,7 +115,8 @@ fun  PhonePayCard (
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp) // 사용 버튼과 간격을 고려한 너비
+                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp)
+                    .focusRequester(focusRequster)
             )
 
             Spacer(modifier = Modifier.width(spacerDp))
