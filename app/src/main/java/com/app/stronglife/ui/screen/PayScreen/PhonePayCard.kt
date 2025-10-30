@@ -23,8 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -81,12 +79,13 @@ fun  PhonePayCard (
     val spaceDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
-    val focusRequester = remember { FocusRequester() }
+    val focusRequster = remember { FocusRequester() }
 
-    // 화면이 표시되면 자동으로 포커스
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        delay(100)
+        focusRequster.requestFocus()
     }
+
 
     Column (
         verticalArrangement = Arrangement.Center,
@@ -116,9 +115,8 @@ fun  PhonePayCard (
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                modifier = Modifier
-                    .width(widDp - boxWidDp - spacerDp - 80.dp)
-                    .focusRequester(focusRequester) // 포커스 리퀘스터 추가
+                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp)
+                    .focusRequester(focusRequster)
             )
 
             Spacer(modifier = Modifier.width(spacerDp))
