@@ -1,13 +1,11 @@
 package com.app.stronglife.ui.screen.PayScreen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -31,9 +29,8 @@ fun PaymentTab(
 ) {
 
     val density = LocalDensity.current
-    val spaceDp = with(density) {30f.toDp()}
+    val spaceDp = with(density) {40f.toDp()}
     val widDp = with(density) {614f.toDp()}
-    val heiDp = with(density) { 80f.toDp()}
     val textSp = with(density) {36f.toSp()}
 
     val textColor = if (isSelected) mainRed else paySelectGray
@@ -41,10 +38,10 @@ fun PaymentTab(
 
     Column (
         modifier = Modifier
-            .size(widDp, heiDp)
-            .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .width(widDp)
+            .clickable(onClick = onClick)
+            .padding(top = spaceDp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
             text = text,
