@@ -18,6 +18,7 @@ import com.app.stronglife.ui.screen.PayingScreen.PayingScreen
 import com.app.stronglife.ui.screen.firstScreen.FirstScreen
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.ui.screen.HelloScreen.RegisterStoreScreen
+import com.app.stronglife.ui.screen.RecipeScreen.RecipeScreen
 import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
@@ -57,6 +58,15 @@ fun NavGraph(
         }
         composable("first") {
             FirstScreen(navController = navController, cartViewModel = cartViewModel)
+        }
+        composable("recipe") {
+            RecipeScreen(
+                navController = navController, 
+                cartViewModel = cartViewModel, 
+                userCodeViewModel = userViewModel,
+                productViewModel = productViewModel,
+                apiKey = apiKey
+            )
         }
         composable("menu") {
             MenuScreen(

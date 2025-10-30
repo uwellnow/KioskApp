@@ -22,18 +22,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.PrefsManager
 import com.app.stronglife.data.remote.RetrofitClient
@@ -66,21 +73,21 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
     }
 
     val density = LocalDensity.current
-    val widDp = with(density) {494f.toDp()}
-    val heiDp = with(density) {294f.toDp()}
-    val textSp = with(density) {36f.toSp()}
-    val spaceDp = with(density) {100f.toDp()}
+    val horDp = with(density) {112f.toDp()}
+    val verDp = with(density) {169f.toDp()}
+    val space1Dp = with(density) {28f.toDp()}
+    val space2Dp = with(density) {86f.toDp()}
+
+    val titleSp = with(density) {100f.toSp()}
+    val desSp = with(density) {32f.toSp()}
 
     val padDp = with(density) {44f.toDp()}
     val btnSpaceDp = with(density) {16f.toDp()}
 
 
     Box (
-        modifier = Modifier
-            .fillMaxSize().clickable {navController.navigate("first")},
-
+        modifier = Modifier.fillMaxSize()
     ){
-
         Row (
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -104,30 +111,38 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
 
 
         Column(
-            modifier = Modifier.align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxSize()
+                .padding(start = horDp, top = verDp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.hello),
-                contentDescription = "처음 보이는 화면",
-                modifier = Modifier
-                    .width(widDp)
-                    .height(heiDp)
-            )
-
-            Spacer(modifier = Modifier.height(spaceDp))
-
             Text(
-                text = stringResource(R.string.hello),
+                text = "나에게 딱 맞는\nAI 맞춤형 피트니스 보충제",
                 style = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontWeight = FontWeight.Medium,
-                    color = mainRed,
-                    textAlign = TextAlign.Center
+                    fontSize = titleSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_bold)),
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF111827)
                 )
             )
+
+            Spacer(modifier = Modifier.height(space1Dp))
+            Text(
+                text = buildAnnotatedString {
+                    append("운동 전/중/후, 나에게 맞는 보충제를 ")
+
+                    withStyle(style = SpanStyle(color = mainRed)) {
+                        append("30초 만에")
+                    }
+                },
+                style = TextStyle(
+                    fontSize = desSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF939393)
+                )
+            )
+            Spacer(modifier = Modifier.height(space2Dp))
+
+            StartBtn(navController)
         }
     }
 }
