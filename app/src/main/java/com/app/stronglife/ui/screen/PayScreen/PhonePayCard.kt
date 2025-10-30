@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -47,6 +49,7 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable

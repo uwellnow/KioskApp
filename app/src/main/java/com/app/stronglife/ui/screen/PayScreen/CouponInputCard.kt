@@ -18,8 +18,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -42,6 +46,7 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun CouponInputCard(
@@ -60,6 +65,13 @@ fun CouponInputCard(
     val boxTextSp = with(density) { 24f.toSp() }
     val spacerDp = with(density) { 60f.toDp() }
     val spacer2Dp = with(density) { 17f.toDp() }
+
+
+    val focusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        delay(100)
+        focusRequester.requestFocus()
+    }
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -88,7 +100,8 @@ fun CouponInputCard(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
                 ),
-                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp) // 사용 버튼과 간격을 고려한 너비
+                modifier = Modifier.width(widDp - boxWidDp - spacerDp - 80.dp)
+                    .focusRequester(focusRequester)
             )
 
             Spacer(modifier = Modifier.width(spacerDp))
