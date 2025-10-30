@@ -65,7 +65,7 @@ class ProductViewModel(
             errorMessage = null
             try {
                 val result = apiService.getProducts()
-                products = result
+                products = result.filter { it.id in 1..8 }
             } catch (e: Exception) {
                 errorMessage = e.message
             } finally {

@@ -50,11 +50,5 @@ fun LanguageBtn(icon: Int, lang: String, isClick: Boolean, onClick: () -> Unit) 
             painter = painterResource(icon),
             contentDescription = "국기",
         )
-        Text(
-            text = lang,
-            fontSize = textSp,
-            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-            color = textColor
-        )
     }
 }

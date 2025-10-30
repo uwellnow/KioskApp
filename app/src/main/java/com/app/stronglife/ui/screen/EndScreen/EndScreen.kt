@@ -222,6 +222,7 @@ fun EndScreen(
 
             // 레시피 저장
             val slotsPairs = product.recipeSlots.map { (it.getOrNull(0) ?: 0) to (it.getOrNull(1) ?: 0) }
+            kioskLogger.logEvent("RecipeSlots count: ${slotsPairs.size}, data: $slotsPairs", false)
             val recipeOk = vm.saveRecipe3(0x11, slotsPairs)
             kioskLogger.logEvent(
                 "SaveRecipe ${product.name} ($currentIndex/$totalJobs)",

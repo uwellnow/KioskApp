@@ -8,6 +8,8 @@ import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.data.model.ProductPurchaseRequest
 import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
+import com.app.stronglife.data.model.RecipeRequest
+import com.app.stronglife.data.model.RecipeResponse
 import com.app.stronglife.data.remote.ApiService
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -240,6 +242,41 @@ class UserCodeViewModel(
                 errorMessage.value = e.message
                 errorState.value = UiError.Exception(e)
                 onResult(false)
+            }
+        }
+    }
+
+    fun getRecipe(
+        apiKey: String,
+        recipeCode: String,
+        onResult: (RecipeResponse?) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                Log.d("UserCodeViewModel", "Recipe request - API Key: $apiKey, Recipe Code: $recipeCode")
+                
+                val request = RecipeRequest(recipeCode)
+                val response: Response<RecipeResponse> = api.getRecipe(
+                    apiKey = apiKey,
+                    request = request
+                )
+                if (response.isSuccessful) {
+                    val recipeResponse = response.body()
+                    Log.d("UserCodeViewModel", "Recipe fetch successful: $recipeResponse")
+                    errorState.value = UiError.None
+                    onResult(recipeResponse)
+                } else {
+                    Log.e("UserCodeViewModel", "Recipe fetch failed with code: ${response.code()}")
+                    errorState.value = when (response.code()) {
+                        404 -> UiError.NotFound
+                        else -> UiError.Generic("레시피 조회 실패 (${response.code()})")
+                    }
+                    onResult(null)
+                }
+            } catch (e: Exception) {
+                Log.e("UserCodeViewModel", "Recipe fetch exception: ${e.message}", e)
+                errorState.value = UiError.Exception(e)
+                onResult(null)
             }
         }
     }
