@@ -115,3 +115,10 @@ fun ErrorBox(errorMsg: String, desMsg: String, onConfirm: () -> Unit) {
         }
     }
 }
+
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorBoxPreview() {
+    ErrorBox("서버 점검중", "서버 점검중입니다. 잠시만 기다려 주세요", onConfirm = {})
+}
