@@ -15,6 +15,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.model.SystemStatus
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -72,5 +73,12 @@ interface ApiService {
     ): Response<ResponseBody>
 
 
+    @GET("system-status/poll")
+    suspend fun pollSystemStatus(
+        @Header("x-api-key") apiKey: String,
+        @Query("status_type") statusType: String?,
+        @Query("since") since:String?,
+        @Query("timeout") timeout: Int?,
+    ): Response<SystemStatus>
 
 }
