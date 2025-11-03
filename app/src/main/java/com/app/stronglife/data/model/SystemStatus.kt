@@ -7,7 +7,7 @@ data class SystemStatus(
     @SerializedName("api_key")
     val apiKey: String,
     @SerializedName("is_active")
-    val isActive: Boolean,
+    var isActive: Boolean,
     @SerializedName("status_type")
     val statusType: String,
     @SerializedName("created_at")

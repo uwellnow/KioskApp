@@ -16,16 +16,16 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 class PollingService : Service() {
     private val job = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + job)
     private lateinit var prefsManager: PrefsManager
-    private val STATUE_TYPE = null // MACHINE, SERVER
-    private val POLLING_TIMEOUT_SECONDS = 60
+    private val POLLING_TIMEOUT_SECONDS = 30
 
     companion object {
-        private const val NOTIFICATION_CHANNEL_ID = "PollingServiceChannel"
+        private const val NOTIFICATION_CHANNEL_ID = "PollingService Channel"
         private const val NOTIFICATION_ID = 1
         private const val TAG = "PollingService"
     }
@@ -41,60 +41,106 @@ class PollingService : Service() {
         val notification = createNotification()
         startForeground(NOTIFICATION_ID, notification)
 
-        Log.d(TAG, "Polling Service 시작됨")
+        startPollingLoop()
 
-
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     private fun startPollingLoop() {
         serviceScope.launch {
-            var lastTimestamp: String? = null
+            pollAllStatuses()
+        }
+    }
+    
+    private suspend fun pollAllStatuses() {
+        var lastTimestamp: String? = null
+        var consecutiveTimeouts = 0
+        val MAX_TIMEOUT_BEFORE_RESET = 1
 
-            while(isActive) {
-                val apiKey = prefsManager.getApiKey()
-
-                if (apiKey.isEmpty()) {
-                    Log.w(TAG, "API Key가 설정되지 않았습니다. 5초 후 재시도합니다.")
-                    delay(5000)
-                    continue
-                }
-
-                try {
-                    Log.d(TAG, "Polling 요청... (since: $lastTimestamp)")
-
-                    val response = RetrofitClient.pollingApi.pollSystemStatus(
-                        apiKey = apiKey,
-                        statusType = STATUE_TYPE,
-                        since = lastTimestamp,
-                        timeout = POLLING_TIMEOUT_SECONDS,
-                    )
-
-                    if (response.isSuccessful) {
-                        val status = response.body()
-
-                        if (status != null) {
-                            Log.i(TAG, "!!! 상태 변화 감지: ${status.isActive}")
-                            SystemStatusManager.updateStatus(status)
-                            lastTimestamp = status.createdAt
-                        } else {
-                            Log.d(TAG, "타임아웃, 즉시 재요청합니다.")
-                        }
-                    } else {
-                        Log.e(TAG, "HTTP Error : ${response.code()} ${response.message()}")
-                        delay(5000)
+        val apiKey = prefsManager.getApiKey()
+        if (apiKey.isNotEmpty()) {
+            try {
+                val response = RetrofitClient.pollingApi.pollSystemStatus(
+                    apiKey = apiKey,
+                    statusType = null, // 모든 타입 조회
+                    since = null,
+                    timeout = 5
+                )
+                if (response.isSuccessful && response.body() != null) {
+                    val statuses = response.body()!!
+                    val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
+                    val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                    val activeStatus = machineActive ?: serverActive
+                    
+                    if (activeStatus != null) {
+                        SystemStatusManager.updateStatus(activeStatus)
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "네트워크 또는 기타 오류: ${e.message}")
+
+                    lastTimestamp = statuses.maxOfOrNull { it.createdAt }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "초기 상태 확인 실패: ${e.message}")
+            }
+        }
+
+        while(coroutineContext.isActive) {
+            val currentApiKey = prefsManager.getApiKey()
+
+            if (currentApiKey.isEmpty()) {
+                delay(5000)
+                continue
+            }
+
+            try {
+                val response = RetrofitClient.pollingApi.pollSystemStatus(
+                    apiKey = currentApiKey,
+                    statusType = null,
+                    since = lastTimestamp,
+                    timeout = POLLING_TIMEOUT_SECONDS,
+                )
+
+                if (response.isSuccessful) {
+                    val statuses = response.body()
+
+                    if (statuses != null && statuses.isNotEmpty()) {
+                        val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
+                        val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                        
+                        val statusToUpdate = machineActive ?: serverActive
+                        
+                        if (statusToUpdate != null) {
+                            SystemStatusManager.updateStatus(statusToUpdate)
+                        } else {
+                            SystemStatusManager.updateStatus(null)
+                        }
+                        
+                        // 가장 최신 timestamp 사용
+                        lastTimestamp = statuses.maxOfOrNull { it.createdAt }
+                        consecutiveTimeouts = 0
+                    } else {
+                        consecutiveTimeouts++
+
+                        if (consecutiveTimeouts >= MAX_TIMEOUT_BEFORE_RESET) {
+                            lastTimestamp = null
+                            consecutiveTimeouts = 0
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e(TAG, "HTTP Error: ${response.code()} ${response.message()}")
+                    Log.e(TAG, "Error Body: $errorBody")
                     delay(5000)
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "네트워크 오류: ${e.message}", e)
+                delay(5000)
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        job.cancel() // 코루틴 같이 종료
+        job.cancel()
         Log.d(TAG, "Polling Service 종료됨")
     }
 

@@ -79,6 +79,6 @@ interface ApiService {
         @Query("status_type") statusType: String?,
         @Query("since") since:String?,
         @Query("timeout") timeout: Int?,
-    ): Response<SystemStatus>
+    ): Response<List<SystemStatus>>
 
 }

@@ -57,7 +57,7 @@ fun ErrorBox(errorMsg: String, desMsg: String, onConfirm: () -> Unit) {
 
 
     Column (
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color.White),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ){
