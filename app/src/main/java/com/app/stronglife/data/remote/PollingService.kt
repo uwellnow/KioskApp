@@ -77,22 +77,41 @@ class PollingService : Service() {
                         since = null,
                         timeout = 5
                     )
-                    if (response.isSuccessful && response.body() != null) {
-                        val statuses = response.body()!!
-                        Log.d(TAG, "초기 상태 수신: ${statuses.size}개 항목")
-                        val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
-                        val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
-                        val activeStatus = machineActive ?: serverActive
-                        
-                        if (activeStatus != null) {
-                            SystemStatusManager.updateStatus(activeStatus)
-                        }
+                    if (response.isSuccessful) {
+                        val statuses = response.body()
+                        if (statuses != null) {
+                            Log.d(TAG, "초기 상태 수신: ${statuses.size}개 항목")
+                            
+                            if (statuses.isEmpty()) {
+                                Log.w(TAG, "⚠️ 초기 상태가 빈 리스트입니다. 서버에 상태 데이터가 없을 수 있습니다.")
+                                // 빈 리스트여도 계속 시도 (서버에 데이터가 생길 때까지)
+                                if (retryCount < maxRetries - 1) {
+                                    delay(2000)
+                                }
+                            } else {
+                                val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
+                                val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                                val activeStatus = machineActive ?: serverActive
+                                
+                                if (activeStatus != null) {
+                                    SystemStatusManager.updateStatus(activeStatus)
+                                } else {
+                                    // 초기 상태에서도 isActive = false인 경우 명시적으로 null 설정
+                                    SystemStatusManager.updateStatus(null)
+                                }
 
-                        lastTimestamp = statuses.maxOfOrNull { it.createdAt }
-                        if (lastTimestamp != null) {
-                            Log.d(TAG, "초기 lastTimestamp 설정 성공: $lastTimestamp")
+                                lastTimestamp = statuses.maxOfOrNull { it.createdAt }
+                                if (lastTimestamp != null) {
+                                    Log.d(TAG, "초기 lastTimestamp 설정 성공: $lastTimestamp")
+                                } else {
+                                    Log.w(TAG, "초기 상태는 수신했지만 createdAt이 없음")
+                                }
+                            }
                         } else {
-                            Log.w(TAG, "초기 상태는 수신했지만 createdAt이 없음")
+                            Log.w(TAG, "⚠️ 초기 상태 응답 본문이 null입니다. HTTP ${response.code()}")
+                            if (retryCount < maxRetries - 1) {
+                                delay(2000)
+                            }
                         }
                     } else {
                         Log.w(TAG, "초기 상태 확인 실패: ${response.code()}")
@@ -127,9 +146,6 @@ class PollingService : Service() {
 
             try {
                 val startTime = System.currentTimeMillis()
-                if (lastTimestamp == null) {
-                    Log.w(TAG, "⚠️ lastTimestamp가 null입니다! 첫 호출로 처리되어 즉시 응답될 수 있습니다.")
-                }
                 Log.d(TAG, "Long polling 요청 시작 - timeout: ${POLLING_TIMEOUT_SECONDS}초, since: $lastTimestamp")
                 
                 val response = RetrofitClient.pollingApi.pollSystemStatus(
@@ -147,15 +163,23 @@ class PollingService : Service() {
 
                     if (statuses != null && statuses.isNotEmpty()) {
                         Log.d(TAG, "상태 업데이트 수신: ${statuses.size}개 항목")
+                        
+                        // isActive = true인 상태 우선 확인
                         val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
                         val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                        val activeStatus = machineActive ?: serverActive
                         
-                        val statusToUpdate = machineActive ?: serverActive
-                        
-                        if (statusToUpdate != null) {
-                            SystemStatusManager.updateStatus(statusToUpdate)
-                            Log.d(TAG, "상태 업데이트: ${statusToUpdate.statusType} - isActive: ${statusToUpdate.isActive}")
+                        if (activeStatus != null) {
+                            // 점검 중 상태
+                            SystemStatusManager.updateStatus(activeStatus)
+                            Log.d(TAG, "상태 업데이트: ${activeStatus.statusType} - isActive: ${activeStatus.isActive}")
                         } else {
+                            // isActive = false인 상태가 있거나, 모든 상태가 false인 경우
+                            // 점검 해제 상태로 처리
+                            val hasInactiveStatus = statuses.any { !it.isActive && (it.statusType == "MACHINE" || it.statusType == "SERVER") }
+                            if (hasInactiveStatus) {
+                                Log.d(TAG, "점검 해제 상태 감지 - 모든 상태를 null로 설정")
+                            }
                             SystemStatusManager.updateStatus(null)
                         }
                         
@@ -172,11 +196,8 @@ class PollingService : Service() {
                         }
                         consecutiveTimeouts++
 
-                        // ⚠️ 중요: lastTimestamp를 null로 리셋하지 않음!
-                        // null로 리셋하면 다음 요청도 첫 호출처럼 처리되어 즉시 응답됨
-                        // 연속 timeout이 발생해도 lastTimestamp는 유지하여 long polling이 계속 작동하도록 함
                         if (consecutiveTimeouts >= MAX_TIMEOUT_BEFORE_RESET) {
-                            Log.d(TAG, "연속 timeout 발생 (${consecutiveTimeouts}회) - lastTimestamp는 유지: $lastTimestamp")
+                            lastTimestamp = null
                             consecutiveTimeouts = 0
                         }
                     }
