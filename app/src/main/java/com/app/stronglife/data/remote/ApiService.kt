@@ -32,7 +32,9 @@ interface ApiService {
     ): Response<ResponseBody>
 
     @GET("products")
-    suspend fun getProducts(): List<Product>
+    suspend fun getProducts(
+        @Header("x-api-key") apiKey: String
+    ): List<Product>
 
     @GET("stocks/kiosk")
     suspend fun getStocks(
