@@ -59,12 +59,14 @@ fun MenuScreen(
 
     LaunchedEffect(Unit) {
         println("MenuScreen: 제품 정보 로드 시작")
-        viewModel.fetchProducts()
         if (apiKey.isNotEmpty()) {
             viewModel.setApiKey(apiKey)
+            println("MenuScreen: API 키 설정 완료")
+        }
+        viewModel.fetchProducts()
+        if (apiKey.isNotEmpty()) {
             println("MenuScreen: 재고 정보 로드 시작")
             viewModel.fetchStocks(forceRefresh = true)  // 매번 최신 재고 정보 갱신
-
         } else {
             println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
         }
@@ -107,7 +109,7 @@ fun MenuScreen(
 
                 else -> {
                     ProductCard(
-                        products = viewModel.products.filter { it.id in 1..7 },
+                        products = viewModel.products,
                         onProductClick = { product ->
                             viewModel.openProductDetail(product)
                         },

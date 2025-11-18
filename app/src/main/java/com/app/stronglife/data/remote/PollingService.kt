@@ -33,7 +33,6 @@ class PollingService : Service() {
     override fun onCreate() {
         super.onCreate()
         prefsManager = PrefsManager(applicationContext)
-        Log.d(TAG, "PrefsManager 초기화 완료")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -57,29 +56,59 @@ class PollingService : Service() {
         var consecutiveTimeouts = 0
         val MAX_TIMEOUT_BEFORE_RESET = 1
 
+        // 초기 상태 확인 (since=null로 첫 호출)
         val apiKey = prefsManager.getApiKey()
         if (apiKey.isNotEmpty()) {
-            try {
-                val response = RetrofitClient.pollingApi.pollSystemStatus(
-                    apiKey = apiKey,
-                    statusType = null, // 모든 타입 조회
-                    since = null,
-                    timeout = 5
-                )
-                if (response.isSuccessful && response.body() != null) {
-                    val statuses = response.body()!!
-                    val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
-                    val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
-                    val activeStatus = machineActive ?: serverActive
-                    
-                    if (activeStatus != null) {
-                        SystemStatusManager.updateStatus(activeStatus)
-                    }
+            var retryCount = 0
+            val maxRetries = 3
+            
+            while (retryCount < maxRetries && lastTimestamp == null) {
+                try {
+                    Log.d(TAG, "초기 상태 확인 시작 (since=null) - 시도 ${retryCount + 1}/$maxRetries")
+                    val response = RetrofitClient.pollingApi.pollSystemStatus(
+                        apiKey = apiKey,
+                        statusType = null, // 모든 타입 조회
+                        since = null,
+                        timeout = 5
+                    )
+                    if (response.isSuccessful) {
+                        val statuses = response.body()
+                        if (statuses != null) {
+                            Log.d(TAG, "초기 상태 수신: ${statuses.size}개 항목")
+                            
+                            if (statuses.isEmpty()) {
+                                if (retryCount < maxRetries - 1) {
+                                    delay(2000)
+                                }
+                            } else {
+                                val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
+                                val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                                val activeStatus = machineActive ?: serverActive
+                                
+                                if (activeStatus != null) {
+                                    SystemStatusManager.updateStatus(activeStatus)
+                                } else {
+                                    SystemStatusManager.updateStatus(null)
+                                }
 
-                    lastTimestamp = statuses.maxOfOrNull { it.createdAt }
+                                lastTimestamp = statuses.maxOfOrNull { it.createdAt }
+                            }
+                        } else {
+                            if (retryCount < maxRetries - 1) {
+                                delay(2000)
+                            }
+                        }
+                    } else {
+                        if (retryCount < maxRetries - 1) {
+                            delay(2000)
+                        }
+                    }
+                } catch (e: Exception) {
+                    if (retryCount < maxRetries - 1) {
+                        delay(2000)
+                    }
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "초기 상태 확인 실패: ${e.message}")
+                retryCount++
             }
         }
 
@@ -92,6 +121,8 @@ class PollingService : Service() {
             }
 
             try {
+                val startTime = System.currentTimeMillis()
+                
                 val response = RetrofitClient.pollingApi.pollSystemStatus(
                     apiKey = currentApiKey,
                     statusType = null,
@@ -99,22 +130,24 @@ class PollingService : Service() {
                     timeout = POLLING_TIMEOUT_SECONDS,
                 )
 
+                val elapsedTime = System.currentTimeMillis() - startTime
+
                 if (response.isSuccessful) {
                     val statuses = response.body()
 
                     if (statuses != null && statuses.isNotEmpty()) {
+
                         val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
                         val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
+                        val activeStatus = machineActive ?: serverActive
                         
-                        val statusToUpdate = machineActive ?: serverActive
-                        
-                        if (statusToUpdate != null) {
-                            SystemStatusManager.updateStatus(statusToUpdate)
+                        if (activeStatus != null) {
+                            SystemStatusManager.updateStatus(activeStatus)
                         } else {
+                            val hasInactiveStatus = statuses.any { !it.isActive && (it.statusType == "MACHINE" || it.statusType == "SERVER") }
                             SystemStatusManager.updateStatus(null)
                         }
-                        
-                        // 가장 최신 timestamp 사용
+
                         lastTimestamp = statuses.maxOfOrNull { it.createdAt }
                         consecutiveTimeouts = 0
                     } else {
@@ -127,12 +160,9 @@ class PollingService : Service() {
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e(TAG, "HTTP Error: ${response.code()} ${response.message()}")
-                    Log.e(TAG, "Error Body: $errorBody")
                     delay(5000)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "네트워크 오류: ${e.message}", e)
                 delay(5000)
             }
         }
@@ -141,7 +171,6 @@ class PollingService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
-        Log.d(TAG, "Polling Service 종료됨")
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
