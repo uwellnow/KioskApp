@@ -30,6 +30,7 @@ fun TimeCategory(time:String, modifier: Modifier = Modifier) {
         "운동 전" -> R.string.time_pre
         "운동 중" -> R.string.time_intra
         "운동 후" -> R.string.time_post
+        "디톡스" -> R.string.time_detox
         else -> null
     }
 

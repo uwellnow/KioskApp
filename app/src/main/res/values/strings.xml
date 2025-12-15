@@ -3,6 +3,7 @@
     <string name="time_pre">운동 전</string>
     <string name="time_intra">운동 중</string>
     <string name="time_post">운동 후</string>
+    <string name="time_detox">디톡스</string>
 
     <string name="hello">화면을 터치하여 주문을 시작하세요</string>
     <string name="top_1">섭취시점 선택</string>

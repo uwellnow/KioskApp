@@ -3,6 +3,7 @@
     <string name="time_pre">Pre</string>
     <string name="time_intra">Intra</string>
     <string name="time_post">Post</string>
+    <string name="time_detox">detox</string>
 
     <string name="hello">Touch the screen to start your order</string>
     <string name="top_1">Intake Timing</string>
