@@ -47,8 +47,8 @@
     <string name="info_box_remain">차감 후 수량</string>
     <string name="not_me">제 정보가 아니예요</string>
     <string name="yes_me">네, 맞아요</string>
-    <string name="pay_done_title">음료 제조 중입니다</string>
-    <string name="pay_done_desc">제조까지 1분 정도의 시간이 소요됩니다. 잠시만 기다려주세요</string>
+    <string name="pay_done_title">음료 제조까지 1분 정도 소요됩니다.</string>
+    <string name="pay_done_desc">기다리시는 동안 심심하시지 않게, 아래 3가지 문항에 답변해 주세요!</string>
 
     <string name="make_1">물\n보충</string>
     <string name="make_2">보충제 투출</string>

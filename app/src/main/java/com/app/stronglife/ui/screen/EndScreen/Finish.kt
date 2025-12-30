@@ -80,14 +80,14 @@ fun Finish(
 
 
             Text(
-                text = stringResource(R.string.pay_done_title),
+                text = if(isInProgress) stringResource(R.string.pay_done_title) else "소중한 의견 감사드립니다 \uD83D\uDE47\u200D♀\uFE0F",
                 fontSize = titleSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = black,
             )
             Spacer(modifier = Modifier.height(space2Dp))
             Text(
-                text = stringResource(R.string.pay_done_desc),
+                text = if(isInProgress) stringResource(R.string.pay_done_desc) else "음료 투출까지 잠시만 기다려주세요 !",
                 fontSize = descSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,
@@ -104,7 +104,7 @@ fun Finish(
                             text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
                             fontSize = counterSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                            color = black,
+                            color = Color(0xFF222222),
                             textAlign = TextAlign.Center
                         )
                         Spacer(Modifier.height(space1Dp))
@@ -127,4 +127,14 @@ fun Finish(
     }
 }
 
-
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
+@Composable
+fun FinishPreview() {
+    Finish(
+        currentDrinkIndex = 1,
+        totalDrinkCount = 2,
+        isInProgress = true,
+        errorMessage = null,
+        onErrorConfirm = {}
+    )
+}

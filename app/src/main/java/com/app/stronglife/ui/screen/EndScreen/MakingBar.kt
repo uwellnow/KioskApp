@@ -40,7 +40,7 @@ fun MakingBar(
     activeColor: Color = mainRed,
     idleColor: Color = Color(0xFFAFAFAF),
     onFinished: (() -> Unit)? = null,
-    resetKey: Any?= null  //변경되면 리셋
+    resetKey: Any?= null
 ) {
     val titles = listOf(stringResource(R.string.make_1),
         stringResource(R.string.make_2),
