@@ -1,6 +1,7 @@
 package com.app.stronglife.ui.screen.EndScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,7 +27,7 @@ import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
-fun PrevNextBox(isAnswered: Boolean,) {
+fun PrevNextBox(isAnswered: Boolean, onPrev: () -> Unit, onNext: () -> Unit) {
     val density = LocalDensity.current
     val spaceDp = with(density) {24f.toDp()}
 
@@ -34,10 +35,9 @@ fun PrevNextBox(isAnswered: Boolean,) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ){
-        /* Todo : onClick  함수 설정 */
-        OneBox(isNext = false, isAnswered = isAnswered, onClick = {})
+        OneBox(isNext = false, isAnswered = isAnswered, onClick = onPrev)
         Spacer(modifier = Modifier.width(spaceDp))
-        OneBox(isNext = true, isAnswered = isAnswered, onClick = {})
+        OneBox(isNext = true, isAnswered = isAnswered, onClick = onNext)
     }
 }
 
@@ -55,7 +55,10 @@ fun OneBox(isNext: Boolean, isAnswered: Boolean, onClick: () -> Unit) {
             .background(
                 if (isAnswered && isNext) mainRed else superLightGray,
                 RoundedCornerShape(roundDp)
-            ),
+            )
+            .clickable(enabled = !isNext || isAnswered) {
+                onClick()
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -72,6 +75,6 @@ fun OneBox(isNext: Boolean, isAnswered: Boolean, onClick: () -> Unit) {
 @Composable
 fun PrevNextBoxPreview() {
     PrevNextBox(
-        isAnswered = true
+        isAnswered = true, onPrev = {}, onNext = {}
     )
 }
