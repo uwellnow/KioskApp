@@ -118,6 +118,9 @@ fun Finish(
                 ) {
 
                     if (totalDrinkCount > 1) {
+                        if (surveyState == SurveyState.SUCCESS) {
+                            Spacer(Modifier.height(space1Dp))
+                        }
                         Text(
                             text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
                             fontSize = counterSp,
@@ -125,7 +128,6 @@ fun Finish(
                             color = Color(0xFF222222),
                             textAlign = TextAlign.Center
                         )
-                        Spacer(Modifier.height(space1Dp))
                     } else {
                         Spacer(Modifier.height(space1Dp))
                     }
@@ -164,68 +166,13 @@ fun Finish(
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33)
 @Composable
 fun FinishPreview() {
-    val density = LocalDensity.current
-    val titleSp = with(density) {70f.toSp()}
-    val descSp = with(density) {32f.toSp()}
-    val space1Dp = with(density) {120f.toDp()}
-    val space2Dp = with(density) {32f.toDp()}
-    
-    var currentIndex by remember { mutableStateOf(0) }
-    var isAnswered by remember { mutableStateOf(false) }
-    val question = QuestionDatas[currentIndex]
-    
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.pay_done_title),
-            fontSize = titleSp,
-            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-            color = black,
-        )
-        Spacer(modifier = Modifier.height(space2Dp))
-        Text(
-            text = stringResource(R.string.pay_done_desc),
-            fontSize = descSp,
-            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-            color = descGray,
-        )
-        
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(Modifier.height(space1Dp))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                QuestionRenderer(
-                    question = question,
-                    questionIndex = currentIndex,
-                    onAnswered = { 
-                        isAnswered = true 
-                    }
-                )
-                
-                PrevNextBox(
-                    isAnswered = isAnswered,
-                    onPrev = {
-                        if (currentIndex > 0) {
-                            currentIndex--
-                            isAnswered = false
-                        }
-                    },
-                    onNext = {
-                        if (currentIndex < QuestionDatas.size - 1) {
-                            currentIndex++
-                            isAnswered = false
-                        }
-                    }
-                )
-            }
-        }
-    }
+    Finish(
+        apiKey = "20250000",
+        currentDrinkIndex = 1,
+        totalDrinkCount = 1,
+        isInProgress = false,
+        surveyState = SurveyState.SUCCESS,
+        onSurveyFinished = {},
+        onSurveyError = {},
+    )
 }

@@ -66,4 +66,9 @@ class SurveyViewModel(
         }
     }
 
+    fun reset() {
+        _currentIndex.value = 0
+        _answers.value = emptyMap()
+    }
+
 }

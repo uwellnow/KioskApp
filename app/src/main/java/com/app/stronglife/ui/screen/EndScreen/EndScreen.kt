@@ -57,10 +57,17 @@ fun EndScreen(
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+    
+    // SurveyViewModel 초기화를 위해 가져오기
+    val surveyViewModel: com.app.stronglife.viewmodel.SurveyViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 
     var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
 
     LaunchedEffect(Unit) {
+        // 새로운 주문이 시작될 때 SurveyViewModel 초기화
+        surveyViewModel.reset()
+        surveyState = SurveyState.IN_PROGRESS
+        
         if (products.isEmpty()) {
             productViewModel.fetchProducts()
         }
