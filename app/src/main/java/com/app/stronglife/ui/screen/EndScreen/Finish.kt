@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,11 +39,16 @@ import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
 
+
 @Composable
 fun Finish(
+    apiKey: String,
     currentDrinkIndex: Int,
     totalDrinkCount: Int,
     isInProgress: Boolean,
+    surveyState: SurveyState,
+    onSurveyFinished: () -> Unit,
+    onSurveyError: () -> Unit,
     errorMessage: String? = null,
     onErrorConfirm: (() -> Unit)? = null
 ) {
@@ -77,28 +86,37 @@ fun Finish(
             verticalArrangement = Arrangement.Center
         ){
 
-
-
             Text(
-                text = if(isInProgress) stringResource(R.string.pay_done_title) else "소중한 의견 감사드립니다 \uD83D\uDE47\u200D♀\uFE0F",
+                text = when(surveyState) {
+                    SurveyState.SUCCESS ->
+                        "소중한 의견 감사드립니다 \uD83D\uDE47\u200D♀\uFE0F"
+
+                    else ->
+                        stringResource(R.string.pay_done_title)
+                },
                 fontSize = titleSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = black,
             )
             Spacer(modifier = Modifier.height(space2Dp))
             Text(
-                text = if(isInProgress) stringResource(R.string.pay_done_desc) else "음료 투출까지 잠시만 기다려주세요 !",
+                text = when(surveyState) {
+                    SurveyState.SUCCESS ->
+                        "음료 투출까지 잠시만 기다려주세요 !"
+
+                    else ->
+                        stringResource(R.string.pay_done_desc)
+                },
                 fontSize = descSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,
             )
-            Spacer(modifier = Modifier.height(space2Dp))
 
             if (isInProgress) {
                 Column(
-                    modifier = Modifier.width(barWidDp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     if (totalDrinkCount > 1) {
                         Text(
                             text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
@@ -112,11 +130,27 @@ fun Finish(
                         Spacer(Modifier.height(space1Dp))
                     }
 
-                    MakingBar(
-                        modifier = Modifier.fillMaxWidth(),
-                        stepSeconds = 20,
-                        resetKey = currentDrinkIndex
-                    )
+                    when (surveyState) {
+                        SurveyState.IN_PROGRESS -> {
+                            QuestionFlow(
+                                apiKey = apiKey,
+                                onFinished = { onSurveyFinished() },
+                                onError = {onSurveyError() }
+                            )
+                        }
+
+                        SurveyState.SUCCESS -> {
+                            Spacer(modifier = Modifier.height(space1Dp))
+                        }
+
+                        SurveyState.ERROR -> {
+                            ErrorBox(
+                                errorMsg = "설문 전송 실패",
+                                desMsg = "설문 전송에 실패했습니다. 음료 투출을 재시도 중입니다."
+                            ) { onSurveyError() }
+                        }
+
+                    }
                 }
             }
 
@@ -127,14 +161,71 @@ fun Finish(
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33)
 @Composable
 fun FinishPreview() {
-    Finish(
-        currentDrinkIndex = 1,
-        totalDrinkCount = 2,
-        isInProgress = true,
-        errorMessage = null,
-        onErrorConfirm = {}
-    )
+    val density = LocalDensity.current
+    val titleSp = with(density) {70f.toSp()}
+    val descSp = with(density) {32f.toSp()}
+    val space1Dp = with(density) {120f.toDp()}
+    val space2Dp = with(density) {32f.toDp()}
+    
+    var currentIndex by remember { mutableStateOf(0) }
+    var isAnswered by remember { mutableStateOf(false) }
+    val question = QuestionDatas[currentIndex]
+    
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.pay_done_title),
+            fontSize = titleSp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = black,
+        )
+        Spacer(modifier = Modifier.height(space2Dp))
+        Text(
+            text = stringResource(R.string.pay_done_desc),
+            fontSize = descSp,
+            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+            color = descGray,
+        )
+        
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(Modifier.height(space1Dp))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                QuestionRenderer(
+                    question = question,
+                    questionIndex = currentIndex,
+                    onAnswered = { 
+                        isAnswered = true 
+                    }
+                )
+                
+                PrevNextBox(
+                    isAnswered = isAnswered,
+                    onPrev = {
+                        if (currentIndex > 0) {
+                            currentIndex--
+                            isAnswered = false
+                        }
+                    },
+                    onNext = {
+                        if (currentIndex < QuestionDatas.size - 1) {
+                            currentIndex++
+                            isAnswered = false
+                        }
+                    }
+                )
+            }
+        }
+    }
 }

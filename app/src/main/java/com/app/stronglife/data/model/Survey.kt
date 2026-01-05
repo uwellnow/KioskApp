@@ -6,6 +6,5 @@ data class SurveyAnswer (
 )
 
 data class SurveyRequest(
-    val surveyId: Int,
     val answers: List<SurveyAnswer>
 )

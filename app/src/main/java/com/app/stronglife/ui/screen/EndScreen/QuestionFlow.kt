@@ -13,12 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.app.stronglife.viewmodel.SurveyViewModel
+import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
 fun QuestionFlow(
+    apiKey: String,
     viewModel: SurveyViewModel = viewModel(),
-    onFinished: () -> Unit
+    onFinished: () -> Unit,
+    onError: () -> Unit
 ) {
+    val userCodeViewModel = UserCodeViewModel.getInstance(com.app.stronglife.data.remote.RetrofitClient.api)
+    val userCode by userCodeViewModel.userCode
 
     val index by viewModel.currentIndex
     val answers by viewModel.answers
@@ -66,11 +71,17 @@ fun QuestionFlow(
                viewModel.prev()
             },
             onNext = {
-                if (index < QuestionDatas.lastIndex) {
-                    viewModel.next()
-                } else {
-                    onFinished()
-                }
+                viewModel.next(
+                    totalCount = QuestionDatas.size,
+                    onFinished = {
+                        viewModel.submitSurvey(
+                            apiKey = apiKey,
+                            userCode = if (userCode.isNotEmpty()) userCode else null,
+                            onSuccess = { onFinished() },
+                            onError = { onError() }
+                        )
+                    }
+                )
             }
         )
 
@@ -111,8 +122,22 @@ fun QuestionRenderer(
 
 
 
-@Preview(device = "spec:width=1920px,height=1080px,dpi=82")
+
+@Preview(device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33, showBackground = true)
 @Composable
 fun QuestionFlowPreview() {
-    QuestionFlow(onFinished = {})
+    // ViewModel 없이 UI만 표시하는 간단한 Preview
+    val currentIndex = remember { mutableStateOf(0) }
+    val question = QuestionDatas[currentIndex.value]
+    
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        QuestionRenderer(
+            question = question,
+            questionIndex = currentIndex.value,
+            onAnswered = { }
+        )
+    }
 }

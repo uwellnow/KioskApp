@@ -39,6 +39,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.runBlocking
 
+enum class SurveyState{
+    IN_PROGRESS,
+    SUCCESS,
+    ERROR
+}
+
 @Composable
 fun EndScreen(
     navController: NavController,
@@ -52,6 +58,7 @@ fun EndScreen(
     val products = productViewModel.products
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
 
+    var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
 
     LaunchedEffect(Unit) {
         if (products.isEmpty()) {
@@ -90,9 +97,17 @@ fun EndScreen(
     val isCurrentlyMaking = inProgress && totalJobs > 0
 
     Finish(
+        apiKey = apiKey,
         currentDrinkIndex = currentIndex,
         totalDrinkCount = totalJobs,
         isInProgress = isCurrentlyMaking,
+        surveyState = surveyState,
+        onSurveyFinished = {
+            surveyState = SurveyState.SUCCESS
+        },
+        onSurveyError = {
+            surveyState = SurveyState.ERROR
+        },
         errorMessage = lastError,
         onErrorConfirm = {
             navController.navigate("hello")

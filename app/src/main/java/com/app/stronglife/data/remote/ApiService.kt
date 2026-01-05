@@ -15,6 +15,7 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.model.SurveyRequest
 import com.app.stronglife.data.model.SystemStatus
 import retrofit2.Response
 import retrofit2.http.*
@@ -82,5 +83,12 @@ interface ApiService {
         @Query("since") since:String?,
         @Query("timeout") timeout: Int?,
     ): Response<List<SystemStatus>>
+
+    @POST("/survey/kiosk")
+    suspend fun submitSurvey(
+        @Header("x-api-key") apiKey: String,
+        @Header("userCode") userCode: String?,
+        @Body request: SurveyRequest
+    ): Response<Unit>
 
 }
