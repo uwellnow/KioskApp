@@ -63,6 +63,7 @@ fun UserInfoScreen(
     val loginResponse = userCodeViewModel.loginResponse.value
     val errorState by userCodeViewModel.errorState
     val userCode by userCodeViewModel.userCode
+    var isPurchasing by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -205,7 +206,9 @@ fun UserInfoScreen(
                     modifier = Modifier.size(widDp,heightDp)
                         .background(mainRed, RoundedCornerShape(roundDp))
                         .border(2.dp, mainRed, RoundedCornerShape(roundDp))
-                        .clickable{
+                        .clickable(enabled = !isPurchasing) {
+                            if (isPurchasing) return@clickable
+                            
                             Log.d("UserInfoScreen", "결제 버튼 클릭됨")
                             Log.d("UserInfoScreen", "주문번호: ${userCodeViewModel.userCode.value}")
                             Log.d("UserInfoScreen", "paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
@@ -217,6 +220,8 @@ fun UserInfoScreen(
                             
                             Log.d("UserInfoScreen", "상품 IDs: $productIds, 수량: $productCounts")
                             
+                            isPurchasing = true
+                            
                             // 구매 요청
                             userCodeViewModel.purchaseProductByOrder(
                                 apiKey = apiKey,
@@ -224,6 +229,7 @@ fun UserInfoScreen(
                                 productIds = productIds,
                                 productCounts = productCounts
                             ) { success ->
+                                isPurchasing = false
                                 Log.d("UserInfoScreen", "결제 결과: $success")
                                 if (success) {
                                     navController.navigate("paying")

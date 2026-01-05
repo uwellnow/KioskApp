@@ -19,7 +19,10 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -66,6 +69,7 @@ fun CouponInputCard(
     val spacerDp = with(density) { 60f.toDp() }
     val spacer2Dp = with(density) { 17f.toDp() }
 
+    var isPurchasing by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) {
@@ -111,39 +115,43 @@ fun CouponInputCard(
             Box(
                 modifier = Modifier
                     .background(
-                        if (viewModel.userCode.value.isNotEmpty()) mainRed else background,
+                        if (viewModel.userCode.value.isNotEmpty() && !isPurchasing) mainRed else background,
                         shape = RoundedCornerShape(roundDp)
                     )
                     .size(boxWidDp, boxHeiDp)
-                    .clickable(enabled = isFilled) {
-                        if (viewModel.userCode.value.isNotEmpty()) {
-                            // 쿠폰 구매 요청
-                            val productIds = cartViewModel.cartItems.value.map { it.product.id }
-                            val productCounts = cartViewModel.cartItems.value.map { it.quantity }
+                    .clickable(enabled = isFilled && !isPurchasing) {
+                        if (isPurchasing) return@clickable
+                        if (viewModel.userCode.value.isEmpty()) return@clickable
+                        
+                        // 쿠폰 구매 요청
+                        val productIds = cartViewModel.cartItems.value.map { it.product.id }
+                        val productCounts = cartViewModel.cartItems.value.map { it.quantity }
 
-                            viewModel.purchaseByCoupon(
-                                apiKey = apiKey,
-                                couponCode = viewModel.userCode.value,
-                                productIds = productIds,
-                                productCounts = productCounts
-                            ) { success ->
-                                if (success) {
-                                    onCouponSuccess()
-                                }
+                        isPurchasing = true
+
+                        viewModel.purchaseByCoupon(
+                            apiKey = apiKey,
+                            couponCode = viewModel.userCode.value,
+                            productIds = productIds,
+                            productCounts = productCounts
+                        ) { success ->
+                            isPurchasing = false
+                            if (success) {
+                                onCouponSuccess()
                             }
                         }
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(R.string.number_btn),
-                    style = TextStyle(
-                        fontSize = boxTextSp,
-                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                        fontWeight = FontWeight.Medium,
-                        color = if (viewModel.userCode.value.isNotEmpty()) Color.White else midGray
+                    Text(
+                        text = stringResource(R.string.number_btn),
+                        style = TextStyle(
+                            fontSize = boxTextSp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                            fontWeight = FontWeight.Medium,
+                            color = if (viewModel.userCode.value.isNotEmpty() && !isPurchasing) Color.White else midGray
+                        )
                     )
-                )
             }
         }
 

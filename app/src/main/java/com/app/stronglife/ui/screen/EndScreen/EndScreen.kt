@@ -31,6 +31,7 @@ import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
+import com.app.stronglife.viewmodel.SurveyViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -59,7 +60,9 @@ fun EndScreen(
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     
     // SurveyViewModel 초기화를 위해 가져오기
-    val surveyViewModel: com.app.stronglife.viewmodel.SurveyViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val surveyViewModel: com.app.stronglife.viewmodel.SurveyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = SurveyViewModelFactory(RetrofitClient.api)
+    )
 
     var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
 

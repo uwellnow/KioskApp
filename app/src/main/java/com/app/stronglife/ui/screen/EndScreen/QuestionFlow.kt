@@ -12,13 +12,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.viewmodel.SurveyViewModel
+import com.app.stronglife.viewmodel.SurveyViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
 fun QuestionFlow(
     apiKey: String,
-    viewModel: SurveyViewModel = viewModel(),
+    viewModel: SurveyViewModel = viewModel(factory = SurveyViewModelFactory(RetrofitClient.api)),
     onFinished: () -> Unit,
     onError: () -> Unit
 ) {
