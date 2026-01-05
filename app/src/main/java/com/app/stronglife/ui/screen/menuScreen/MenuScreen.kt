@@ -41,7 +41,15 @@ import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.ProductViewModel
+import com.app.stronglife.viewmodel.Gs805ViewModel
 import kotlinx.coroutines.delay
+
+sealed class MachineError {
+    object WaterShortage : MachineError()
+    object CupShortage : MachineError()
+    data class OtherError(val code: Int) : MachineError()
+    object SerialError : MachineError()
+}
 
 @Composable
 fun MenuScreen(
@@ -51,24 +59,45 @@ fun MenuScreen(
     apiKey: String = "",
     languageManager: com.app.stronglife.util.LanguageManager
 ) {
-
+    val gs805ViewModel: Gs805ViewModel = viewModel()
+    var machineError by remember { mutableStateOf<MachineError?>(null) }
 
     val isLoading = viewModel.isLoading
     val error = viewModel.errorMessage
     val currentDetail = viewModel.currentDetail
 
     LaunchedEffect(Unit) {
-        println("MenuScreen: 제품 정보 로드 시작")
         if (apiKey.isNotEmpty()) {
             viewModel.setApiKey(apiKey)
-            println("MenuScreen: API 키 설정 완료")
         }
         viewModel.fetchProducts()
         if (apiKey.isNotEmpty()) {
-            println("MenuScreen: 재고 정보 로드 시작")
-            viewModel.fetchStocks(forceRefresh = true)  // 매번 최신 재고 정보 갱신
+            viewModel.fetchStocks(forceRefresh = true)
         } else {
             println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
+        }
+
+        val serialOk = gs805ViewModel.startSerial()
+        if (serialOk) {
+            try {
+                val queryResult = gs805ViewModel.queryErrorCode(retries = 10)
+                val errorCode = queryResult.businessResult
+                
+                machineError = when {
+                    errorCode == 0x00 -> null
+                    errorCode == 0x01 -> MachineError.WaterShortage
+                    errorCode == 0x02 -> MachineError.CupShortage
+                    errorCode == -1 -> MachineError.SerialError
+                    queryResult.responseHex == null -> MachineError.SerialError
+                    else -> MachineError.OtherError(errorCode)
+                }
+            } catch (e: Exception) {
+                machineError = MachineError.SerialError
+            } finally {
+                gs805ViewModel.stopSerial()
+            }
+        } else {
+            // 시리얼 연결 실패는 무시 (기기 없을 수도 있음)
         }
     }
 

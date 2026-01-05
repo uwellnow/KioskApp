@@ -77,10 +77,10 @@ class Gs805ViewModel : ViewModel(), SerialListener {
         null
 }
 
-    suspend fun queryErrorCode(): SerialResult<Int> {
+    suspend fun queryErrorCode(retries: Int = 100): SerialResult<Int> {
         val frame = Gs805Protocol.queryErrorCode()
         val dataOnly = frame.copyOfRange(4, frame.size - 1)
-        val respBytes = sendAndAwait(0x0C, dataOnly, timeoutMs = 300L)
+        val respBytes = sendAndAwait(0x0C, dataOnly, retries = retries, timeoutMs = 300L)
 
         val errCode = if (respBytes != null && respBytes.size > 4) {
             respBytes[4].toInt() and 0xFF
