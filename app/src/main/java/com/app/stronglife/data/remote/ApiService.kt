@@ -84,7 +84,7 @@ interface ApiService {
         @Query("timeout") timeout: Int?,
     ): Response<List<SystemStatus>>
 
-    @POST("/survey/kiosk")
+    @POST("survey/kiosk")
     suspend fun submitSurvey(
         @Header("x-api-key") apiKey: String,
         @Header("userCode") userCode: String?,

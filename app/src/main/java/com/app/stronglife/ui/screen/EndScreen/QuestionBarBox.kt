@@ -145,7 +145,7 @@ fun QuestionBarBox(
                     Row(
                         modifier = Modifier.fillMaxWidth()
                             .drawBehind {
-                                val centerY = size.height / 2f - 75.dp.toPx()
+                                val centerY = size.height / 2f - 58.dp.toPx()
                                 drawRect(
                                     color = mainRed.copy(alpha = 0.5f),
                                     topLeft = androidx.compose.ui.geometry.Offset(130f, centerY),

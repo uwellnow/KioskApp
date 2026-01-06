@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.viewmodel.SurveyViewModel
 import com.app.stronglife.viewmodel.SurveyViewModelFactory
@@ -22,7 +23,8 @@ fun QuestionFlow(
     apiKey: String,
     viewModel: SurveyViewModel = viewModel(factory = SurveyViewModelFactory(RetrofitClient.api)),
     onFinished: () -> Unit,
-    onError: () -> Unit
+    onError: () -> Unit,
+    kioskLogger: KioskLogger? = null
 ) {
     val userCodeViewModel = UserCodeViewModel.getInstance(com.app.stronglife.data.remote.RetrofitClient.api)
     val userCode by userCodeViewModel.userCode
@@ -80,7 +82,8 @@ fun QuestionFlow(
                             apiKey = apiKey,
                             userCode = if (userCode.isNotEmpty()) userCode else null,
                             onSuccess = { onFinished() },
-                            onError = { onError() }
+                            onError = { onError() },
+                            kioskLogger = kioskLogger
                         )
                     }
                 )

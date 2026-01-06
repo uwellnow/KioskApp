@@ -38,7 +38,7 @@ import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
-
+import com.app.stronglife.data.remote.KioskLogger
 
 @Composable
 fun Finish(
@@ -50,7 +50,8 @@ fun Finish(
     onSurveyFinished: () -> Unit,
     onSurveyError: () -> Unit,
     errorMessage: String? = null,
-    onErrorConfirm: (() -> Unit)? = null
+    onErrorConfirm: (() -> Unit)? = null,
+    kioskLogger: KioskLogger? = null
 ) {
     val density = LocalDensity.current
     val barWidDp = with(density) {1140f.toDp()}
@@ -59,6 +60,7 @@ fun Finish(
     val counterSp = with(density) { 36f.toSp() }
     val space1Dp = with(density) {120f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
+    val space3Dp = with(density) {64f.toDp()}
 
     if (errorMessage != null) {
         Box(
@@ -67,13 +69,27 @@ fun Finish(
                 .background(Color.White),
             contentAlignment = Alignment.Center
         ) {
-            // ErrorBox 시그니처에 맞춤
             ErrorBox(
                 errorMsg = "출하 실패",
                 desMsg = "제품 출하에 실패했습니다. 환불을 위해 유웰나우 카카오채널로 문의해 주세요"
             ) {
                 onErrorConfirm?.invoke()
             }
+        }
+        return
+    }
+
+    if (surveyState == SurveyState.ERROR) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            ErrorBox(
+                errorMsg = "설문 전송 실패",
+                desMsg = "설문 전송에 실패했습니다."
+            ) { onSurveyError() }
         }
         return
     }
@@ -119,8 +135,9 @@ fun Finish(
 
                     if (totalDrinkCount > 1) {
                         if (surveyState == SurveyState.SUCCESS) {
-                            Spacer(Modifier.height(space1Dp))
+                            Spacer(Modifier.height(space3Dp))
                         }
+                        Spacer(Modifier.height(space2Dp))
                         Text(
                             text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
                             fontSize = counterSp,
@@ -128,8 +145,11 @@ fun Finish(
                             color = Color(0xFF222222),
                             textAlign = TextAlign.Center
                         )
+                        Spacer(Modifier.height(space2Dp))
                     } else {
-                        Spacer(Modifier.height(space1Dp))
+                        if (surveyState != SurveyState.SUCCESS) {
+                            Spacer(Modifier.height(space3Dp))
+                        }
                     }
 
                     when (surveyState) {
@@ -137,19 +157,15 @@ fun Finish(
                             QuestionFlow(
                                 apiKey = apiKey,
                                 onFinished = { onSurveyFinished() },
-                                onError = {onSurveyError() }
+                                onError = {onSurveyError() },
+                                kioskLogger = kioskLogger
                             )
                         }
 
                         SurveyState.SUCCESS -> {
-                            Spacer(modifier = Modifier.height(space1Dp))
                         }
 
                         SurveyState.ERROR -> {
-                            ErrorBox(
-                                errorMsg = "설문 전송 실패",
-                                desMsg = "설문 전송에 실패했습니다. 음료 투출을 재시도 중입니다."
-                            ) { onSurveyError() }
                         }
 
                     }
@@ -169,8 +185,8 @@ fun FinishPreview() {
     Finish(
         apiKey = "20250000",
         currentDrinkIndex = 1,
-        totalDrinkCount = 1,
-        isInProgress = false,
+        totalDrinkCount = 2,
+        isInProgress = true,
         surveyState = SurveyState.SUCCESS,
         onSurveyFinished = {},
         onSurveyError = {},

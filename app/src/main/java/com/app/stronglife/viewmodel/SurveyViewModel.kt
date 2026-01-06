@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.app.stronglife.data.model.SurveyAnswer
 import com.app.stronglife.data.model.SurveyRequest
 import com.app.stronglife.data.remote.ApiService
+import com.app.stronglife.data.remote.KioskLogger
 import kotlinx.coroutines.launch
 
 class SurveyViewModel(
@@ -43,7 +44,8 @@ class SurveyViewModel(
         apiKey: String,
         userCode: String?,
         onSuccess: () -> Unit,
-        onError: () -> Unit
+        onError: () -> Unit,
+        kioskLogger: KioskLogger? = null
     ) {
         viewModelScope.launch {
             try {
@@ -53,14 +55,42 @@ class SurveyViewModel(
                     }
                 )
 
-                api.submitSurvey(
+                println("Survey 제출 시작 - API Key: $apiKey, UserCode: $userCode")
+                println("Survey 요청 데이터: ${request.answers}")
+
+                val response = api.submitSurvey(
                     apiKey = apiKey,
                     userCode = userCode,
                     request = request
                 )
 
-                onSuccess()
+                if (response.isSuccessful) {
+                    println("Survey 제출 성공")
+                    onSuccess()
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMessage = "Survey 제출 실패 - HTTP ${response.code()}: $errorBody"
+                    println(errorMessage)
+                    
+                    // 서버로 에러 로그 전송
+                    kioskLogger?.logEvent(
+                        detail = "SurveySubmitError: HTTP ${response.code()}, UserCode: $userCode, Answers: ${request.answers}, ErrorBody: $errorBody",
+                        isError = true
+                    )
+                    
+                    onError()
+                }
             } catch (e: Exception) {
+                val errorMessage = "Survey 제출 예외 발생: ${e.message}"
+                println(errorMessage)
+                e.printStackTrace()
+                
+                // 서버로 에러 로그 전송
+                kioskLogger?.logEvent(
+                    detail = "SurveySubmitException: ${e.javaClass.simpleName} - ${e.message}, UserCode: $userCode, Answers: ${answers.value}",
+                    isError = true
+                )
+                
                 onError()
             }
         }

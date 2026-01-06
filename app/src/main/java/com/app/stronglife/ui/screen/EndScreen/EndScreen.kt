@@ -118,6 +118,7 @@ fun EndScreen(
         onSurveyError = {
             surveyState = SurveyState.ERROR
         },
+        kioskLogger = kioskLogger,
         errorMessage = lastError,
         onErrorConfirm = {
             navController.navigate("hello")
