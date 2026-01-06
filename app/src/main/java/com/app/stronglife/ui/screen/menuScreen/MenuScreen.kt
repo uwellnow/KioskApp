@@ -42,6 +42,9 @@ import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel
+import com.app.stronglife.data.remote.KioskLogger
+import com.app.stronglife.data.remote.RetrofitClient
+import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.delay
 
 sealed class MachineError {
@@ -61,6 +64,21 @@ fun MenuScreen(
 ) {
     val gs805ViewModel: Gs805ViewModel = viewModel()
     var machineError by remember { mutableStateOf<MachineError?>(null) }
+    val scope = rememberCoroutineScope()
+
+    val kioskLogger = remember(apiKey) {
+        if (apiKey.isNotEmpty()) {
+            KioskLogger(
+                apiKey = apiKey,
+                service = RetrofitClient.api,
+                externalScope = scope,
+                machineId = apiKey.toLongOrNull() ?: 0L,
+                storeName = "스트롱라이프 GFC점"
+            )
+        } else {
+            null
+        }
+    }
 
     val isLoading = viewModel.isLoading
     val error = viewModel.errorMessage
@@ -77,27 +95,67 @@ fun MenuScreen(
             println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
         }
 
-        val serialOk = gs805ViewModel.startSerial()
+        val wasSerialRunning = gs805ViewModel.isSerialRunning()
+        kioskLogger?.logEvent("MenuScreen: wasSerialRunning=$wasSerialRunning", false)
+        
+        val serialOk = if (wasSerialRunning) {
+            true // 이미 실행 중이면 OK로 간주
+        } else {
+            val started = gs805ViewModel.startSerial()
+            kioskLogger?.logEvent("MenuScreen: startSerial()=$started", !started)
+            started
+        }
+        
         if (serialOk) {
             try {
-                val queryResult = gs805ViewModel.queryErrorCode(retries = 10)
+                if (!wasSerialRunning) {
+                    delay(500)
+                }
+                kioskLogger?.logEvent("MenuScreen: Calling queryErrorCode()", false)
+                val queryResult = gs805ViewModel.queryErrorCode()
+                kioskLogger?.logEvent("MenuScreen: queryErrorCode() completed, responseHex=${queryResult.responseHex}", queryResult.responseHex == null)
                 val errorCode = queryResult.businessResult
+
+                kioskLogger?.logEvent(
+                    detail = "MenuScreen QueryErrorCode: errorCode=0x${errorCode.toString(16)}, responseHex=${queryResult.responseHex}",
+                    isError = (errorCode != 0x00 && errorCode != -1),
+                    commandHex = queryResult.sentHex,
+                    responseHex = queryResult.responseHex
+                )
                 
                 machineError = when {
                     errorCode == 0x00 -> null
-                    errorCode == 0x01 -> MachineError.WaterShortage
-                    errorCode == 0x02 -> MachineError.CupShortage
-                    errorCode == -1 -> MachineError.SerialError
-                    queryResult.responseHex == null -> MachineError.SerialError
-                    else -> MachineError.OtherError(errorCode)
+                    errorCode == 0x01 -> {
+                        kioskLogger?.logEvent("MenuScreen MachineError: WaterShortage (0x01)", true)
+                        MachineError.WaterShortage
+                    }
+                    errorCode == 0x02 -> {
+                        kioskLogger?.logEvent("MenuScreen MachineError: CupShortage (0x02)", true)
+                        MachineError.CupShortage
+                    }
+                    errorCode == -1 -> {
+                        kioskLogger?.logEvent("MenuScreen MachineError: SerialError (response null or -1)", true)
+                        MachineError.SerialError
+                    }
+                    queryResult.responseHex == null -> {
+                        kioskLogger?.logEvent("MenuScreen MachineError: SerialError (responseHex null)", true)
+                        MachineError.SerialError
+                    }
+                    else -> {
+                        kioskLogger?.logEvent("MenuScreen MachineError: OtherError (0x${errorCode.toString(16)})", true)
+                        MachineError.OtherError(errorCode)
+                    }
                 }
             } catch (e: Exception) {
+                kioskLogger?.logEvent("MenuScreen MachineError: Exception - ${e.javaClass.simpleName}: ${e.message}", true)
                 machineError = MachineError.SerialError
             } finally {
-                gs805ViewModel.stopSerial()
+                if (!wasSerialRunning) {
+                    gs805ViewModel.stopSerial()
+                }
             }
         } else {
-            // 시리얼 연결 실패는 무시 (기기 없을 수도 있음)
+            kioskLogger?.logEvent("MenuScreen: Serial connection failed (ignored)", false)
         }
     }
 
@@ -150,11 +208,52 @@ fun MenuScreen(
         }
 
         when {
+            machineError is MachineError.WaterShortage -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorBox("물 부족", "물이 부족합니다. 관리자에게 문의하세요.") {
+                        machineError = null
+                        navController.navigate("hello") { popUpTo(0) }
+                    }
+                }
+            }
+            machineError is MachineError.CupShortage -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorBox("컵 부족", "컵이 부족합니다. 관리자에게 문의하세요.") {
+                        machineError = null
+                        navController.navigate("hello") { popUpTo(0) }
+                    }
+                }
+            }
+            machineError is MachineError.OtherError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ErrorBox("기기 오류", "기기 오류가 발생했습니다. (에러 코드: 0x${(machineError as MachineError.OtherError).code.toString(16)})") {
+                        machineError = null
+                        navController.navigate("hello") { popUpTo(0) }
+                    }
+                }
+            }
+            machineError is MachineError.SerialError -> {
+            }
             cupShortage -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White), // 뒷배경 흐리게
+                        .background(Color.White),
                     contentAlignment = Alignment.Center
                 ) {
                     ErrorBox("컵 부족", "컵이 부족합니다. 관리자에게 문의해 주세요"){

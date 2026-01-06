@@ -133,19 +133,21 @@ class Gs805ViewModel : ViewModel(), SerialListener {
 
         if (cmd == 0x0C) {
             val code = b[4].toInt() and 0xFF
-            if (code == 0x00) {
-                // 0x0C 응답만 waiter에 전달
-                pending.remove(cmd)?.complete(b)
-                return
-            } else {
-                // 비동기 이벤트
+            // 0x0C 응답은 항상 waiter에 전달 (queryErrorCode가 응답을 받을 수 있도록)
+            val waiter = pending.remove(cmd)
+            if (waiter != null) {
+                waiter.complete(b)
+            }
+            
+            // 추가로 이벤트도 발행 (0x00이 아닌 경우)
+            if (code != 0x00) {
                 when (code) {
                     0x05 -> _events.tryEmit(MachineEvent.CupDropped(hex))
                     0x10 -> _events.tryEmit(MachineEvent.DrinkCompleted(hex))
                     else -> _events.tryEmit(MachineEvent.ErrorCode(code))
                 }
-                return
             }
+            return
         }
 
         // 그 외 명령의 응답
