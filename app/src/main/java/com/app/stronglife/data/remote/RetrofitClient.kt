@@ -9,6 +9,7 @@ import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+//    private const val BASE_URL = "http://10.0.2.2:8000/api/"
     private const val BASE_URL = "http://manage-uwellnow.com/api/"
 
     private val logging = HttpLoggingInterceptor().apply {

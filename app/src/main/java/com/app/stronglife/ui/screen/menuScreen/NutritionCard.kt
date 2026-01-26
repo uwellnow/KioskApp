@@ -100,25 +100,17 @@ fun NutrientCard(nutrition: Nutrition, lang: String) {
 
             Spacer(modifier = Modifier.height(space3Dp))
 
-        val showValue = try {
-            nutrition.value.toDouble() != 0.0
-        } catch (e: NumberFormatException) {
-            true
-        }
-
-        if (showValue) {
-            Text(
-                text = "${NumberWithComma(nutrition.value)}${nutrition.unit}",
-                style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = unitText,
-                    color = black
-                )
+        Text(
+            text = "${NumberWithComma(nutrition.value)}${nutrition.unit}",
+            style = TextStyle(
+                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                fontWeight = FontWeight.Bold,
+                fontSize = unitText,
+                color = black
             )
+        )
 
-            Spacer(modifier = Modifier.height(10.dp))
-        }
+        Spacer(modifier = Modifier.height(10.dp))
 
             Text(
                 text = nutrition.name,

@@ -109,7 +109,6 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(Unit) {
                         SystemStatusManager.statusFlow.collectLatest { status ->
                             if (status?.isActive == true) {
-                                Log.i("MainActivity", "!!! ErrorBox 표시 - statusType: ${status.statusType}")
                                 errorDetails = when (status.statusType) {
                                     "MACHINE" -> Pair(
                                         "기기 점검 중",
@@ -124,7 +123,6 @@ class MainActivity : ComponentActivity() {
                                         "시스템 점검 중입니다 (코드: ${status.statusType})"
                                     )
                                 }
-                                Log.d("MainActivity", "errorDetails 설정됨: $errorDetails")
                             } else {
                                 if (errorDetails != null) {
                                     Log.i("MainActivity", "점검 상태 해제됨 (기존 errorDetails: $errorDetails)")

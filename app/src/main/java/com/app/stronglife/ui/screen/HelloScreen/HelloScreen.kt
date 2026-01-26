@@ -40,6 +40,7 @@ import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import com.app.stronglife.viewmodel.SurveyViewModelFactory
 
 @Composable
 fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
@@ -49,7 +50,10 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
 
     val langTag by languageManager.languageTag.collectAsState()
 
-    // apiKey가 없으면 register 화면으로 이동
+    val surveyViewModel: com.app.stronglife.viewmodel.SurveyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = SurveyViewModelFactory(RetrofitClient.api)
+    )
+
     LaunchedEffect(apiKey) {
         if (!prefsManager.hasApiKey()) {
             navController.navigate("register") {
@@ -63,6 +67,7 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
         userViewModel.sendApiKey(apiKey) // API Key 전송
         UserCodeViewModel.getInstance(RetrofitClient.api).resetAll()
         cartViewModel.clearCart()
+        surveyViewModel.reset()
     }
 
     val density = LocalDensity.current

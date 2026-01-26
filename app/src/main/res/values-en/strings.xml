@@ -3,6 +3,7 @@
     <string name="time_pre">Pre</string>
     <string name="time_intra">Intra</string>
     <string name="time_post">Post</string>
+    <string name="time_detox">detox</string>
 
     <string name="hello">Touch the screen to start your order</string>
     <string name="top_1">Intake Timing</string>
@@ -46,8 +47,8 @@
     <string name="info_box_remain">Balance After Deduction</string>
     <string name="not_me">This is not my account</string>
     <string name="yes_me">Yes, that\'s correct</string>
-    <string name="pay_done_title">Preparing your drink</string>
-    <string name="pay_done_desc">It takes about 1 minute to complete. Please wait a moment.</string>
+    <string name="pay_done_title">It takes about a minute to make the drink.</string>
+    <string name="pay_done_desc">Please answer the 3 questions while waiting!</string>
 
     <string name="make_1">Water Supply</string>
     <string name="make_2">Dispensing</string>

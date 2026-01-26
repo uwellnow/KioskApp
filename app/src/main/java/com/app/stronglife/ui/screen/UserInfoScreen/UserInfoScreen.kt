@@ -63,19 +63,8 @@ fun UserInfoScreen(
     val loginResponse = userCodeViewModel.loginResponse.value
     val errorState by userCodeViewModel.errorState
     val userCode by userCodeViewModel.userCode
+    var isPurchasing by remember { mutableStateOf(false) }
 
-    // 화면 진입 시 주문번호 확인
-    LaunchedEffect(Unit) {
-        Log.d("UserInfoScreen", "화면 진입 - 주문번호: ${userCodeViewModel.userCode.value}")
-        Log.d("UserInfoScreen", "화면 진입 - paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
-    }
-
-    // userCode 상태 변화 모니터링
-    LaunchedEffect(userCode) {
-        Log.d("UserInfoScreen", "userCode 상태 변화: $userCode")
-    }
-
-    // 화면을 떠날 때 에러 상태 초기화
     DisposableEffect(Unit) {
         onDispose {
             userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
@@ -89,10 +78,7 @@ fun UserInfoScreen(
     val roundDp = with(density) {46f.toDp()}
 
 
-
-    // 에러 상태 로깅
     LaunchedEffect(errorState) {
-        Log.d("UserInfoScreen", "Error state changed: $errorState")
         when (val error = errorState) {
             is UserCodeViewModel.UiError.None -> Log.d("UserInfoScreen", "No error")
             is UserCodeViewModel.UiError.NotFound -> Log.d("UserInfoScreen", "NotFound error")
@@ -103,21 +89,11 @@ fun UserInfoScreen(
         }
     }
 
-    // 에러 상태 변화를 실시간으로 모니터링
-    Log.d("UserInfoScreen", "Current error state: $errorState")
-    
-    // 에러 상태가 None이 아닌 경우 로그 출력
-    if (errorState !is UserCodeViewModel.UiError.None) {
-        Log.d("UserInfoScreen", "Non-None error state detected: $errorState")
-    }
-
     // 에러 상태에 따른 처리
     when (val error = errorState) {
         is UserCodeViewModel.UiError.None -> {
-            Log.d("UserInfoScreen", "No error state")
         }
         is UserCodeViewModel.UiError.NotFound -> {
-            Log.d("UserInfoScreen", "Showing NotFound error")
             MemberErrorBox(onConfirm = {
                 userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
                 navController.popBackStack()
@@ -125,7 +101,6 @@ fun UserInfoScreen(
             return
         }
         is UserCodeViewModel.UiError.InsufficientBalance -> {
-            Log.d("UserInfoScreen", "Showing InsufficientBalance error")
             ErrorBox("결제 실패", "잔여 잔 수가 부족합니다") {
                 userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
                 navController.navigate("cart")
@@ -133,21 +108,18 @@ fun UserInfoScreen(
             return
         }
         is UserCodeViewModel.UiError.OutOfStock -> {
-            Log.d("UserInfoScreen", "Showing OutOfStock error")
             ErrorBox("결제 실패", "재고가 부족합니다") {
                 userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
             }
             return
         }
         is UserCodeViewModel.UiError.Generic -> {
-            Log.d("UserInfoScreen", "Showing Generic error: ${error.message}")
             ErrorBox("오류", error.message) {
                 userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
             }
             return
         }
         is UserCodeViewModel.UiError.Exception -> {
-            Log.d("UserInfoScreen", "Showing Exception error: ${error.throwable.message}")
             ErrorBox("예외 발생", "다시 한 번 시도해 주세요") {
                 userCodeViewModel.errorState.value = UserCodeViewModel.UiError.None
             }
@@ -234,7 +206,9 @@ fun UserInfoScreen(
                     modifier = Modifier.size(widDp,heightDp)
                         .background(mainRed, RoundedCornerShape(roundDp))
                         .border(2.dp, mainRed, RoundedCornerShape(roundDp))
-                        .clickable{
+                        .clickable(enabled = !isPurchasing) {
+                            if (isPurchasing) return@clickable
+                            
                             Log.d("UserInfoScreen", "결제 버튼 클릭됨")
                             Log.d("UserInfoScreen", "주문번호: ${userCodeViewModel.userCode.value}")
                             Log.d("UserInfoScreen", "paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
@@ -246,6 +220,8 @@ fun UserInfoScreen(
                             
                             Log.d("UserInfoScreen", "상품 IDs: $productIds, 수량: $productCounts")
                             
+                            isPurchasing = true
+                            
                             // 구매 요청
                             userCodeViewModel.purchaseProductByOrder(
                                 apiKey = apiKey,
@@ -253,6 +229,7 @@ fun UserInfoScreen(
                                 productIds = productIds,
                                 productCounts = productCounts
                             ) { success ->
+                                isPurchasing = false
                                 Log.d("UserInfoScreen", "결제 결과: $success")
                                 if (success) {
                                     navController.navigate("paying")

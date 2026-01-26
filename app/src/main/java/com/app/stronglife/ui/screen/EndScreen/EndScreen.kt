@@ -31,6 +31,7 @@ import com.app.stronglife.viewmodel.Gs805ViewModel
 import com.app.stronglife.viewmodel.Gs805ViewModel.MachineEvent
 import com.app.stronglife.viewmodel.ProductViewModel
 import com.app.stronglife.viewmodel.ProductViewModelFactory
+import com.app.stronglife.viewmodel.SurveyViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -38,6 +39,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.runBlocking
+
+enum class SurveyState{
+    IN_PROGRESS,
+    SUCCESS,
+    ERROR
+}
 
 @Composable
 fun EndScreen(
@@ -51,9 +58,19 @@ fun EndScreen(
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
+    
+    // SurveyViewModel 초기화를 위해 가져오기
+    val surveyViewModel: com.app.stronglife.viewmodel.SurveyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(
+        factory = SurveyViewModelFactory(RetrofitClient.api)
+    )
 
+    var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
 
     LaunchedEffect(Unit) {
+        // 새로운 주문이 시작될 때 SurveyViewModel 초기화
+        surveyViewModel.reset()
+        surveyState = SurveyState.IN_PROGRESS
+        
         if (products.isEmpty()) {
             productViewModel.fetchProducts()
         }
@@ -90,9 +107,18 @@ fun EndScreen(
     val isCurrentlyMaking = inProgress && totalJobs > 0
 
     Finish(
+        apiKey = apiKey,
         currentDrinkIndex = currentIndex,
         totalDrinkCount = totalJobs,
         isInProgress = isCurrentlyMaking,
+        surveyState = surveyState,
+        onSurveyFinished = {
+            surveyState = SurveyState.SUCCESS
+        },
+        onSurveyError = {
+            surveyState = SurveyState.ERROR
+        },
+        kioskLogger = kioskLogger,
         errorMessage = lastError,
         onErrorConfirm = {
             navController.navigate("hello")

@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,14 +38,20 @@ import com.app.stronglife.ui.component.ErrorBox
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
+import com.app.stronglife.data.remote.KioskLogger
 
 @Composable
 fun Finish(
+    apiKey: String,
     currentDrinkIndex: Int,
     totalDrinkCount: Int,
     isInProgress: Boolean,
+    surveyState: SurveyState,
+    onSurveyFinished: () -> Unit,
+    onSurveyError: () -> Unit,
     errorMessage: String? = null,
-    onErrorConfirm: (() -> Unit)? = null
+    onErrorConfirm: (() -> Unit)? = null,
+    kioskLogger: KioskLogger? = null
 ) {
     val density = LocalDensity.current
     val barWidDp = with(density) {1140f.toDp()}
@@ -50,6 +60,7 @@ fun Finish(
     val counterSp = with(density) { 36f.toSp() }
     val space1Dp = with(density) {120f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
+    val space3Dp = with(density) {64f.toDp()}
 
     if (errorMessage != null) {
         Box(
@@ -58,13 +69,27 @@ fun Finish(
                 .background(Color.White),
             contentAlignment = Alignment.Center
         ) {
-            // ErrorBox 시그니처에 맞춤
             ErrorBox(
                 errorMsg = "출하 실패",
                 desMsg = "제품 출하에 실패했습니다. 환불을 위해 유웰나우 카카오채널로 문의해 주세요"
             ) {
                 onErrorConfirm?.invoke()
             }
+        }
+        return
+    }
+
+    if (surveyState == SurveyState.ERROR) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            contentAlignment = Alignment.Center
+        ) {
+            ErrorBox(
+                errorMsg = "설문 전송 실패",
+                desMsg = "설문 전송에 실패했습니다."
+            ) { onSurveyError() }
         }
         return
     }
@@ -77,46 +102,73 @@ fun Finish(
             verticalArrangement = Arrangement.Center
         ){
 
-
-
             Text(
-                text = stringResource(R.string.pay_done_title),
+                text = when(surveyState) {
+                    SurveyState.SUCCESS ->
+                        "소중한 의견 감사드립니다 \uD83D\uDE47\u200D♀\uFE0F"
+
+                    else ->
+                        stringResource(R.string.pay_done_title)
+                },
                 fontSize = titleSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                 color = black,
             )
             Spacer(modifier = Modifier.height(space2Dp))
             Text(
-                text = stringResource(R.string.pay_done_desc),
+                text = when(surveyState) {
+                    SurveyState.SUCCESS ->
+                        "음료 투출까지 잠시만 기다려주세요 !"
+
+                    else ->
+                        stringResource(R.string.pay_done_desc)
+                },
                 fontSize = descSp,
                 fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                 color = descGray,
             )
-            Spacer(modifier = Modifier.height(space2Dp))
 
             if (isInProgress) {
                 Column(
-                    modifier = Modifier.width(barWidDp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
                     if (totalDrinkCount > 1) {
+                        if (surveyState == SurveyState.SUCCESS) {
+                            Spacer(Modifier.height(space3Dp))
+                        }
+                        Spacer(Modifier.height(space2Dp))
                         Text(
                             text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
                             fontSize = counterSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                            color = black,
+                            color = Color(0xFF222222),
                             textAlign = TextAlign.Center
                         )
-                        Spacer(Modifier.height(space1Dp))
+                        Spacer(Modifier.height(space2Dp))
                     } else {
-                        Spacer(Modifier.height(space1Dp))
+                        if (surveyState != SurveyState.SUCCESS) {
+                            Spacer(Modifier.height(space3Dp))
+                        }
                     }
 
-                    MakingBar(
-                        modifier = Modifier.fillMaxWidth(),
-                        stepSeconds = 20,
-                        resetKey = currentDrinkIndex
-                    )
+                    when (surveyState) {
+                        SurveyState.IN_PROGRESS -> {
+                            QuestionFlow(
+                                apiKey = apiKey,
+                                onFinished = { onSurveyFinished() },
+                                onError = {onSurveyError() },
+                                kioskLogger = kioskLogger
+                            )
+                        }
+
+                        SurveyState.SUCCESS -> {
+                        }
+
+                        SurveyState.ERROR -> {
+                        }
+
+                    }
                 }
             }
 
@@ -127,4 +179,16 @@ fun Finish(
     }
 }
 
-
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33)
+@Composable
+fun FinishPreview() {
+    Finish(
+        apiKey = "20250000",
+        currentDrinkIndex = 1,
+        totalDrinkCount = 2,
+        isInProgress = true,
+        surveyState = SurveyState.SUCCESS,
+        onSurveyFinished = {},
+        onSurveyError = {},
+    )
+}

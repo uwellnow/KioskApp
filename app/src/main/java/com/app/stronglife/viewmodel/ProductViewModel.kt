@@ -60,14 +60,24 @@ class ProductViewModel(
             return
         }
 
+        if (apiKey.isEmpty()) {
+            println("API 키가 설정되지 않아 제품 정보를 가져올 수 없습니다.")
+            errorMessage = "API 키가 설정되지 않았습니다."
+            return
+        }
+
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
             try {
-                val result = apiService.getProducts()
+                println("제품 정보 API 호출 시작 - API 키: $apiKey")
+                val result = apiService.getProducts(apiKey)
                 products = result
+                println("제품 정보 로드 완료: ${products.size}개 상품")
             } catch (e: Exception) {
                 errorMessage = e.message
+                println("제품 정보 로드 실패: ${e.message}")
+                e.printStackTrace()
             } finally {
                 isLoading = false
             }
