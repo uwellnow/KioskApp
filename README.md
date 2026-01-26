@@ -7,6 +7,12 @@
 - RAM: 2GB
 - 저장공간: 16GB
 
+## 브랜치 구분
+- `main` : 기기 테스트 완료 및 현재 운영중인 버전
+- `dev-main` : `dev-product` / `dev-recipe` 에서 에뮬레이터 테스트 완료 된 버전 -> 기기 테스트 필요
+- `dev-product` : 레시피 추천 들어가지 않은 버전
+- `dev-recipe` : 레시피 추천 들어간 버전 
+
 ## 디렉토리 구조 및 파일 설명
 ```
 StrongLife/
