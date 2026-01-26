@@ -9,11 +9,15 @@ import retrofit2.create
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-//    private const val BASE_URL = "http://10.0.2.2:8000/api/"
-    private const val BASE_URL = "http://manage-uwellnow.com/api/"
+    private const val BASE_URL = "http://10.0.2.2:8000/api/"
+//    private const val BASE_URL = "http://manage-uwellnow.com/api/"
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val pollingLogging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.NONE  // polling 요청은 로그 안 찍음
     }
 
     private val client = OkHttpClient.Builder()
@@ -21,7 +25,7 @@ object RetrofitClient {
         .build()
 
     private val pollingClient = OkHttpClient.Builder()
-        .addInterceptor(logging)
+        .addInterceptor(pollingLogging)  // NONE 레벨로 로그 차단
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(65, TimeUnit.SECONDS)
         .build()

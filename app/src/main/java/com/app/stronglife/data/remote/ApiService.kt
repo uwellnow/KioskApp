@@ -15,6 +15,8 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.model.KioskResponse
+import com.app.stronglife.data.model.ProductsByPurposeResponse
 import com.app.stronglife.data.model.SurveyRequest
 import com.app.stronglife.data.model.SystemStatus
 import retrofit2.Response
@@ -30,12 +32,17 @@ interface ApiService {
     @POST("kiosk")
     suspend fun postApiKey(
         @Body request: ApiKeyRequest
-    ): Response<ResponseBody>
+    ): Response<KioskResponse>
 
     @GET("products")
     suspend fun getProducts(
         @Header("x-api-key") apiKey: String
     ): List<Product>
+
+    @GET("products/purpose")
+    suspend fun getProductsByPurpose(
+        @Header("x-api-key") apiKey: String
+    ): ProductsByPurposeResponse
 
     @GET("stocks/kiosk")
     suspend fun getStocks(

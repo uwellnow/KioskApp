@@ -3,6 +3,7 @@ package com.app.stronglife.ui.screen.firstScreen
 import android.view.RoundedCorner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,16 +33,24 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.withStyle
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.lightRed
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
+import CartViewModel
 
 @Composable
-fun FirstPickScreen() {
+fun FirstPickScreen(navController: NavController, cartViewModel: CartViewModel) {
+    // 장바구니 비우기 (hello 화면과 동일하게)
+    LaunchedEffect(Unit) {
+        cartViewModel.clearCart()
+    }
     val density = LocalDensity.current
     val horPadding = with(density) {112f.toDp()}
     val verPadding = with(density) {170f.toDp()}
@@ -133,7 +142,8 @@ fun FirstPickScreen() {
                             )
                         }
                     }
-                    .background(color = Color.White, shape = RoundedCornerShape(boxRoundDp)),
+                    .background(color = Color.White, shape = RoundedCornerShape(boxRoundDp))
+                    .clickable{navController.navigate("pick_purpose")},
             ){
                 Row(
                     modifier = Modifier.fillMaxSize()
@@ -188,7 +198,8 @@ fun FirstPickScreen() {
                             )
                         }
                     }
-                    .background(color = Color.White, shape = RoundedCornerShape(boxRoundDp)),
+                    .background(color = Color.White, shape = RoundedCornerShape(boxRoundDp))
+                    .clickable{navController.navigate("menu")},
             ){
                 Row(
                     modifier = Modifier.fillMaxSize()
@@ -228,5 +239,5 @@ fun FirstPickScreen() {
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
 @Composable
 fun FirstPickScreenPreview(){
-    FirstPickScreen()
+    FirstPickScreen(navController = rememberNavController(), cartViewModel = CartViewModel())
 }

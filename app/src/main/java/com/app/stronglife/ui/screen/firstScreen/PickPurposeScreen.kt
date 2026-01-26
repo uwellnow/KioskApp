@@ -3,6 +3,7 @@ package com.app.stronglife.ui.screen.firstScreen
 import CartViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,11 +39,19 @@ import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.viewmodel.ProductViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 private val previewCartViewModel = CartViewModel()
 
 @Composable
-fun PurposeBox(title: String, desc: String, image: Int) {
+fun PurposeBox(
+    title: String, 
+    desc: String, 
+    image: Int,
+    onClick: () -> Unit = {}
+) {
     val density = LocalDensity.current
 
     val boxWidth = with(density) {415f.toDp()}
@@ -49,15 +63,17 @@ fun PurposeBox(title: String, desc: String, image: Int) {
     val imageHeightDp = with(density) {134f.toDp()}
 
     Column (
-        modifier = Modifier.size(boxWidth, boxHeight)
+        modifier = Modifier
+            .size(boxWidth, boxHeight)
             .background(color = Color.White, shape = RoundedCornerShape(boxRoundDp))
+            .clickable(onClick = onClick)
             .padding(boxRoundDp)
     ) {
         Text(
             text = title,
             fontFamily = FontFamily(Font(R.font.pretendard_bold)),
             fontSize = boxTitleSp,
-            color = Color(0xFF5A5A5A)
+            color = black
         )
         Spacer(modifier = Modifier.height(boxSpaceDp))
         Text(
@@ -80,8 +96,21 @@ fun PurposeBox(title: String, desc: String, image: Int) {
     }
 }
 
+// 목적별 이미지와 설명 매핑
+private val purposeInfoMap = mapOf(
+    "저녁운동" to Pair("운동 퍼포먼스는 그대로,\n숙면까지 자연스럽게", R.drawable.pick_night),
+    "다이어트" to Pair("칼로리 부담은 낮게,\n지속가능한 감량 루틴", R.drawable.pick_diet),
+    "근비대" to Pair("무게는 더 올리고,\n회복은 더 빠르게", R.drawable.pick_muscle),
+    "공복운동" to Pair("에너지는 안정적으로,\n집중은 더욱 오래", R.drawable.pick_alarm)
+)
+
 @Composable
-fun PickPurposeScreen(cartViewModel: CartViewModel, navController: NavController) {
+fun PickPurposeScreen(
+    cartViewModel: CartViewModel, 
+    navController: NavController,
+    productViewModel: ProductViewModel,
+    apiKey: String
+) {
     val density = LocalDensity.current
     val firstPadDp = with(density) {113f.toDp()}
     val titleSp = with(density) {64f.toSp()}
@@ -91,6 +120,15 @@ fun PickPurposeScreen(cartViewModel: CartViewModel, navController: NavController
     val spaceSecondDp = with(density) {57f.toDp()}
     val spaceWidDp = with(density) {20f.toDp()}
 
+    val isLoading = productViewModel.isLoading
+    val purposesResponse = productViewModel.productsByPurpose
+
+    LaunchedEffect(Unit) {
+        if (apiKey.isNotEmpty()) {
+            productViewModel.setApiKey(apiKey)
+            productViewModel.fetchProductsByPurpose()
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -116,41 +154,53 @@ fun PickPurposeScreen(cartViewModel: CartViewModel, navController: NavController
             )
             Spacer(modifier = Modifier.height(spaceTotalDp))
 
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ){
-                Column {
-                    Spacer(modifier = Modifier.height(spaceSecondDp))
-                    PurposeBox(
-                        "저녁 운동",
-                        "운동 퍼포먼스는 그대로,\n숙면까지 자연스럽게",
-                        image = R.drawable.pick_night)
+            if (isLoading) {
+                Text("로딩 중...")
+            } else if (purposesResponse != null) {
+                val purposes = purposesResponse.purposes
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    purposes.forEachIndexed { index, purposeGroup ->
+                        if (index > 0) {
+                            Spacer(modifier = Modifier.width(spaceWidDp))
+                        }
+                        
+                        val purposeName = purposeGroup.purpose
+                        val (desc, imageRes) = purposeInfoMap[purposeName] 
+                            ?: Pair("", R.drawable.pick_night) // 기본값
+                        
+                        val isOffset = index % 2 == 0 // 첫 번째와 세 번째는 offset
+                        
+                        if (isOffset) {
+                            Column {
+                                Spacer(modifier = Modifier.height(spaceSecondDp))
+                                PurposeBox(
+                                    title = purposeName,
+                                    desc = desc,
+                                    image = imageRes,
+                                    onClick = {
+                                        val encodedPurpose = URLEncoder.encode(purposeName, StandardCharsets.UTF_8.toString())
+                                        navController.navigate("pick_menu/$encodedPurpose")
+                                    }
+                                )
+                            }
+                        } else {
+                            PurposeBox(
+                                title = purposeName,
+                                desc = desc,
+                                image = imageRes,
+                                onClick = {
+                                    val encodedPurpose = URLEncoder.encode(purposeName, StandardCharsets.UTF_8.toString())
+                                    navController.navigate("pick_menu/$encodedPurpose")
+                                }
+                            )
+                        }
+                    }
                 }
-
-                Spacer(modifier = Modifier.width(spaceWidDp))
-
-                PurposeBox(
-                    "다이어트",
-                    "칼로리 부담은 낮게,\n지속가능한 감량 루틴",
-                    image = R.drawable.pick_diet)
-
-                Spacer(modifier = Modifier.width(spaceWidDp))
-
-                Column {
-                    Spacer(modifier = Modifier.height(spaceSecondDp))
-                    PurposeBox(
-                        "근비대",
-                        "무게는 더 올리고,\n회복은 더 빠르게",
-                        image = R.drawable.pick_muscle)
-                }
-                Spacer(modifier = Modifier.width(spaceWidDp))
-
-                PurposeBox(
-                    "공복 운동",
-                    "에너지는 안정적으로,\n집중은 더욱 오래",
-                    image = R.drawable.pick_alarm)
-
+            } else {
+                Text("목적 정보를 불러올 수 없습니다.")
             }
         }
     }
@@ -159,5 +209,5 @@ fun PickPurposeScreen(cartViewModel: CartViewModel, navController: NavController
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=81")
 @Composable
 fun PickPurposeScreenPreview() {
-    PickPurposeScreen(cartViewModel = previewCartViewModel, navController = rememberNavController())
+    // Preview는 실제 ViewModel 없이 렌더링하기 어려우므로 생략
 }

@@ -34,9 +34,15 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.screen.firstScreen.NumberCircleWithText
 import com.app.stronglife.ui.theme.mainRed
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import com.app.stronglife.data.remote.PrefsManager
+import androidx.compose.runtime.remember
 
 @Composable
 fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartViewModel: CartViewModel) {
+    val context = LocalContext.current
+    val prefsManager = remember { PrefsManager(context) }
+    val isPicked = prefsManager.getIsPicked()
     val density = LocalDensity.current
     val heightInDp = with(density) { 112f.toDp() }
     val paddingInDp = with(density) {60f.toDp()}
@@ -91,7 +97,18 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartV
             Image(
                 painter = painterResource(id = R.drawable.home),
                 modifier = Modifier.size(btnInDp)
-                    .clickable{navController.navigate("hello")},
+                    .clickable{
+                        // is_picked 값에 따라 라우팅
+                        if (isPicked) {
+                            navController.navigate("first_pick") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else {
+                            navController.navigate("hello") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        }
+                    },
                 contentDescription = "처음으로 이동 버튼"
             )
         }

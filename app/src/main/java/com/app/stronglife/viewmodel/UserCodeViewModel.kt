@@ -27,14 +27,17 @@ class UserCodeViewModel(
         }
     }
 
-    fun sendApiKey(apiKey: String, onResult: (Boolean) -> Unit = {}) {
+    fun sendApiKey(apiKey: String, onResult: (Boolean, Boolean?) -> Unit = { _, _ -> }) {
         viewModelScope.launch {
             try {
                 val response = api.postApiKey(ApiService.ApiKeyRequest(apiKey))
                 if (response.isSuccessful) {
-                    Log.d("api key", "API Key 등록 성공: ${response.body()}")
+                    val kioskResponse = response.body()
+                    val isPicked = kioskResponse?.isPicked
+                    Log.d("api key", "API Key 등록 성공: ${response.body()}, is_picked: $isPicked")
+                    Log.d("api key", "isPicked 값 확인: $isPicked, 타입: ${isPicked?.javaClass?.simpleName}")
                     errorState.value = UiError.None
-                    onResult(true)
+                    onResult(true, isPicked)
                 } else {
                     Log.e("api key", "API Key 전송 실패 - 코드: ${response.code()}")
                     val error = when (response.code()) {
@@ -42,12 +45,12 @@ class UserCodeViewModel(
                         else -> UiError.Generic("API 키 검증 실패 (${response.code()})")
                     }
                     errorState.value = error
-                    onResult(false)
+                    onResult(false, null)
                 }
             } catch (e: Exception) {
                 Log.e("api key", "API Key 전송 오류", e)
                 errorState.value = UiError.Exception(e)
-                onResult(false)
+                onResult(false, null)
             }
         }
     }

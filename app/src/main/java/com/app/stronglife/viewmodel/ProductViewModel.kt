@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.stronglife.data.model.Product
+import com.app.stronglife.data.model.ProductsByPurposeResponse
 import com.app.stronglife.data.model.Stock
 import com.app.stronglife.data.remote.ApiService
 import kotlinx.coroutines.launch
@@ -33,6 +34,12 @@ class ProductViewModel(
     }
 
     var products by mutableStateOf<List<Product>>(emptyList())
+        private set
+
+    var productsByPurpose by mutableStateOf<ProductsByPurposeResponse?>(null)
+        private set
+
+    var selectedPurpose by mutableStateOf<String?>(null)
         private set
 
     var stocks by mutableStateOf<List<Stock>>(emptyList())
@@ -113,6 +120,49 @@ class ProductViewModel(
                 e.printStackTrace()
             }
         }
+    }
+
+    fun fetchProductsByPurpose(forceRefresh: Boolean = false) {
+        if (productsByPurpose != null && !forceRefresh) {
+            return
+        }
+
+        if (apiKey.isEmpty()) {
+            println("API 키가 설정되지 않아 목적별 제품 정보를 가져올 수 없습니다.")
+            errorMessage = "API 키가 설정되지 않았습니다."
+            return
+        }
+
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+            try {
+                println("목적별 제품 정보 API 호출 시작 - API 키: $apiKey")
+                val result = apiService.getProductsByPurpose(apiKey)
+                productsByPurpose = result
+                println("목적별 제품 정보 로드 완료: ${result.purposes.size}개 목적")
+            } catch (e: Exception) {
+                errorMessage = e.message
+                println("목적별 제품 정보 로드 실패: ${e.message}")
+                e.printStackTrace()
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    fun selectPurpose(purpose: String) {
+        selectedPurpose = purpose
+        // 선택된 목적의 제품만 products에 설정
+        productsByPurpose?.purposes?.find { it.purpose == purpose }?.let { purposeGroup ->
+            products = purposeGroup.products
+        } ?: run {
+            products = emptyList()
+        }
+    }
+
+    fun getProductsForPurpose(purpose: String): List<Product> {
+        return productsByPurpose?.purposes?.find { it.purpose == purpose }?.products ?: emptyList()
     }
 
     fun isProductSoldOut(productId: Int): Boolean {
