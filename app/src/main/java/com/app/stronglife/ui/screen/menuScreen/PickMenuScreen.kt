@@ -177,7 +177,7 @@ fun PickMenuScreen(
                 .background(background)
         ) {
             TopBar(2, listOf("섭취목적 선택",
-                "공복 운동>메뉴선택"
+                "${purpose}>메뉴선택"
             ), navController, cartViewModel = cartViewModel)
             Spacer(modifier = Modifier.height(spacertoDp))
             when {

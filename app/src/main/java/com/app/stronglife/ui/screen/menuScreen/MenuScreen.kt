@@ -81,7 +81,7 @@ fun MenuScreen(
         if (apiKey.isNotEmpty()) {
             viewModel.setApiKey(apiKey)
         }
-        viewModel.fetchProducts()
+        viewModel.fetchProducts(forceRefresh = true)  // pick_menu에서 온 경우를 대비해 강제 새로고침
         if (apiKey.isNotEmpty()) {
             viewModel.fetchStocks(forceRefresh = true)
         } else {

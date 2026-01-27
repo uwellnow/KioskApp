@@ -147,6 +147,11 @@ fun OrderNumScreen(
 
     var selected by remember { mutableStateOf("phone") }
 
+    // 탭 변경 시 userCode 초기화
+    LaunchedEffect(selected) {
+        userCodeViewModel.clear()
+    }
+
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
