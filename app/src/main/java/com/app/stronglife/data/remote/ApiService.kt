@@ -7,6 +7,8 @@ import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import com.app.stronglife.data.model.Stock
+import com.app.stronglife.data.model.PhoneLoginRequest
+import com.app.stronglife.data.model.ProductPurchaseResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -55,6 +57,11 @@ interface ApiService {
         @Body request: UserLoginRequest
     ) : retrofit2.Response<LoginResponse>
 
+    @POST("user/login/phone")
+    suspend fun postUserLoginByPhone(
+        @Header("x-api-key") apiKey: String,
+        @Body request: PhoneLoginRequest
+    ): Response<LoginResponse>
 
     @POST("user/purchase/product")
     suspend fun postPurchaseProduct(
@@ -74,6 +81,13 @@ interface ApiService {
         @Header("x-api-key") apiKey: String,
         @Body body: CouponPurchaseRequest
     ) : retrofit2.Response<okhttp3.ResponseBody>
+
+    @POST("user/purchase/product-by-phone")
+    suspend fun postPurchaseProductByPhone(
+        @Header("x-api-key") apiKey: String,
+        @Header("phoneNumber") phoneNumber: String,  // 8자리 또는 전체
+        @Body body: ProductPurchaseRequest
+    ): Response<ProductPurchaseResponse>
   
 
     @POST("log/kiosk")

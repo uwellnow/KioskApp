@@ -36,7 +36,7 @@
     <string name="pay_coupon_desc">스캔이 원활하지 않을 경우, 바코드 번호를 입력해 주세요</string>
     <string name="number_btn">조회</string>
     <string name="pay_order_title">주문 번호를 입력하세요</string>
-    <string name="pay_order_desc">결제 완료 후 카카오톡 채널로 발송된 메시지를 확인해 주세요</string>
+    <string name="pay_order_desc">카카오톡 채널로 발송된 메시지를 확인해 주세요</string>
     <string name="pay_order_add">* 현재 카드결제, 간편결제는 지원되지 않습니다. 추후 업데이트 예정입니다. </string>
     <string name="keypad_delete_all">전체\n삭제</string>
     <string name="keypad_delete_one">지\n움</string>

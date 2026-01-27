@@ -210,8 +210,8 @@ fun UserInfoScreen(
                             if (isPurchasing) return@clickable
                             
                             Log.d("UserInfoScreen", "결제 버튼 클릭됨")
-                            Log.d("UserInfoScreen", "주문번호: ${userCodeViewModel.userCode.value}")
-                            Log.d("UserInfoScreen", "paymentMethodId: ${userCodeViewModel.paymentMethodId.value}")
+                            Log.d("UserInfoScreen", "주문번호/전화번호: ${userCodeViewModel.userCode.value}")
+                            Log.d("UserInfoScreen", "결제 방법: ${userCodeViewModel.selectedPaymentMethod.value}")
                             
                             // 장바구니 정보 가져오기
                             val cartItems = cartViewModel.cartItems.value
@@ -222,19 +222,60 @@ fun UserInfoScreen(
                             
                             isPurchasing = true
                             
-                            // 구매 요청
-                            userCodeViewModel.purchaseProductByOrder(
-                                apiKey = apiKey,
-                                orderNumber = userCodeViewModel.userCode.value,
-                                productIds = productIds,
-                                productCounts = productCounts
-                            ) { success ->
-                                isPurchasing = false
-                                Log.d("UserInfoScreen", "결제 결과: $success")
-                                if (success) {
-                                    navController.navigate("paying")
-                                } else {
-                                    Log.d("UserInfoScreen", "결제 실패, 현재 에러 상태: ${userCodeViewModel.errorState.value}")
+                            // 선택된 결제 방법에 따라 적절한 API 호출
+                            when (userCodeViewModel.selectedPaymentMethod.value) {
+                                "phone" -> {
+                                    // 휴대폰 번호로 결제
+                                    val phoneNumber = userCodeViewModel.userCode.value
+                                    userCodeViewModel.purchaseProductByPhone(
+                                        apiKey = apiKey,
+                                        phoneNumber = phoneNumber,
+                                        productIds = productIds,
+                                        productCounts = productCounts
+                                    ) { success ->
+                                        isPurchasing = false
+                                        Log.d("UserInfoScreen", "휴대폰 결제 결과: $success")
+                                        if (success) {
+                                            navController.navigate("paying")
+                                        } else {
+                                            Log.d("UserInfoScreen", "결제 실패, 현재 에러 상태: ${userCodeViewModel.errorState.value}")
+                                        }
+                                    }
+                                }
+                                "order" -> {
+                                    // 주문번호로 결제
+                                    userCodeViewModel.purchaseProductByOrder(
+                                        apiKey = apiKey,
+                                        orderNumber = userCodeViewModel.userCode.value,
+                                        productIds = productIds,
+                                        productCounts = productCounts
+                                    ) { success ->
+                                        isPurchasing = false
+                                        Log.d("UserInfoScreen", "주문번호 결제 결과: $success")
+                                        if (success) {
+                                            navController.navigate("paying")
+                                        } else {
+                                            Log.d("UserInfoScreen", "결제 실패, 현재 에러 상태: ${userCodeViewModel.errorState.value}")
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    // 기본값: 주문번호로 결제 (기존 동작 유지)
+                                    Log.w("UserInfoScreen", "결제 방법이 설정되지 않음, 주문번호로 결제 시도")
+                                    userCodeViewModel.purchaseProductByOrder(
+                                        apiKey = apiKey,
+                                        orderNumber = userCodeViewModel.userCode.value,
+                                        productIds = productIds,
+                                        productCounts = productCounts
+                                    ) { success ->
+                                        isPurchasing = false
+                                        Log.d("UserInfoScreen", "결제 결과: $success")
+                                        if (success) {
+                                            navController.navigate("paying")
+                                        } else {
+                                            Log.d("UserInfoScreen", "결제 실패, 현재 에러 상태: ${userCodeViewModel.errorState.value}")
+                                        }
+                                    }
                                 }
                             }
                         },

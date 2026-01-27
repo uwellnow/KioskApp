@@ -3,7 +3,6 @@ package com.app.stronglife.ui.screen.PayScreen
 import CartViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.DisposableEffect
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -144,7 +145,7 @@ fun OrderNumScreen(
     val spacerDp = with(density) {16f.toDp()}
     val descSp = with(density) {20f.toSp()}
 
-
+    var selected by remember { mutableStateOf("phone") }
 
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -163,36 +164,88 @@ fun OrderNumScreen(
                 .background(color = Color.White, shape = RoundedCornerShape(roundDp))
                 .border(2.dp, cardPayGray, RoundedCornerShape(roundDp)),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ){
-            Text(
-                text = stringResource(R.string.pay_order_title),
-                style = TextStyle(
-                    fontSize = titleSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                    color = black
-                )
-            )
-            Spacer(modifier = Modifier.height(spacerDp))
 
-            Text(
-                text = stringResource(R.string.pay_order_desc),
-                style = TextStyle(
-                    fontSize = descSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    color = lightGray
+            Row (
+                modifier = Modifier.fillMaxWidth()
+            ){
+                PaymentTab(
+                    text = "전화번호로 조회",
+                    isSelected = selected == "phone",
+                    onClick = { selected = "phone"},
                 )
-            )
+                PaymentTab(
+                    text = "주문번호로 조회",
+                    isSelected = selected == "order",
+                    onClick = { selected = "order"},
+                )
 
-            Spacer(modifier = Modifier.height(spaceDp))
-            
-            PhonePayCard(
-                navController = navController,
-                viewModel = userCodeViewModel,
-                apiKey = apiKey,
-                onUserFound = { navController.navigate("userInfo") },
-                cartViewModel = cartViewModel
-            )
+
+            }
+
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (selected) {
+                    "phone" -> {
+                        Text(
+                            text = "휴대폰 번호 뒷 8자리를 입력해주세요 (010 제외)",
+                            style = TextStyle(
+                                fontSize = titleSp,
+                                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                                color = black
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(roundDp))
+
+                        PhonePayCard(
+                            title = "휴대폰 번호를 입력해주세요",
+                            viewModel = userCodeViewModel,
+                            onSubmit = { phoneInput ->
+                                // 결제 방법을 "phone"으로 설정
+                                userCodeViewModel.selectedPaymentMethod.value = "phone"
+                                userCodeViewModel.loginByPhone(
+                                    apiKey = apiKey,
+                                    phoneInput = phoneInput
+                                ) { success ->
+                                    if (success) {
+                                        navController.navigate("userInfo")
+                                    }
+                                }
+                            }
+                        )
+                    }
+                    "order" -> {
+                        Text(
+                            text = stringResource(R.string.pay_order_desc),
+                            style = TextStyle(
+                                fontSize = titleSp,
+                                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                                color = black
+                            )
+                        )
+
+                        Spacer(modifier = Modifier.height(roundDp))
+
+                        PhonePayCard(
+                            title = "주문번호를 입력해주세요",
+                            viewModel = userCodeViewModel,
+                            onSubmit = { orderNumber ->
+                                // 결제 방법을 "order"로 설정
+                                userCodeViewModel.selectedPaymentMethod.value = "order"
+                                userCodeViewModel.fetchUser(apiKey) { success ->
+                                    if (success) {
+                                        navController.navigate("userInfo")
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            }
         }
         Spacer(modifier = Modifier.weight(1f)) // 아래로 밀기
 
