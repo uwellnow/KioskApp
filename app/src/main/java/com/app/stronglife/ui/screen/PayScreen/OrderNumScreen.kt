@@ -134,7 +134,7 @@ fun OrderNumScreen(
     }
 
     val density = LocalDensity.current
-    val barbtnSpace = with(density) {81f.toDp()}
+    val barbtnSpace = with(density) {60f.toDp()}
     val widDp = with(density) {1231f.toDp()}
     val heightDp = with(density) {824f.toDp()}
     val roundDp = with(density) {32f.toDp()}
@@ -196,7 +196,7 @@ fun OrderNumScreen(
                 when (selected) {
                     "phone" -> {
                         Text(
-                            text = "휴대폰 번호 뒷 8자리를 입력해주세요 (010 제외)",
+                            text = "휴대폰 번호 뒷 8자리를 입력해주세요",
                             style = TextStyle(
                                 fontSize = titleSp,
                                 fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -207,7 +207,7 @@ fun OrderNumScreen(
                         Spacer(modifier = Modifier.height(roundDp))
 
                         PhonePayCard(
-                            title = "휴대폰 번호를 입력해주세요",
+                            title = "010 제외하고 입력",
                             viewModel = userCodeViewModel,
                             onSubmit = { phoneInput ->
                                 // 결제 방법을 "phone"으로 설정

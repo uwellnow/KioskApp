@@ -60,8 +60,9 @@ fun  PhonePayCard (
 ) {
 
     val density = LocalDensity.current
-    val widDp = with(density) {584f.toDp()}
+    val widDp = with(density) {570f.toDp()}
     val textSp = with(density) {36f.toSp()}
+    val text1Sp = with(density) {30f.toSp()}
     val roundDp = with(density) {12f.toDp()}
     val boxWidDp = with(density) {97f.toDp()}
     val boxHeiDp = with(density) {44f.toDp()}
@@ -86,7 +87,7 @@ fun  PhonePayCard (
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
+            modifier = Modifier.width(widDp).padding(horizontal = 20.dp)
         ){
             BasicTextField(
                 value = if (viewModel.userCode.value.isEmpty()) title else viewModel.userCode.value,
@@ -98,11 +99,11 @@ fun  PhonePayCard (
                 textStyle =
                     if (viewModel.userCode.value.isEmpty())
                         TextStyle(
-                            fontSize = 42.sp,
+                            fontSize = text1Sp,
                             fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                             fontWeight = FontWeight.Medium,
                             color = keyGray,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Start
                         )
                     else
                         TextStyle(
@@ -110,7 +111,7 @@ fun  PhonePayCard (
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
                         fontWeight = FontWeight.Medium,
                         color = black,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Start
                     ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

@@ -29,9 +29,9 @@ fun PaymentTab(
 ) {
 
     val density = LocalDensity.current
-    val spaceDp = with(density) {40f.toDp()}
+    val spaceDp = with(density) {30f.toDp()}
     val widDp = with(density) {614f.toDp()}
-    val textSp = with(density) {36f.toSp()}
+    val textSp = with(density) {28f.toSp()}
 
     val textColor = if (isSelected) mainRed else paySelectGray
     val dividerColor = if (isSelected) mainRed else paySelectGray
