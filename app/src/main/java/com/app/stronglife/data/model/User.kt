@@ -16,14 +16,15 @@ data class Membership(
     val barcode: String,
     val membership_name: String,
     val remain_count: Int,
-    val total_count: Int
+    val total_count: Int,
+    val status: String? = null  // "active", "expired", "no_remaining"
 )
 
 data class LoginResponse(
     val id: Int,
     val phone: String,
     val name: String,
-    val age: Int,
+    val birth: String,  // "2003-06-02" 형식
     val gender: String,
     val membership: Membership
 )
@@ -44,4 +45,15 @@ data class CouponPurchaseRequest(
     val couponCode: String,
     val productIds: List<Int>,
     val productCounts: List<Int>
+)
+
+data class PhoneLoginRequest(
+    val phoneInput: String  // 8자리 또는 전체 번호
+)
+
+data class ProductPurchaseResponse(
+    val message: String,
+    val remainCount: Int,
+    val customerName: String,
+    val paymentMethod: String  // "주문번호" 또는 "휴대폰번호"
 )

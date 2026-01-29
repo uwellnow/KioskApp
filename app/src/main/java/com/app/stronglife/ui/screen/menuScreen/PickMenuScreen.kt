@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -46,14 +45,16 @@ import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.delay
+import com.app.stronglife.util.LanguageManager
 
 @Composable
-fun MenuScreen(
+fun PickMenuScreen(
     viewModel: ProductViewModel,
     cartViewModel: CartViewModel = viewModel(),
     navController: NavController = rememberNavController(),
     apiKey: String = "",
-    languageManager: com.app.stronglife.util.LanguageManager
+    purpose: String,
+    languageManager: LanguageManager
 ) {
     val gs805ViewModel: Gs805ViewModel = viewModel()
     var machineError by remember { mutableStateOf<MachineError?>(null) }
@@ -77,25 +78,27 @@ fun MenuScreen(
     val error = viewModel.errorMessage
     val currentDetail = viewModel.currentDetail
 
-    LaunchedEffect(Unit) {
+    // 목적별 제품 로드
+    LaunchedEffect(purpose) {
         if (apiKey.isNotEmpty()) {
             viewModel.setApiKey(apiKey)
         }
-        viewModel.fetchProducts(forceRefresh = true)  // pick_menu에서 온 경우를 대비해 강제 새로고침
+        viewModel.fetchProductsByPurpose()
+        viewModel.selectPurpose(purpose)
         if (apiKey.isNotEmpty()) {
             viewModel.fetchStocks(forceRefresh = true)
         } else {
-            println("MenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
+            println("PickMenuScreen: API 키가 없어 재고 정보를 로드할 수 없습니다.")
         }
 
         val wasSerialRunning = gs805ViewModel.isSerialRunning()
-        kioskLogger?.logEvent("MenuScreen: wasSerialRunning=$wasSerialRunning", false)
+        kioskLogger?.logEvent("PickMenuScreen: wasSerialRunning=$wasSerialRunning", false)
         
         val serialOk = if (wasSerialRunning) {
-            true // 이미 실행 중이면 OK로 간주
+            true
         } else {
             val started = gs805ViewModel.startSerial()
-            kioskLogger?.logEvent("MenuScreen: startSerial()=$started", !started)
+            kioskLogger?.logEvent("PickMenuScreen: startSerial()=$started", !started)
             started
         }
         
@@ -104,13 +107,13 @@ fun MenuScreen(
                 if (!wasSerialRunning) {
                     delay(500)
                 }
-                kioskLogger?.logEvent("MenuScreen: Calling queryErrorCode()", false)
+                kioskLogger?.logEvent("PickMenuScreen: Calling queryErrorCode()", false)
                 val queryResult = gs805ViewModel.queryErrorCode()
-                kioskLogger?.logEvent("MenuScreen: queryErrorCode() completed, responseHex=${queryResult.responseHex}", queryResult.responseHex == null)
+                kioskLogger?.logEvent("PickMenuScreen: queryErrorCode() completed, responseHex=${queryResult.responseHex}", queryResult.responseHex == null)
                 val errorCode = queryResult.businessResult
 
                 kioskLogger?.logEvent(
-                    detail = "MenuScreen QueryErrorCode: errorCode=0x${errorCode.toString(16)}, responseHex=${queryResult.responseHex}",
+                    detail = "PickMenuScreen QueryErrorCode: errorCode=0x${errorCode.toString(16)}, responseHex=${queryResult.responseHex}",
                     isError = (errorCode != 0x00 && errorCode != -1),
                     commandHex = queryResult.sentHex,
                     responseHex = queryResult.responseHex
@@ -119,28 +122,28 @@ fun MenuScreen(
                 machineError = when {
                     errorCode == 0x00 -> null
                     errorCode == 0x01 -> {
-                        kioskLogger?.logEvent("MenuScreen MachineError: WaterShortage (0x01)", true)
+                        kioskLogger?.logEvent("PickMenuScreen MachineError: WaterShortage (0x01)", true)
                         MachineError.WaterShortage
                     }
                     errorCode == 0x02 -> {
-                        kioskLogger?.logEvent("MenuScreen MachineError: CupShortage (0x02)", true)
+                        kioskLogger?.logEvent("PickMenuScreen MachineError: CupShortage (0x02)", true)
                         MachineError.CupShortage
                     }
                     errorCode == -1 -> {
-                        kioskLogger?.logEvent("MenuScreen MachineError: SerialError (response null or -1)", true)
+                        kioskLogger?.logEvent("PickMenuScreen MachineError: SerialError (response null or -1)", true)
                         MachineError.SerialError
                     }
                     queryResult.responseHex == null -> {
-                        kioskLogger?.logEvent("MenuScreen MachineError: SerialError (responseHex null)", true)
+                        kioskLogger?.logEvent("PickMenuScreen MachineError: SerialError (responseHex null)", true)
                         MachineError.SerialError
                     }
                     else -> {
-                        kioskLogger?.logEvent("MenuScreen MachineError: OtherError (0x${errorCode.toString(16)})", true)
+                        kioskLogger?.logEvent("PickMenuScreen MachineError: OtherError (0x${errorCode.toString(16)})", true)
                         MachineError.OtherError(errorCode)
                     }
                 }
             } catch (e: Exception) {
-                kioskLogger?.logEvent("MenuScreen MachineError: Exception - ${e.javaClass.simpleName}: ${e.message}", true)
+                kioskLogger?.logEvent("PickMenuScreen MachineError: Exception - ${e.javaClass.simpleName}: ${e.message}", true)
                 machineError = MachineError.SerialError
             } finally {
                 if (!wasSerialRunning) {
@@ -148,7 +151,7 @@ fun MenuScreen(
                 }
             }
         } else {
-            kioskLogger?.logEvent("MenuScreen: Serial connection failed (ignored)", false)
+            kioskLogger?.logEvent("PickMenuScreen: Serial connection failed (ignored)", false)
         }
     }
 
@@ -158,7 +161,6 @@ fun MenuScreen(
     val waterShortage by remember(viewModel.stocks) {
         derivedStateOf { viewModel.stocks.any { it.productId == 101 && it.productCount == 0 } }
     }
-
 
     val density = LocalDensity.current
     val spacertoDp = with(density) { 80f.toDp() }
@@ -174,8 +176,8 @@ fun MenuScreen(
                 .fillMaxSize()
                 .background(background)
         ) {
-            TopBar(2, listOf(stringResource(R.string.top_1),
-                stringResource(R.string.top_2)
+            TopBar(2, listOf("섭취목적 선택",
+                "${purpose}>메뉴선택"
             ), navController, cartViewModel = cartViewModel)
             Spacer(modifier = Modifier.height(spacertoDp))
             when {
@@ -314,4 +316,3 @@ fun MenuScreen(
         }
     }
 }
-

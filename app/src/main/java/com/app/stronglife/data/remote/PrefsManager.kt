@@ -22,4 +22,16 @@ class PrefsManager(private val context: Context) {
     fun clearApiKey() {
         prefs.edit().remove("api_key").apply()
     }
+
+    fun saveIsPicked(isPicked: Boolean) {
+        prefs.edit().putBoolean("is_picked", isPicked).apply()
+    }
+
+    fun getIsPicked(): Boolean {
+        return prefs.getBoolean("is_picked", false)
+    }
+
+    fun clearIsPicked() {
+        prefs.edit().remove("is_picked").apply()
+    }
 }

@@ -26,6 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -192,10 +196,30 @@ fun RegisterStoreScreen(
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (isFilled) {
-                            userCodeViewModel.sendApiKey(storeCode) { success ->
+                            userCodeViewModel.sendApiKey(storeCode) { success, isPicked ->
                                 if (success) {
                                     prefsManager.saveApiKey(storeCode)
-                                    onApiKeySet(storeCode)
+                                    // is_picked 값 저장
+                                    if (isPicked != null) {
+                                        prefsManager.saveIsPicked(isPicked)
+                                    }
+                                    // is_picked 값에 따라 라우팅
+                                    if (isPicked == true) {
+                                        navController.navigate("first_pick") {
+                                            popUpTo("register") { inclusive = true }
+                                            launchSingleTop = true
+                                        }
+                                    } else {
+                                        navController.navigate("hello") {
+                                            popUpTo("register") { inclusive = true }
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                    // 라우팅 완료 후 onApiKeySet 호출 (지연하여 NavGraph 재구성 방지)
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        delay(200) // 라우팅 완료 대기
+                                        onApiKeySet(storeCode)
+                                    }
                                 }
                                 // 실패 시 에러는 errorState를 통해 처리됨
                             }

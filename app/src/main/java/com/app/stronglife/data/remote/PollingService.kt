@@ -136,7 +136,7 @@ class PollingService : Service() {
                     val statuses = response.body()
 
                     if (statuses != null && statuses.isNotEmpty()) {
-
+                        // 변경사항이 있음
                         val machineActive = statuses.firstOrNull { it.isActive && it.statusType == "MACHINE" }
                         val serverActive = statuses.firstOrNull { it.isActive && it.statusType == "SERVER" }
                         val activeStatus = machineActive ?: serverActive
@@ -148,15 +148,14 @@ class PollingService : Service() {
                             SystemStatusManager.updateStatus(null)
                         }
 
+                        // 변경사항이 있으면 lastTimestamp 업데이트
                         lastTimestamp = statuses.maxOfOrNull { it.createdAt }
                         consecutiveTimeouts = 0
                     } else {
-                        consecutiveTimeouts++
-
-                        if (consecutiveTimeouts >= MAX_TIMEOUT_BEFORE_RESET) {
-                            lastTimestamp = null
-                            consecutiveTimeouts = 0
-                        }
+                        // 타임아웃 (변경사항 없음) - lastTimestamp는 유지하고 바로 재요청
+                        // Long Polling이므로 30초 대기 후 빈 리스트가 온 것이 정상
+                        consecutiveTimeouts = 0  // 타임아웃은 정상 동작이므로 리셋
+                        // lastTimestamp는 유지 (null로 리셋하지 않음)
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()

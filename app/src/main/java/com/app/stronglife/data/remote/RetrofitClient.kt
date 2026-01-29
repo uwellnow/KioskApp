@@ -16,12 +16,16 @@ object RetrofitClient {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    private val pollingLogging = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.NONE  // polling 요청은 로그 안 찍음
+    }
+
     private val client = OkHttpClient.Builder()
         .addInterceptor(logging)
         .build()
 
     private val pollingClient = OkHttpClient.Builder()
-        .addInterceptor(logging)
+        .addInterceptor(pollingLogging)  // NONE 레벨로 로그 차단
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(65, TimeUnit.SECONDS)
         .build()

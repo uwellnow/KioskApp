@@ -38,11 +38,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.background
 import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.keyGray
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.midGray
@@ -52,22 +54,15 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun  PhonePayCard (
-    navController: NavController,
+    title: String,
     viewModel: UserCodeViewModel, 
-    apiKey: String, 
-    onUserFound: () -> Unit,
-    cartViewModel: CartViewModel
+    onSubmit: (String) -> Unit,
 ) {
-    // 화면을 떠날 때 에러 상태 초기화
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.errorState.value = UserCodeViewModel.UiError.None
-        }
-    }
 
     val density = LocalDensity.current
-    val widDp = with(density) {584f.toDp()}
+    val widDp = with(density) {570f.toDp()}
     val textSp = with(density) {36f.toSp()}
+    val text1Sp = with(density) {30f.toSp()}
     val roundDp = with(density) {12f.toDp()}
     val boxWidDp = with(density) {97f.toDp()}
     val boxHeiDp = with(density) {44f.toDp()}
@@ -75,9 +70,6 @@ fun  PhonePayCard (
     val spacerDp = with(density) {60f.toDp()}
     val spacer2Dp = with(density) {17f.toDp()}
 
-    val titleSp = with(density) {36f.toSp()}
-    val spaceDp = with(density) {16f.toDp()}
-    val descSp = with(density) {20f.toSp()}
 
     val focusRequster = remember { FocusRequester() }
 
@@ -95,22 +87,32 @@ fun  PhonePayCard (
         Row (
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(widDp).padding(horizontal = 40.dp)
+            modifier = Modifier.width(widDp).padding(horizontal = 20.dp)
         ){
             BasicTextField(
-                value = viewModel.userCode.value,
+                value = if (viewModel.userCode.value.isEmpty()) title else viewModel.userCode.value,
                 onValueChange = { newValue ->
                     if (newValue.all { it.isDigit() }) {
                         viewModel.userCode.value = newValue
                     }
                 },
-                textStyle = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontWeight = FontWeight.Medium,
-                    color = black,
-                    textAlign = TextAlign.Center
-                ),
+                textStyle =
+                    if (viewModel.userCode.value.isEmpty())
+                        TextStyle(
+                            fontSize = text1Sp,
+                            fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                            fontWeight = FontWeight.Medium,
+                            color = keyGray,
+                            textAlign = TextAlign.Start
+                        )
+                    else
+                        TextStyle(
+                        fontSize = textSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                        fontWeight = FontWeight.Medium,
+                        color = black,
+                        textAlign = TextAlign.Start
+                    ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -128,12 +130,7 @@ fun  PhonePayCard (
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
                         if (viewModel.userCode.value.isNotEmpty()) {
-                            // 사용자 조회 요청
-                            viewModel.fetchUser(apiKey) { success ->
-                                if (success) {
-                                    onUserFound()
-                                }
-                            }
+                            onSubmit(viewModel.userCode.value)
                         }
                     }
                 ,

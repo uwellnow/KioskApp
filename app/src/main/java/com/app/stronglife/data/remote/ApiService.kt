@@ -7,6 +7,8 @@ import com.app.stronglife.data.model.CouponPurchaseRequest
 import com.app.stronglife.data.model.UserLoginRequest
 import com.app.stronglife.data.model.UserPurchase
 import com.app.stronglife.data.model.Stock
+import com.app.stronglife.data.model.PhoneLoginRequest
+import com.app.stronglife.data.model.ProductPurchaseResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -15,6 +17,8 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import com.app.stronglife.data.model.KioskLogPayload
+import com.app.stronglife.data.model.KioskResponse
+import com.app.stronglife.data.model.ProductsByPurposeResponse
 import com.app.stronglife.data.model.SurveyRequest
 import com.app.stronglife.data.model.SystemStatus
 import retrofit2.Response
@@ -30,12 +34,17 @@ interface ApiService {
     @POST("kiosk")
     suspend fun postApiKey(
         @Body request: ApiKeyRequest
-    ): Response<ResponseBody>
+    ): Response<KioskResponse>
 
     @GET("products")
     suspend fun getProducts(
         @Header("x-api-key") apiKey: String
     ): List<Product>
+
+    @GET("products/purpose")
+    suspend fun getProductsByPurpose(
+        @Header("x-api-key") apiKey: String
+    ): ProductsByPurposeResponse
 
     @GET("stocks/kiosk")
     suspend fun getStocks(
@@ -48,6 +57,11 @@ interface ApiService {
         @Body request: UserLoginRequest
     ) : retrofit2.Response<LoginResponse>
 
+    @POST("user/login/phone")
+    suspend fun postUserLoginByPhone(
+        @Header("x-api-key") apiKey: String,
+        @Body request: PhoneLoginRequest
+    ): Response<LoginResponse>
 
     @POST("user/purchase/product")
     suspend fun postPurchaseProduct(
@@ -67,6 +81,13 @@ interface ApiService {
         @Header("x-api-key") apiKey: String,
         @Body body: CouponPurchaseRequest
     ) : retrofit2.Response<okhttp3.ResponseBody>
+
+    @POST("user/purchase/product-by-phone")
+    suspend fun postPurchaseProductByPhone(
+        @Header("x-api-key") apiKey: String,
+        @Header("phoneNumber") phoneNumber: String,  // 8자리 또는 전체
+        @Body body: ProductPurchaseRequest
+    ): Response<ProductPurchaseResponse>
   
 
     @POST("log/kiosk")
