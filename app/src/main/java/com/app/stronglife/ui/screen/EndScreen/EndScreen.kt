@@ -59,7 +59,6 @@ fun EndScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val prefsManager = remember { PrefsManager(context) }
-    val isPicked = prefsManager.getIsPicked()
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
@@ -126,7 +125,9 @@ fun EndScreen(
         kioskLogger = kioskLogger,
         errorMessage = lastError,
         onErrorConfirm = {
-            navController.navigate("hello")
+            val isPickedNow = prefsManager.getIsPicked()
+            val dest = if (isPickedNow) "first_pick" else "hello"
+            navController.navigate(dest) { popUpTo(0) }
         }
     )
 
@@ -222,8 +223,9 @@ fun EndScreen(
         lastError = null
 
         if (queue.isEmpty()) {
-            val dest = if (isPicked) "first_pick" else "hello"
-            kioskLogger.logEvent("Queue empty -> $dest", false)
+            val isPickedNow = prefsManager.getIsPicked()
+            val dest = if (isPickedNow) "first_pick" else "hello"
+            kioskLogger.logEvent("Queue empty -> $dest (isPicked=$isPickedNow)", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
             navController.navigate(dest) { popUpTo(0) }; return@LaunchedEffect
         }
@@ -315,8 +317,9 @@ fun EndScreen(
         inProgress = false
 
         if (currentIndex == totalJobs && lastError == null) {
-            val dest = if (isPicked) "first_pick" else "hello"
-            kioskLogger.logEvent("All jobs completed -> $dest", false)
+            val isPickedNow = prefsManager.getIsPicked()
+            val dest = if (isPickedNow) "first_pick" else "hello"
+            kioskLogger.logEvent("All jobs completed -> $dest (isPicked=$isPickedNow)", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
             navController.navigate(dest) { popUpTo(0) }
 
