@@ -16,9 +16,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.app.stronglife.data.remote.PrefsManager
 import coil.compose.AsyncImage
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.KioskLogger
@@ -55,6 +57,9 @@ fun EndScreen(
     apiKey: String
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val prefsManager = remember { PrefsManager(context) }
+    val isPicked = prefsManager.getIsPicked()
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
@@ -217,9 +222,10 @@ fun EndScreen(
         lastError = null
 
         if (queue.isEmpty()) {
-            kioskLogger.logEvent("Queue empty -> home", false)
+            val dest = if (isPicked) "first_pick" else "hello"
+            kioskLogger.logEvent("Queue empty -> $dest", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
-            navController.navigate("hello"); return@LaunchedEffect
+            navController.navigate(dest) { popUpTo(0) }; return@LaunchedEffect
         }
 
         inProgress = true
@@ -309,9 +315,10 @@ fun EndScreen(
         inProgress = false
 
         if (currentIndex == totalJobs && lastError == null) {
-            kioskLogger.logEvent("All jobs completed -> home", false)
+            val dest = if (isPicked) "first_pick" else "hello"
+            kioskLogger.logEvent("All jobs completed -> $dest", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
-            navController.navigate("hello")
+            navController.navigate(dest) { popUpTo(0) }
 
         } else {
             kioskLogger.logEvent("Jobs ended with error: $lastError", true)

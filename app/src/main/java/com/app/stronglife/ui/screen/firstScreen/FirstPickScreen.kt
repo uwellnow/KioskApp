@@ -235,9 +235,3 @@ fun FirstPickScreen(navController: NavController, cartViewModel: CartViewModel) 
         }
     }
 }
-
-@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
-@Composable
-fun FirstPickScreenPreview(){
-    FirstPickScreen(navController = rememberNavController(), cartViewModel = CartViewModel())
-}
