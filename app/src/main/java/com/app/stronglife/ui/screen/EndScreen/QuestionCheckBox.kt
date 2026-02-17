@@ -33,18 +33,14 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.app.stronglife.R
 import com.app.stronglife.ui.theme.Stronglife
 import com.app.stronglife.ui.theme.black
-import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
-import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
-fun QuestionBox(question: ChoiceQuestion, questionIndex: Int, onAnswered: (String) -> Unit) {
+fun QuestionCheckBox(question: CheckQuestion, questionIndex: Int, onAnswered: (String) -> Unit) {
     val density = LocalDensity.current
     val boxWidth = with(density) {1498f.toDp()}
     val boxHeight = with(density) {448f.toDp()}
@@ -138,12 +134,10 @@ fun QuestionBox(question: ChoiceQuestion, questionIndex: Int, onAnswered: (Strin
                         ){
                             rowChoices.forEachIndexed { rowIndex, choice ->
                                 val globalIndex = question.choices.indexOf(choice)
-                                val imageResId = question.choiceImages?.getOrNull(globalIndex) ?: R.drawable.radio_btn
 
-                                ChoiceItemWithImage(
+                                CheckItem(
                                     choice = choice,
-                                    isSelected = selectedIndex == globalIndex,
-                                    imageResId = imageResId
+                                    isSelected = selectedIndex == globalIndex
                                 ) {
                                     selectedIndex = globalIndex
                                     isAnswered = true

@@ -1,8 +1,12 @@
 package com.app.stronglife.ui.screen.EndScreen
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,10 +14,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.app.stronglife.R
 import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.data.remote.RetrofitClient
+import com.app.stronglife.ui.theme.black
+import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.viewmodel.SurveyViewModel
 import com.app.stronglife.viewmodel.SurveyViewModelFactory
 import com.app.stronglife.viewmodel.UserCodeViewModel
@@ -26,40 +39,37 @@ fun QuestionFlow(
     onError: () -> Unit,
     kioskLogger: KioskLogger? = null
 ) {
+    val density = LocalDensity.current
+
     val userCodeViewModel = UserCodeViewModel.getInstance(com.app.stronglife.data.remote.RetrofitClient.api)
     val userCode by userCodeViewModel.userCode
+    val userName = userCodeViewModel.loginResponse.value?.name
 
     val index by viewModel.currentIndex
     val answers by viewModel.answers
-
+    val titleSp = with(density) {28f.toSp()}
+    val descSp = with(density) {48f.toSp()}
     var isAnswered by remember { mutableStateOf(false) }
 
     val question = QuestionDatas[index]
 
     Column (
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ){
-        /*
-        when (question) {
-            is ChoiceQuestion -> {
-                QuestionBox(
-                    question = question,
-                    questionIndex = index,
-                    onAnswered = { viewModel.selectAnswer(question.index, it) }
-                )
-            }
-            is ScoreQuestion -> {
-                QuestionBarBox(
-                    question = question,
-                    questionIndex = index,
-                    onAnswered = { score ->
-                        viewModel.selectAnswer(question.index, score.toString())
-                    }
-                )
-            }
-        }
-        * */
+        Text(
+            text = "${userName}님, 첫 주문이시네요",
+            fontSize = titleSp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = mainRed,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "${question.title}",
+            fontSize = descSp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = black,
+        )
         QuestionRenderer(
             question  = question,
             questionIndex = index,
@@ -121,6 +131,16 @@ fun QuestionRenderer(
                 }
             )
         }
+
+        is CheckQuestion -> {
+            QuestionCheckBox(
+                question = question,
+                questionIndex = questionIndex,
+                onAnswered = {score ->
+                    onAnswered(score.toString())
+                }
+            )
+        }
     }
 }
 
@@ -137,8 +157,21 @@ fun QuestionFlowPreview() {
     
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.Start
     ) {
+        Text(
+            text = "태란님, 첫 주문이시네요",
+            fontSize = 20.sp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = mainRed,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "${question.title}",
+            fontSize = 30.sp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = black,
+        )
         QuestionRenderer(
             question = question,
             questionIndex = currentIndex.value,

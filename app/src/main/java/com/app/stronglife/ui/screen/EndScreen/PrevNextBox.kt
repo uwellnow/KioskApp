@@ -33,10 +33,9 @@ fun PrevNextBox(isAnswered: Boolean, onPrev: () -> Unit, onNext: () -> Unit) {
 
     Row (
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceBetween
     ){
         OneBox(isNext = false, isAnswered = isAnswered, onClick = onPrev)
-        Spacer(modifier = Modifier.width(spaceDp))
         OneBox(isNext = true, isAnswered = isAnswered, onClick = onNext)
     }
 }

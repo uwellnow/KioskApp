@@ -39,6 +39,7 @@ import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.ui.theme.descGray
 import com.app.stronglife.data.remote.KioskLogger
+import com.app.stronglife.ui.theme.mainRed
 
 @Composable
 fun Finish(
@@ -55,12 +56,14 @@ fun Finish(
 ) {
     val density = LocalDensity.current
     val barWidDp = with(density) {1140f.toDp()}
-    val titleSp = with(density) {70f.toSp()}
-    val descSp = with(density) {32f.toSp()}
+    val titleSp = with(density) {28f.toSp()}
+    val descSp = with(density) {48f.toSp()}
     val counterSp = with(density) { 36f.toSp() }
     val space1Dp = with(density) {120f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
     val space3Dp = with(density) {64f.toDp()}
+    val horPadding = with(density) {80f.toDp()}
+    val verPadding = with(density) {175f.toDp()}
 
     if (errorMessage != null) {
         Box(
@@ -94,88 +97,40 @@ fun Finish(
         return
     }
 
-    Column {
-
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ){
-
-            Text(
-                text = when(surveyState) {
-                    SurveyState.SUCCESS ->
-                        "소중한 의견 감사드립니다 \uD83D\uDE47\u200D♀\uFE0F"
-
-                    else ->
-                        stringResource(R.string.pay_done_title)
-                },
-                fontSize = titleSp,
-                fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                color = black,
-            )
-            Spacer(modifier = Modifier.height(space2Dp))
-            Text(
-                text = when(surveyState) {
-                    SurveyState.SUCCESS ->
-                        "음료 투출까지 잠시만 기다려주세요 !"
-
-                    else ->
-                        stringResource(R.string.pay_done_desc)
-                },
-                fontSize = descSp,
-                fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                color = descGray,
-            )
-
-            if (isInProgress) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    if (totalDrinkCount > 1) {
-                        if (surveyState == SurveyState.SUCCESS) {
-                            Spacer(Modifier.height(space3Dp))
-                        }
-                        Spacer(Modifier.height(space2Dp))
-                        Text(
-                            text = "${totalDrinkCount}잔 중, ${currentDrinkIndex}잔 째 만드는 중입니다",
-                            fontSize = counterSp,
-                            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                            color = Color(0xFF222222),
-                            textAlign = TextAlign.Center
+    Column (
+        modifier = Modifier.fillMaxSize().padding(horizontal = horPadding, verPadding),
+        horizontalAlignment = Alignment.Start,
+    ){
+        if (isInProgress) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+//                    if (totalDrinkCount > 1) {
+//                    } else {
+//                    }
+                when (surveyState) {
+                    SurveyState.IN_PROGRESS -> {
+                        QuestionFlow(
+                            apiKey = apiKey,
+                            onFinished = { onSurveyFinished() },
+                            onError = {onSurveyError() },
+                            kioskLogger = kioskLogger
                         )
-                        Spacer(Modifier.height(space2Dp))
-                    } else {
-                        if (surveyState != SurveyState.SUCCESS) {
-                            Spacer(Modifier.height(space3Dp))
-                        }
                     }
 
-                    when (surveyState) {
-                        SurveyState.IN_PROGRESS -> {
-                            QuestionFlow(
-                                apiKey = apiKey,
-                                onFinished = { onSurveyFinished() },
-                                onError = {onSurveyError() },
-                                kioskLogger = kioskLogger
-                            )
-                        }
-
-                        SurveyState.SUCCESS -> {
-                        }
-
-                        SurveyState.ERROR -> {
-                        }
-
+                    SurveyState.SUCCESS -> {
                     }
+
+                    SurveyState.ERROR -> {
+                    }
+
                 }
             }
-
-
-
-
         }
+
+
+
+
     }
 }
 
@@ -187,7 +142,7 @@ fun FinishPreview() {
         currentDrinkIndex = 1,
         totalDrinkCount = 2,
         isInProgress = true,
-        surveyState = SurveyState.SUCCESS,
+        surveyState = SurveyState.IN_PROGRESS,
         onSurveyFinished = {},
         onSurveyError = {},
     )
