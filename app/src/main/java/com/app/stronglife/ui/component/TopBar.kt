@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartViewModel: CartViewModel) {
     val context = LocalContext.current
     val prefsManager = remember { PrefsManager(context) }
+    val apiKey = prefsManager.getApiKey()
     val isPicked = prefsManager.getIsPicked()
     val density = LocalDensity.current
     val heightInDp = with(density) { 112f.toDp() }
@@ -98,8 +99,12 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartV
                 painter = painterResource(id = R.drawable.home),
                 modifier = Modifier.size(btnInDp)
                     .clickable{
-                        // is_picked 값에 따라 라우팅
-                        if (isPicked) {
+                        // apiKey 없으면 등록 화면, 있으면 is_picked에 따라 홈 라우팅
+                        if (apiKey.isEmpty()) {
+                            navController.navigate("register") {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        } else if (isPicked) {
                             navController.navigate("first_pick") {
                                 popUpTo(0) { inclusive = true }
                             }
