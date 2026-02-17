@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -72,7 +73,8 @@ fun DrinkStageBarV2(
     var barSize by remember { mutableStateOf(IntSize(0, 0)) }
     val barWidthDp = with(density) { barSize.width.toDp() }
     val barHeightDp = with(density) { barSize.height.toDp() }
-
+    val descHeightDp = with(density) {52f.toDp()}
+    val descBottomSpace = with(density) {13f.toDp()}
     val circlePitch = circleDp + (dotsSpace * 2) + dotsWidth
     val x = when (activeCircleIndex) {
         1 -> 0.dp
@@ -81,19 +83,30 @@ fun DrinkStageBarV2(
     }
 
     val labelHeightDp = labelSp.value.dp * 1.4f // 대충 한 줄 높이(폰트마다 약간 다름)
-    val containerHeight = if (barSize.height > 0) barHeightDp + labelTopSpace + labelHeightDp else Dp.Unspecified
+    val containerHeight = if (barSize.height > 0) barHeightDp + labelTopSpace + labelHeightDp + descHeightDp + (descBottomSpace * 2) else Dp.Unspecified
 
 
-    Box(
+    Column (
         modifier = modifier
             .width(barWidthDp.takeIf { it > 0.dp }?.let { it * 1.3f } ?: Dp.Unspecified)
             .height(containerHeight)
     ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.drink_stage_desc),
+                contentDescription = "음료 제조 과정 말풍선",
+                modifier = Modifier.height(descHeightDp)
+            )
+        }
+        Spacer(modifier = Modifier.height(descBottomSpace))
         Row(
             modifier = Modifier
-                .onSizeChanged { barSize = it }
-                .align(Alignment.TopStart),
-            verticalAlignment = Alignment.CenterVertically
+                .onSizeChanged { barSize = it },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
             StageCircle(1, stage, circleDp, numSp, activeColor, idleColor, checkedCircleRes)
             Spacer(Modifier.width(dotsSpace))
@@ -117,7 +130,7 @@ fun DrinkStageBarV2(
                 softWrap = false,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .offset(x = x, y = barHeightDp + labelTopSpace)
+                    .offset(x = x, y = labelTopSpace)
                     .widthIn(max = 60.dp)
             )
         }
