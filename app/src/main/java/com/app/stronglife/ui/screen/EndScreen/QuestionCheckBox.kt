@@ -40,123 +40,58 @@ import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
 
 @Composable
-fun QuestionCheckBox(question: CheckQuestion, questionIndex: Int, onAnswered: (String) -> Unit) {
+fun QuestionCheckBox(
+    question: CheckQuestion, 
+    questionIndex: Int, 
+    existingAnswer: String? = null,
+    onAnswered: (String) -> Unit
+) {
     val density = LocalDensity.current
-    val boxWidth = with(density) {1498f.toDp()}
-    val boxHeight = with(density) {448f.toDp()}
-    val titleTextSp = with(density) {44f.toSp()}
-    val indexTextSp = with(density) {36f.toSp()}
-    val heightSpaceDp = with(density) {32f.toDp()}
-    val roundDp = with(density) {20f.toDp()}
 
-    val blurRadiusPx = with(density) { 7.dp.toPx() }
+    val boxHor = with(density) {60f.toDp()}
+    val heightSpaceDp = with(density) {22f.toDp()}
 
-    var isAnswered by remember { mutableStateOf(false) }
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
-    LaunchedEffect(questionIndex) {
-        selectedIndex = null
-        isAnswered = false
+    // 기존 답변을 기반으로 초기 선택 상태 복원
+    LaunchedEffect(questionIndex, existingAnswer) {
+        if (existingAnswer != null && existingAnswer.isNotBlank()) {
+            val index = question.choices.indexOf(existingAnswer)
+            selectedIndex = if (index >= 0) index else null
+        } else {
+            selectedIndex = null
+        }
     }
 
     Column (
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth().padding(vertical = boxHor),
     ){
-        Box(
-            modifier = Modifier.size(boxWidth, boxHeight)
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().asFrameworkPaint().apply {
-                            color = shadowGray.toArgb()
-                            maskFilter = android.graphics.BlurMaskFilter(
-                                blurRadiusPx,
-                                android.graphics.BlurMaskFilter.Blur.NORMAL
-                            )
-                        }
-                        canvas.nativeCanvas.drawRoundRect(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
-                            blurRadiusPx,
-                            blurRadiusPx,
-                            paint
-                        )
-                    }
-                }
-                .background(color = Color.White, RoundedCornerShape(roundDp))
-        ) {
-            Column (
-                modifier = Modifier.fillMaxSize().padding(horizontal = 55.dp, vertical = 60.dp),
-                verticalArrangement = Arrangement.Center,
 
-                ){
+        Column (
+            verticalArrangement = Arrangement.spacedBy(heightSpaceDp)
+        ){
+            // 선택지를 2개씩 행으로 나누어 표시 (동적 처리)
+            question.choices.chunked(2).forEach { rowChoices ->
                 Row (
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.spacedBy(18.dp)
                 ){
-                    Text(
-                        text = question.title,
-                        fontFamily = Stronglife,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = titleTextSp,
-                        color = black
-                    )
+                    rowChoices.forEachIndexed { rowIndex, choice ->
+                        val globalIndex = question.choices.indexOf(choice)
 
-                    Spacer(modifier = Modifier.width(20.dp))
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("(")
-                            withStyle(
-                                style = SpanStyle(color = mainRed)
-                            ) {
-                                append(question.index.toString())
-                            }
-                            append("/${QuestionDatas.size})")
-                        },
-                        fontFamily = Stronglife,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = indexTextSp,
-                        color = Color(0xFFD1D5DC)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(heightSpaceDp))
-
-                Column (
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ){
-                    // 선택지를 2개씩 행으로 나누어 표시 (동적 처리)
-                    question.choices.chunked(2).forEach { rowChoices ->
-                        Row (
-                            horizontalArrangement = Arrangement.spacedBy(18.dp)
-                        ){
-                            rowChoices.forEachIndexed { rowIndex, choice ->
-                                val globalIndex = question.choices.indexOf(choice)
-
-                                CheckItem(
-                                    choice = choice,
-                                    isSelected = selectedIndex == globalIndex
-                                ) {
-                                    selectedIndex = globalIndex
-                                    isAnswered = true
-                                    onAnswered(choice)
-                                }
-                            }
-                            // 홀수 개일 경우 빈 공간 추가
-                            if (rowChoices.size == 1) {
-                                Spacer(modifier = Modifier.width(685.dp + 18.dp))
-                            }
+                        CheckItem(
+                            choice = choice,
+                            isSelected = selectedIndex == globalIndex
+                        ) {
+                            selectedIndex = globalIndex
+                            onAnswered(choice)
                         }
                     }
+                    // 홀수 개일 경우 빈 공간 추가
+                    if (rowChoices.size == 1) {
+                        Spacer(modifier = Modifier.width(685.dp + 18.dp))
+                    }
                 }
-
             }
         }
-
-        Spacer(modifier = Modifier.height(56.dp))
-
     }
-
 }

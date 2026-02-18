@@ -11,7 +11,8 @@ data class ChoiceQuestion(
     override val index: Int,
     override val title: String,
     val choices: List<String>,
-    val choiceImages: List<Int>? = null
+    val choiceImages: List<Int>? = null,
+    val isMultiple: Boolean = false  // 복수 선택 가능 여부
 ) : QuestionData()
 
 data class CheckQuestion(
@@ -32,7 +33,7 @@ data class ScoreQuestion(
 val QuestionDatas = listOf(
     ChoiceQuestion(
         index = 1,
-        title = "당신의 직업은 무엇인가요?",
+        title = "직업은 무엇인가요?",
         choices = listOf(
             "학생 (중/고/대학생)",
             "자영업/프리랜서",
@@ -92,7 +93,8 @@ val QuestionDatas = listOf(
             R.drawable.survey_sleep,
             R.drawable.survey_glp,
             R.drawable.survey_beauty
-        )
+        ),
+        isMultiple = true  // 복수 선택 가능
     ),
     CheckQuestion(
         index = 5,

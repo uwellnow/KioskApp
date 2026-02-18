@@ -31,10 +31,13 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.Stronglife
 import com.app.stronglife.ui.theme.black
@@ -44,125 +47,134 @@ import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.ui.theme.superLightGray
 
 @Composable
-fun QuestionBox(question: ChoiceQuestion, questionIndex: Int, onAnswered: (String) -> Unit) {
+fun QuestionBox(
+    question: ChoiceQuestion, 
+    questionIndex: Int, 
+    existingAnswer: String? = null,
+    onAnswered: (String) -> Unit
+) {
     val density = LocalDensity.current
-    val boxWidth = with(density) {1498f.toDp()}
-    val boxHeight = with(density) {448f.toDp()}
-    val titleTextSp = with(density) {44f.toSp()}
-    val indexTextSp = with(density) {36f.toSp()}
-    val heightSpaceDp = with(density) {32f.toDp()}
-    val roundDp = with(density) {20f.toDp()}
+    val boxHor = with(density) {20f.toDp()}
+    val heightSpaceDp = with(density) {22f.toDp()}
+    val widthSpaceDp = with(density) {30f.toDp()}
 
-    val blurRadiusPx = with(density) { 7.dp.toPx() }
+    // 복수 선택 지원: Set으로 여러 개 선택 관리
+    var selectedIndices by remember { mutableStateOf<Set<Int>>(emptySet()) }
 
-    var isAnswered by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf<Int?>(null) }
+    // 기존 답변을 기반으로 초기 선택 상태 복원
+    LaunchedEffect(questionIndex, existingAnswer) {
+        if (existingAnswer != null && existingAnswer.isNotBlank()) {
+            if (question.isMultiple) {
+                // 복수 선택: 쉼표로 구분된 문자열을 파싱
+                val selectedChoices = existingAnswer.split(",").map { it.trim() }
+                selectedIndices = selectedChoices.mapNotNull { choice ->
+                    question.choices.indexOf(choice).takeIf { it >= 0 }
+                }.toSet()
+            } else {
+                // 단일 선택
+                val index = question.choices.indexOf(existingAnswer)
+                selectedIndices = if (index >= 0) setOf(index) else emptySet()
+            }
+        } else {
+            selectedIndices = emptySet()
+        }
+    }
 
-    LaunchedEffect(questionIndex) {
-        selectedIndex = null
-        isAnswered = false
+    // 선택이 변경될 때마다 답변 업데이트
+    LaunchedEffect(selectedIndices) {
+        if (question.isMultiple) {
+            // 복수 선택: 선택된 항목들을 쉼표로 구분하여 전달
+            if (selectedIndices.isNotEmpty()) {
+                val selectedChoices = selectedIndices.map { question.choices[it] }
+                onAnswered(selectedChoices.joinToString(","))
+            }
+        } else {
+            // 단일 선택: 하나만 선택 가능
+            if (selectedIndices.isNotEmpty()) {
+                val selectedIndex = selectedIndices.first()
+                onAnswered(question.choices[selectedIndex])
+            }
+        }
     }
 
     Column (
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-        Box(
-            modifier = Modifier.size(boxWidth, boxHeight)
-                .drawBehind {
-                    drawIntoCanvas { canvas ->
-                        val paint = Paint().asFrameworkPaint().apply {
-                            color = shadowGray.toArgb()
-                            maskFilter = android.graphics.BlurMaskFilter(
-                                blurRadiusPx,
-                                android.graphics.BlurMaskFilter.Blur.NORMAL
-                            )
-                        }
-                        canvas.nativeCanvas.drawRoundRect(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
-                            blurRadiusPx,
-                            blurRadiusPx,
-                            paint
-                        )
-                    }
-                }
-                .background(color = Color.White, RoundedCornerShape(roundDp))
-        ) {
-            Column (
-                modifier = Modifier.fillMaxSize().padding(horizontal = 55.dp, vertical = 60.dp),
-                verticalArrangement = Arrangement.Center,
+        modifier = Modifier.fillMaxWidth().padding(vertical = boxHor),
+        ){
 
-                ){
+        Column (
+            verticalArrangement = Arrangement.spacedBy(heightSpaceDp)
+        ){
+            question.choices.chunked(2).forEach { rowChoices ->
                 Row (
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.spacedBy(widthSpaceDp)
                 ){
-                    Text(
-                        text = question.title,
-                        fontFamily = Stronglife,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = titleTextSp,
-                        color = black
-                    )
+                    rowChoices.forEachIndexed { rowIndex, choice ->
+                        val globalIndex = question.choices.indexOf(choice)
+                        val imageResId = question.choiceImages?.getOrNull(globalIndex) ?: R.drawable.radio_btn
 
-                    Spacer(modifier = Modifier.width(20.dp))
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("(")
-                            withStyle(
-                                style = SpanStyle(color = mainRed)
-                            ) {
-                                append(question.index.toString())
-                            }
-                            append("/${QuestionDatas.size})")
-                        },
-                        fontFamily = Stronglife,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = indexTextSp,
-                        color = Color(0xFFD1D5DC)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(heightSpaceDp))
-
-                Column (
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ){
-                    // 선택지를 2개씩 행으로 나누어 표시 (동적 처리)
-                    question.choices.chunked(2).forEach { rowChoices ->
-                        Row (
-                            horizontalArrangement = Arrangement.spacedBy(18.dp)
-                        ){
-                            rowChoices.forEachIndexed { rowIndex, choice ->
-                                val globalIndex = question.choices.indexOf(choice)
-                                val imageResId = question.choiceImages?.getOrNull(globalIndex) ?: R.drawable.radio_btn
-
-                                ChoiceItemWithImage(
-                                    choice = choice,
-                                    isSelected = selectedIndex == globalIndex,
-                                    imageResId = imageResId
-                                ) {
-                                    selectedIndex = globalIndex
-                                    isAnswered = true
-                                    onAnswered(choice)
+                        ChoiceItemWithImage(
+                            choice = choice,
+                            isSelected = selectedIndices.contains(globalIndex),
+                            imageResId = imageResId
+                        ) {
+                            if (question.isMultiple) {
+                                // 복수 선택: 토글 방식, 최대 3개까지 선택 가능
+                                selectedIndices = if (selectedIndices.contains(globalIndex)) {
+                                    // 이미 선택된 항목이면 제거
+                                    selectedIndices - globalIndex
+                                } else {
+                                    // 최대 3개까지만 선택 가능
+                                    if (selectedIndices.size < 3) {
+                                        selectedIndices + globalIndex
+                                    } else {
+                                        selectedIndices // 이미 3개 선택됨, 추가 불가
+                                    }
                                 }
-                            }
-                            // 홀수 개일 경우 빈 공간 추가
-                            if (rowChoices.size == 1) {
-                                Spacer(modifier = Modifier.width(685.dp + 18.dp))
+                            } else {
+                                // 단일 선택: 하나만 선택 가능
+                                selectedIndices = setOf(globalIndex)
                             }
                         }
                     }
+                    // 홀수 개일 경우 빈 공간 추가
+                    if (rowChoices.size == 1) {
+                        Spacer(modifier = Modifier.width(685.dp + 18.dp))
+                    }
                 }
-
             }
         }
-
-        Spacer(modifier = Modifier.height(56.dp))
-
     }
+}
 
+
+@Preview(device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33, showBackground = true)
+@Composable
+fun QuestionFlowV1Preview() {
+    // ViewModel 없이 UI만 표시하는 간단한 Preview
+    val currentIndex = remember { mutableStateOf(9) }
+    val question = QuestionDatas[currentIndex.value]
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "태란님, 첫 주문이시네요",
+            fontSize = 20.sp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = mainRed,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "${question.title}",
+            fontSize = 30.sp,
+            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+            color = black,
+        )
+        QuestionRenderer(
+            question = question,
+            questionIndex = currentIndex.value,
+            onAnswered = { }
+        )
+    }
 }

@@ -44,7 +44,7 @@ fun ChoiceItemWithImage(
     val textSp = with(density) {30f.toSp()}
     val spaceDp = with(density) {24f.toDp()}
     val imageSize = with(density) {40f.toDp()}
-    val borderDp = with(density) {4f.toDp()}
+    val borderDp = with(density) {2f.toDp()}
     val paddingDp = with(density) {44f.toDp()}
 
     Row(
@@ -88,7 +88,7 @@ fun CheckItem(
     val textSp = with(density) {30f.toSp()}
     val spaceDp = with(density) {24f.toDp()}
     val checkSize = with(density) {40f.toDp()}
-    val borderDp = with(density) {4f.toDp()}
+    val borderDp = with(density) {2f.toDp()}
     val paddingDp = with(density) {44f.toDp()}
 
     Row(
@@ -130,7 +130,7 @@ fun ChoiceItem(choice: String, isSelected: Boolean, onClick: () -> Unit) {
     val spaceDp = with(density) {24f.toDp()}
     val circleSize = with(density) {40f.toDp()}
 
-    val borderDp = with(density) {4f.toDp()}
+    val borderDp = with(density) {2f.toDp()}
 
     Row(
         modifier = Modifier.size(barWidth,barHeight)

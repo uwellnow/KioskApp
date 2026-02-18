@@ -52,6 +52,7 @@ import com.app.stronglife.ui.theme.shadowGray
 fun QuestionBarBox(
     question: ScoreQuestion,
     questionIndex: Int,
+    existingAnswer: String? = null,
     onAnswered: (Int) -> Unit
 ) {
     val density = LocalDensity.current
@@ -66,10 +67,15 @@ fun QuestionBarBox(
     val roundDp = with(density) { 20f.toDp() }
     val descTextSp = with(density) { 26f.toSp() }
 
-    var selectedScore by remember { mutableStateOf<Int?>(3) } // preview용 3 선택
+    var selectedScore by remember { mutableStateOf<Int?>(null) }
 
-    LaunchedEffect(questionIndex) {
-        selectedScore = null
+    // 기존 답변을 기반으로 초기 선택 상태 복원
+    LaunchedEffect(questionIndex, existingAnswer) {
+        if (existingAnswer != null && existingAnswer.isNotBlank()) {
+            selectedScore = existingAnswer.toIntOrNull()
+        } else {
+            selectedScore = null
+        }
     }
 
     Column(

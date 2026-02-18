@@ -86,9 +86,10 @@ fun DrinkStageBarV2(
     val containerHeight = if (barSize.height > 0) barHeightDp + labelTopSpace + labelHeightDp + descHeightDp + (descBottomSpace * 2) else Dp.Unspecified
 
 
+    val columnWidth = barWidthDp.takeIf { it > 0.dp }?.let { (it * 1.8f).coerceAtLeast(320.dp) } ?: 320.dp
     Column (
         modifier = modifier
-            .width(barWidthDp.takeIf { it > 0.dp }?.let { it * 1.3f } ?: Dp.Unspecified)
+            .width(columnWidth)
             .height(containerHeight)
     ) {
         Box(
@@ -126,12 +127,11 @@ fun DrinkStageBarV2(
                 fontSize = labelSp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Start,
-                maxLines = 1,
-                softWrap = false,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .offset(x = x, y = labelTopSpace)
-                    .widthIn(max = 60.dp)
+                    .fillMaxWidth()
             )
         }
     }
@@ -213,7 +213,7 @@ private fun StageCircle(
 @Composable
 fun DrinkStageBarV2Preview() {
     DrinkStageBarV2(
-        stepSeconds = 5,
+        stepSeconds = 20,
         resetKey = 0
     )
 }

@@ -6,13 +6,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,7 +67,7 @@ fun Finish(
     val space2Dp = with(density) {32f.toDp()}
     val space3Dp = with(density) {64f.toDp()}
     val horPadding = with(density) {80f.toDp()}
-    val verPadding = with(density) {175f.toDp()}
+    val verPadding = with(density) {120f.toDp()}
 
     if (errorMessage != null) {
         Box(
@@ -97,41 +101,49 @@ fun Finish(
         return
     }
 
-    Column (
-        modifier = Modifier.fillMaxSize().padding(horizontal = horPadding, verPadding),
-        horizontalAlignment = Alignment.Start,
+    Row (
+        modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ){
-        if (isInProgress) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-//                    if (totalDrinkCount > 1) {
-//                    } else {
-//                    }
-                when (surveyState) {
-                    SurveyState.IN_PROGRESS -> {
-                        QuestionFlow(
-                            apiKey = apiKey,
-                            onFinished = { onSurveyFinished() },
-                            onError = {onSurveyError() },
-                            kioskLogger = kioskLogger
-                        )
-                    }
+        Column (
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = horPadding, vertical = verPadding),
+            horizontalAlignment = Alignment.Start,
+        ){
+            if (isInProgress) {
+                Column(
+                ) {
+                    when (surveyState) {
+                        SurveyState.IN_PROGRESS -> {
+                            QuestionFlow(
+                                apiKey = apiKey,
+                                onFinished = { onSurveyFinished() },
+                                onError = {onSurveyError() },
+                                kioskLogger = kioskLogger
+                            )
+                        }
 
-                    SurveyState.SUCCESS -> {
-                    }
+                        SurveyState.SUCCESS -> {
+                        }
 
-                    SurveyState.ERROR -> {
-                    }
+                        SurveyState.ERROR -> {
+                        }
 
+                    }
                 }
             }
         }
 
-
-
-
+        Image(
+            painter = painterResource(id = R.drawable.right_qr_section),
+            contentDescription = "프로모션 이벤트 배너",
+            modifier = Modifier.fillMaxHeight()
+        )
     }
+
 }
 
 @Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82", apiLevel = 33)

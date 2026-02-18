@@ -43,7 +43,7 @@ fun PrevNextBox(isAnswered: Boolean, onPrev: () -> Unit, onNext: () -> Unit) {
 @Composable
 fun OneBox(isNext: Boolean, isAnswered: Boolean, onClick: () -> Unit) {
     val density = LocalDensity.current
-    val boxWidth = with(density) { 300f.toDp()}
+    val boxWidth = with(density) { 202f.toDp()}
     val boxHeight = with(density) {89f.toDp()}
     val roundDp = with(density) {12f.toDp()}
     val textSp = with(density) {28f.toSp()}

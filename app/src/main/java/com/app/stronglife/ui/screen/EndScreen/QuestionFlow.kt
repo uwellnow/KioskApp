@@ -1,13 +1,18 @@
 package com.app.stronglife.ui.screen.EndScreen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,37 +52,81 @@ fun QuestionFlow(
 
     val index by viewModel.currentIndex
     val answers by viewModel.answers
+    val spaceDp = with(density) {20f.toDp()}
     val titleSp = with(density) {28f.toSp()}
     val descSp = with(density) {48f.toSp()}
     var isAnswered by remember { mutableStateOf(false) }
 
     val question = QuestionDatas[index]
 
+    // 질문이 바뀔 때 isAnswered 초기화 및 기존 답변 확인
+    LaunchedEffect(index) {
+        isAnswered = when (question) {
+            is ChoiceQuestion -> {
+                val answer = viewModel.getAnswer(question.index)
+                if (question.isMultiple) {
+                    // 복수 선택: 쉼표로 구분된 문자열이 있으면 true
+                    !answer.isNullOrBlank()
+                } else {
+                    // 단일 선택: 답변이 있으면 true
+                    !answer.isNullOrBlank()
+                }
+            }
+            is CheckQuestion -> {
+                val answer = viewModel.getAnswer(question.index)
+                !answer.isNullOrBlank()
+            }
+            is ScoreQuestion -> {
+                val answer = viewModel.getAnswer(question.index)
+                !answer.isNullOrBlank()
+            }
+        }
+    }
+
     Column (
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ){
-        Text(
-            text = "${userName}님, 첫 주문이시네요",
-            fontSize = titleSp,
-            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-            color = mainRed,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "${question.title}",
-            fontSize = descSp,
-            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-            color = black,
-        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
+                Text(
+                    text = "${userName?:"고객"}님, 첫 주문이시네요",
+                    fontSize = titleSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                    color = mainRed,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "${question.title}",
+                    fontSize = descSp,
+                    fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                    color = black,
+                )
+            }
+            DrinkStageBarV2(
+                modifier = Modifier
+                    .widthIn(min = 300.dp)
+                    .offset(y = (-70).dp)
+            )
+        }
+
         QuestionRenderer(
             question  = question,
             questionIndex = index,
+            existingAnswer = viewModel.getAnswer(question.index),
             onAnswered = { answer ->
                 viewModel.selectAnswer(question.index, answer)
-                isAnswered = true
+                // 답변이 있으면 다음 버튼 활성화
+                isAnswered = answer.isNotBlank()
             }
         )
+
+        Spacer(modifier = Modifier.height(spaceDp))
 
         PrevNextBox(
             isAnswered = isAnswered,
@@ -109,6 +158,7 @@ fun QuestionFlow(
 fun QuestionRenderer(
     question: QuestionData,
     questionIndex: Int,
+    existingAnswer: String? = null,
     onAnswered: (String) -> Unit
 ) {
     when (question) {
@@ -116,6 +166,7 @@ fun QuestionRenderer(
             QuestionBox(
                 question = question,
                 questionIndex = questionIndex,
+                existingAnswer = existingAnswer,
                 onAnswered = { answer ->
                     onAnswered(answer)
                 }
@@ -126,7 +177,8 @@ fun QuestionRenderer(
             QuestionBarBox(
                 question = question,
                 questionIndex = questionIndex,
-                onAnswered = {score ->
+                existingAnswer = existingAnswer,
+                onAnswered = { score ->
                     onAnswered(score.toString())
                 }
             )
@@ -136,8 +188,9 @@ fun QuestionRenderer(
             QuestionCheckBox(
                 question = question,
                 questionIndex = questionIndex,
-                onAnswered = {score ->
-                    onAnswered(score.toString())
+                existingAnswer = existingAnswer,
+                onAnswered = {answer ->
+                    onAnswered(answer)
                 }
             )
         }
