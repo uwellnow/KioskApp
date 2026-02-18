@@ -73,6 +73,6 @@ fun PayingScreen(viewModel: CartViewModel, userViewModel: UserCodeViewModel,navC
 
     LaunchedEffect(Unit) {
         delay(1500)
-        navController.navigate("end")
+        navController.navigate("End")
     }
 }

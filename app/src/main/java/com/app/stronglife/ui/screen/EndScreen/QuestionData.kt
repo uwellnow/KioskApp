@@ -73,7 +73,7 @@ val QuestionDatas = listOf(
     ),
     ChoiceQuestion(
         index = 4,
-        title = "건강 목표는 무엇인가요?",
+        title = "건강 목표는 무엇인가요?(최대 3개)",
         choices = listOf(
             "뼈 및 관절 건강",
             "뇌 건강, 집중력 및 인지력",
@@ -137,8 +137,6 @@ val QuestionDatas = listOf(
             "기존에 먹던 영양제/보충제",
             "편의점 음료 또는 다른 대안 탐색",
             "섭취하지 않음",
-            "특정 건강/운동 고민이 있어서",
-            "호기심/신기해서"
         )
     ),
     CheckQuestion(

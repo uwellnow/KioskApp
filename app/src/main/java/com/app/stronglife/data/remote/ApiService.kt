@@ -74,13 +74,13 @@ interface ApiService {
         @Header("x-api-key") apiKey: String,
         @Query("orderNumber") orderNumber: String,
         @Body body: ProductPurchaseRequest
-    ) : retrofit2.Response<okhttp3.ResponseBody>
+    ) : retrofit2.Response<ProductPurchaseResponse>
 
     @POST("user/purchase/product-by-coupon")
     suspend fun postPurchaseByCoupon(
         @Header("x-api-key") apiKey: String,
         @Body body: CouponPurchaseRequest
-    ) : retrofit2.Response<okhttp3.ResponseBody>
+    ) : retrofit2.Response<ProductPurchaseResponse>
 
     @POST("user/purchase/product-by-phone")
     suspend fun postPurchaseProductByPhone(
