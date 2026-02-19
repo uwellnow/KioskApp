@@ -262,8 +262,7 @@ fun EndScreen(
 
         val serialOk = vm.startSerial()
         kioskLogger.logEvent("SerialStart", !serialOk, responseHex = if (serialOk) "OK" else null)
-        // 임시로 주석 처리: 에뮬레이터 테스트용 (시리얼 통신 없이 EndScreen UI 확인)
-        // if (!serialOk) { lastError = "시리얼 연결 실패"; inProgress = false; return@LaunchedEffect }
+        if (!serialOk) { lastError = "시리얼 연결 실패"; inProgress = false; return@LaunchedEffect }
 
         delay(500)
 
