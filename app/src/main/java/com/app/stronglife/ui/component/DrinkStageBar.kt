@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun DrinkStageBarV2(
     modifier: Modifier = Modifier,
-    stepSeconds: Int = 20,
+    stepDurations: List<Int> = listOf(22, 13, 14, 15),
     activeColor: Color = mainRed,
     idleColor: Color = Color(0xFFAFAFAF),
     resetKey: Any? = null,
@@ -47,11 +47,13 @@ fun DrinkStageBarV2(
     )
 
     var stage by remember { mutableIntStateOf(1) }
-    LaunchedEffect(resetKey, stepSeconds) {
+    LaunchedEffect(resetKey, stepDurations) {
         stage = 1
-        repeat(3) {
-            delay(stepSeconds * 1000L)
-            stage += 1
+        stepDurations.forEachIndexed { index, duration ->
+            if (index < stepDurations.size - 1) { // 마지막 단계는 delay 불필요
+                delay(duration * 1000L)
+                stage += 1
+            }
         }
         onFinished?.invoke()
     }
@@ -75,6 +77,7 @@ fun DrinkStageBarV2(
     val barHeightDp = with(density) { barSize.height.toDp() }
     val descHeightDp = with(density) {52f.toDp()}
     val descBottomSpace = with(density) {13f.toDp()}
+    val imageOffset = with(density) {50f.toDp()}
     val circlePitch = circleDp + (dotsSpace * 2) + dotsWidth
     val x = when (activeCircleIndex) {
         1 -> 0.dp
@@ -86,11 +89,12 @@ fun DrinkStageBarV2(
     val containerHeight = if (barSize.height > 0) barHeightDp + labelTopSpace + labelHeightDp + descHeightDp + (descBottomSpace * 2) else Dp.Unspecified
 
 
-    val columnWidth = barWidthDp.takeIf { it > 0.dp }?.let { (it * 1.8f).coerceAtLeast(320.dp) } ?: 320.dp
+    val columnWidth = barWidthDp.takeIf { it > 0.dp }?.let { (it * 1.8f).coerceAtLeast(280.dp) } ?: 280.dp
     Column (
         modifier = modifier
             .width(columnWidth)
             .height(containerHeight)
+            .offset(x = imageOffset)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -99,7 +103,9 @@ fun DrinkStageBarV2(
             Image(
                 painter = painterResource(id = R.drawable.drink_stage_desc),
                 contentDescription = "음료 제조 과정 말풍선",
-                modifier = Modifier.height(descHeightDp)
+                modifier = Modifier
+                    .height(descHeightDp)
+                    .offset(x = -(imageOffset))
             )
         }
         Spacer(modifier = Modifier.height(descBottomSpace))
@@ -209,11 +215,11 @@ private fun StageCircle(
 }
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, device = "spec:width=1920px,height=1080px,dpi=82")
 @Composable
 fun DrinkStageBarV2Preview() {
     DrinkStageBarV2(
-        stepSeconds = 20,
-        resetKey = 0
+        stepDurations = listOf(23, 13, 14, 15),
+        resetKey = 3
     )
 }
