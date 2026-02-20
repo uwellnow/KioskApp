@@ -55,5 +55,6 @@ data class ProductPurchaseResponse(
     val message: String,
     val remainCount: Int,
     val customerName: String,
-    val paymentMethod: String  // "주문번호" 또는 "휴대폰번호"
+    val paymentMethod: String,  // "주문번호" 또는 "휴대폰번호"
+    val isFirstOrder: Boolean = true
 )

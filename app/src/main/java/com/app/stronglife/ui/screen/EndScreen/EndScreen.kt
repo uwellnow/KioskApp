@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.runBlocking
+import android.util.Log
 
 enum class SurveyState{
     IN_PROGRESS,
@@ -53,6 +54,7 @@ fun EndScreen(
     navController: NavController,
     productViewModel: ProductViewModel,
     cartViewModel: CartViewModel,
+    userViewModel: UserCodeViewModel,
     vm: Gs805ViewModel = viewModel(),
     apiKey: String
 ) {
@@ -61,6 +63,7 @@ fun EndScreen(
     val prefsManager = remember { PrefsManager(context) }
     val cartItems = cartViewModel.cartItems.value
     val products = productViewModel.products
+    // UserInfoScreen에서 getInstance()로 사용한 동일한 인스턴스 사용
     val userCodeViewModel = UserCodeViewModel.getInstance(RetrofitClient.api)
     
     // SurveyViewModel 초기화를 위해 가져오기
@@ -68,12 +71,33 @@ fun EndScreen(
         factory = SurveyViewModelFactory(RetrofitClient.api)
     )
 
+    // 백엔드에서 받은 isFirstOrder 값을 그대로 사용
+    // 결제 API 응답(ProductPurchaseResponse)에서 받은 값을 UserCodeViewModel.lastPurchaseIsFirstOrder에 저장하고 있음
+    val isFirstOrderValue by userCodeViewModel.lastPurchaseIsFirstOrder
+    
+    // 백엔드에서 받은 값을 그대로 사용 (기본값 사용 안 함)
+    // null이면 아직 결제 응답이 처리되지 않은 상태이므로 값이 설정될 때까지 기다림
+    Log.d("EndScreen", "백엔드에서 받은 isFirstOrder 값: lastPurchaseIsFirstOrder.value=$isFirstOrderValue")
+    
+    // isFirstOrder에 따라 설문 상태 설정 (false면 설문 안 보이게)
     var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
-
+    
+    // 백엔드에서 받은 isFirstOrder 값이 변경될 때마다 surveyState 업데이트
+    LaunchedEffect(isFirstOrderValue) {
+        // 백엔드에서 받은 값을 그대로 사용 (null이 아닐 때만)
+        if (isFirstOrderValue != null) {
+            val newState = if (isFirstOrderValue == true) SurveyState.IN_PROGRESS else SurveyState.SUCCESS
+            Log.d("EndScreen", "백엔드 값 반영: isFirstOrderValue=$isFirstOrderValue -> surveyState=$newState")
+            surveyState = newState
+        } else {
+            Log.d("EndScreen", "아직 결제 응답이 오지 않음: isFirstOrderValue=null")
+        }
+    }
+    
+    // 초기화는 한 번만 실행
     LaunchedEffect(Unit) {
         // 새로운 주문이 시작될 때 SurveyViewModel 초기화
         surveyViewModel.reset()
-        surveyState = SurveyState.IN_PROGRESS
         
         if (products.isEmpty()) {
             productViewModel.fetchProducts()
@@ -116,6 +140,7 @@ fun EndScreen(
         totalDrinkCount = totalJobs,
         isInProgress = isCurrentlyMaking,
         surveyState = surveyState,
+        isFirstOrder = isFirstOrderValue ?: false,  // 백엔드에서 받은 값을 사용, null이면 false (값이 설정되면 자동으로 업데이트됨)
         onSurveyFinished = {
             surveyState = SurveyState.SUCCESS
         },
@@ -127,8 +152,11 @@ fun EndScreen(
         onErrorConfirm = {
             val isPickedNow = prefsManager.getIsPicked()
             val dest = if (isPickedNow) "first_pick" else "hello"
+            // 에러 확인 후 다른 화면으로 이동할 때 clear
+            userCodeViewModel.clearLastPurchaseIsFirstOrder()
             navController.navigate(dest) { popUpTo(0) }
-        }
+        },
+        onFinishDispose = null  // EndScreen의 DisposableEffect에서 직접 호출
     )
 
     // 정적 구간 길이/타임아웃
@@ -321,6 +349,8 @@ fun EndScreen(
             val dest = if (isPickedNow) "first_pick" else "hello"
             kioskLogger.logEvent("All jobs completed -> $dest (isPicked=$isPickedNow)", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
+            // EndScreen이 완전히 끝나고 다른 화면으로 이동할 때 clear
+            userCodeViewModel.clearLastPurchaseIsFirstOrder()
             navController.navigate(dest) { popUpTo(0) }
 
         } else {
@@ -338,7 +368,7 @@ fun EndScreen(
                 runCatching { withTimeout(1500) { kioskLogger.flush(1200) } }
                 runCatching { withTimeout(2000) { kioskLogger.closeAndJoin(1800) } }
             }
-            
+            // clearLastPurchaseIsFirstOrder()는 출하 완료 후 다른 화면으로 이동할 때 호출하므로 여기서는 호출 안 함
         }
     }
 
