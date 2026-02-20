@@ -90,15 +90,16 @@ fun QuestionFlow(
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Column(modifier = Modifier.weight(1f, fill = false)) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = "${userName?:"고객"}님, 첫 주문이시네요",
                     fontSize = titleSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     color = mainRed,
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -106,12 +107,13 @@ fun QuestionFlow(
                     fontSize = descSp,
                     fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
                     color = black,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
             DrinkStageBarV2(
                 modifier = Modifier
                     .widthIn(min = 300.dp)
-                    .offset(y = (-70).dp)
+                    .offset(x = 120.dp, y = (-30).dp)
             )
         }
 

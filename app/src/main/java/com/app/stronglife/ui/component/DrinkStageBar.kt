@@ -77,7 +77,7 @@ fun DrinkStageBarV2(
     val barHeightDp = with(density) { barSize.height.toDp() }
     val descHeightDp = with(density) {52f.toDp()}
     val descBottomSpace = with(density) {13f.toDp()}
-    val imageOffset = with(density) {50f.toDp()}
+    val imageOffset = with(density) {10f.toDp()}
     val circlePitch = circleDp + (dotsSpace * 2) + dotsWidth
     val x = when (activeCircleIndex) {
         1 -> 0.dp
@@ -89,12 +89,11 @@ fun DrinkStageBarV2(
     val containerHeight = if (barSize.height > 0) barHeightDp + labelTopSpace + labelHeightDp + descHeightDp + (descBottomSpace * 2) else Dp.Unspecified
 
 
-    val columnWidth = barWidthDp.takeIf { it > 0.dp }?.let { (it * 1.8f).coerceAtLeast(280.dp) } ?: 280.dp
+    val columnWidth = barWidthDp.takeIf { it > 0.dp }?.let { (it * 1.6f).coerceAtLeast(260.dp) } ?: 260.dp
     Column (
         modifier = modifier
             .width(columnWidth)
             .height(containerHeight)
-            .offset(x = imageOffset)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),

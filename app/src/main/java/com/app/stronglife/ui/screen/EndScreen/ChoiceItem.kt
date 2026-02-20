@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,10 +38,10 @@ fun ChoiceItemWithImage(
     choice: String,
     isSelected: Boolean,
     imageResId: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
-    val barWidth = with(density) {631f.toDp()}
     val barHeight = with(density) {125f.toDp()}
     val textSp = with(density) {30f.toSp()}
     val spaceDp = with(density) {24f.toDp()}
@@ -48,10 +50,14 @@ fun ChoiceItemWithImage(
     val paddingDp = with(density) {44f.toDp()}
 
     Row(
-        modifier = Modifier.size(barWidth, barHeight)
+        modifier = modifier
+            .height(barHeight)
             .border(borderDp, color = if(isSelected) mainRed else Color(0xFFE5E7EB), shape = RoundedCornerShape(16.dp))
             .background(color = if(isSelected) Color(0xFFFDF7F8) else Color.White, RoundedCornerShape(16.dp))
-            .clickable { onClick() }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
             .padding(horizontal = paddingDp),
         verticalAlignment = Alignment.CenterVertically
     ) {

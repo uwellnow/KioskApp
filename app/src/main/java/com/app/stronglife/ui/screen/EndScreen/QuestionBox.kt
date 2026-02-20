@@ -45,6 +45,7 @@ import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.shadowGray
 import com.app.stronglife.ui.theme.superLightGray
+import android.util.Log
 
 @Composable
 fun QuestionBox(
@@ -61,12 +62,15 @@ fun QuestionBox(
     // 복수 선택 지원: Set으로 여러 개 선택 관리
     var selectedIndices by remember { mutableStateOf<Set<Int>>(emptySet()) }
 
+    // 복수 선택 시 구분자: 선택지 텍스트에 쉼표가 있으면 파싱이 깨지므로 '|' 사용
+    val multiSelectDelimiter = "|"
+
     // 기존 답변을 기반으로 초기 선택 상태 복원
     LaunchedEffect(questionIndex, existingAnswer) {
         if (existingAnswer != null && existingAnswer.isNotBlank()) {
             if (question.isMultiple) {
-                // 복수 선택: 쉼표로 구분된 문자열을 파싱
-                val selectedChoices = existingAnswer.split(",").map { it.trim() }
+                // 복수 선택: 구분자로 split (선택지에 쉼표가 있어도 안전)
+                val selectedChoices = existingAnswer.split(multiSelectDelimiter).map { it.trim() }.filter { it.isNotBlank() }
                 selectedIndices = selectedChoices.mapNotNull { choice ->
                     question.choices.indexOf(choice).takeIf { it >= 0 }
                 }.toSet()
@@ -83,10 +87,10 @@ fun QuestionBox(
     // 선택이 변경될 때마다 답변 업데이트
     LaunchedEffect(selectedIndices) {
         if (question.isMultiple) {
-            // 복수 선택: 선택된 항목들을 쉼표로 구분하여 전달
+            // 복수 선택: 구분자로 합쳐서 전달 (선택지 텍스트에 쉼표 포함 가능)
             if (selectedIndices.isNotEmpty()) {
                 val selectedChoices = selectedIndices.map { question.choices[it] }
-                onAnswered(selectedChoices.joinToString(","))
+                onAnswered(selectedChoices.joinToString(multiSelectDelimiter))
             }
         } else {
             // 단일 선택: 하나만 선택 가능
@@ -101,44 +105,45 @@ fun QuestionBox(
         modifier = Modifier.fillMaxWidth().padding(vertical = boxHor),
         ){
 
-        Column (
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(heightSpaceDp)
-        ){
+        ) {
             question.choices.chunked(2).forEach { rowChoices ->
-                Row (
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(widthSpaceDp)
-                ){
-                    rowChoices.forEachIndexed { rowIndex, choice ->
+                ) {
+                    rowChoices.forEachIndexed { _, choice ->
                         val globalIndex = question.choices.indexOf(choice)
                         val imageResId = question.choiceImages?.getOrNull(globalIndex) ?: R.drawable.radio_btn
-
-                        ChoiceItemWithImage(
-                            choice = choice,
-                            isSelected = selectedIndices.contains(globalIndex),
-                            imageResId = imageResId
-                        ) {
-                            if (question.isMultiple) {
-                                // 복수 선택: 토글 방식, 최대 3개까지 선택 가능
-                                selectedIndices = if (selectedIndices.contains(globalIndex)) {
-                                    // 이미 선택된 항목이면 제거
-                                    selectedIndices - globalIndex
-                                } else {
-                                    // 최대 3개까지만 선택 가능
-                                    if (selectedIndices.size < 3) {
-                                        selectedIndices + globalIndex
+                        Box(modifier = Modifier.weight(1f)) {
+                            ChoiceItemWithImage(
+                                choice = choice,
+                                isSelected = selectedIndices.contains(globalIndex),
+                                imageResId = imageResId,
+                                onClick = {
+                                    Log.d("QuestionBox", "클릭: globalIndex=$globalIndex, choice=\"$choice\"")
+                                    if (question.isMultiple) {
+                                        selectedIndices = if (selectedIndices.contains(globalIndex)) {
+                                            selectedIndices - globalIndex
+                                        } else {
+                                            if (selectedIndices.size < 3) {
+                                                selectedIndices + globalIndex
+                                            } else {
+                                                selectedIndices
+                                            }
+                                        }
                                     } else {
-                                        selectedIndices // 이미 3개 선택됨, 추가 불가
+                                        selectedIndices = setOf(globalIndex)
                                     }
-                                }
-                            } else {
-                                // 단일 선택: 하나만 선택 가능
-                                selectedIndices = setOf(globalIndex)
-                            }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
-                    // 홀수 개일 경우 빈 공간 추가
                     if (rowChoices.size == 1) {
-                        Spacer(modifier = Modifier.width(685.dp + 18.dp))
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }
