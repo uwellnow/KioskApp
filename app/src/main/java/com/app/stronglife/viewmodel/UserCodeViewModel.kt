@@ -160,6 +160,9 @@ class UserCodeViewModel(
 
     var errorState = mutableStateOf<UiError>(UiError.None)
 
+    /** 결제 성공 시 서버에서 내려준 첫 주문 여부. EndScreen/Finish에서 읽은 뒤 clearLastPurchaseIsFirstOrder() 호출 권장 */
+    var lastPurchaseIsFirstOrder = mutableStateOf<Boolean?>(null)
+
 
 
     fun purchaseProductByOrder(
@@ -175,14 +178,23 @@ class UserCodeViewModel(
                 Log.d("UserCodeViewModel", "Product IDs: $productIds, Product Counts: $productCounts")
                 
                 val request = ProductPurchaseRequest(productIds, productCounts)
-                val response: Response<okhttp3.ResponseBody> = api.postPurchaseProductByOrder(
+                val response: Response<ProductPurchaseResponse> = api.postPurchaseProductByOrder(
                     apiKey = apiKey,
                     orderNumber = orderNumber,
                     body = request
                 )
                 if (response.isSuccessful) {
-                    val responseBody = response.body()?.string()
-                    Log.d("UserCodeViewModel", "Purchase successful: $responseBody")
+                    val body = response.body()
+                    Log.d("UserCodeViewModel", "Purchase successful: $body")
+                    Log.d("UserCodeViewModel", "body is null: ${body == null}")
+                    if (body != null) {
+                        Log.d("UserCodeViewModel", "body.isFirstOrder=${body.isFirstOrder}")
+                        lastPurchaseIsFirstOrder.value = body.isFirstOrder
+                    } else {
+                        Log.w("UserCodeViewModel", "Response body is null!")
+                        lastPurchaseIsFirstOrder.value = null
+                    }
+                    Log.d("UserCodeViewModel", "lastPurchaseIsFirstOrder.value set to: ${lastPurchaseIsFirstOrder.value}")
                     errorState.value = UiError.None
                     onResult(true)
                 } else {
@@ -224,13 +236,22 @@ class UserCodeViewModel(
                 Log.d("UserCodeViewModel", "Product IDs: $productIds, Product Counts: $productCounts")
                 
                 val request = CouponPurchaseRequest(couponCode, productIds, productCounts)
-                val response: Response<okhttp3.ResponseBody> = api.postPurchaseByCoupon(
+                val response: Response<ProductPurchaseResponse> = api.postPurchaseByCoupon(
                     apiKey = apiKey,
                     body = request
                 )
                 if (response.isSuccessful) {
-                    val responseBody = response.body()?.string()
-                    Log.d("UserCodeViewModel", "Coupon purchase successful: $responseBody")
+                    val body = response.body()
+                    Log.d("UserCodeViewModel", "Coupon purchase successful: $body")
+                    Log.d("UserCodeViewModel", "body is null: ${body == null}")
+                    if (body != null) {
+                        Log.d("UserCodeViewModel", "body.isFirstOrder=${body.isFirstOrder}")
+                        lastPurchaseIsFirstOrder.value = body.isFirstOrder
+                    } else {
+                        Log.w("UserCodeViewModel", "Response body is null!")
+                        lastPurchaseIsFirstOrder.value = null
+                    }
+                    Log.d("UserCodeViewModel", "lastPurchaseIsFirstOrder.value set to: ${lastPurchaseIsFirstOrder.value}")
                     errorState.value = UiError.None
                     onResult(true)
                 } else {
@@ -308,8 +329,17 @@ class UserCodeViewModel(
                     body = request
                 )
                 if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    Log.d("UserCodeViewModel", "Phone purchase successful: $responseBody")
+                    val body = response.body()
+                    Log.d("UserCodeViewModel", "Phone purchase successful: $body")
+                    Log.d("UserCodeViewModel", "body is null: ${body == null}")
+                    if (body != null) {
+                        Log.d("UserCodeViewModel", "body.isFirstOrder=${body.isFirstOrder}")
+                        lastPurchaseIsFirstOrder.value = body.isFirstOrder
+                    } else {
+                        Log.w("UserCodeViewModel", "Response body is null!")
+                        lastPurchaseIsFirstOrder.value = null
+                    }
+                    Log.d("UserCodeViewModel", "lastPurchaseIsFirstOrder.value set to: ${lastPurchaseIsFirstOrder.value}")
                     errorState.value = UiError.None
                     onResult(true)
                 } else {
@@ -333,5 +363,10 @@ class UserCodeViewModel(
                 onResult(false)
             }
         }
+    }
+
+    /** EndScreen/Finish에서 isFirstOrder 읽은 뒤 호출하여 다음 결제까지 초기화 */
+    fun clearLastPurchaseIsFirstOrder() {
+        lastPurchaseIsFirstOrder.value = null
     }
 }

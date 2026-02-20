@@ -67,10 +67,10 @@ fun FirstPickScreen(navController: NavController, cartViewModel: CartViewModel) 
     val image2Height = with(density) {266f.toDp()}
     val boxTitleSp = with(density) {56f.toSp()}
     val boxTitle2Sp= with(density) {60f.toSp()}
-    val boxDescSp = with(density) {32f.toSp()}
+    val boxDescSp = with(density) {28f.toSp()}
     val boxDesc2Sp = with(density) {40f.toSp()}
 
-    val boxSpace1Dp = with(density) {34f.toDp()}
+    val boxSpace1Dp = with(density) {30f.toDp()}
     val boxSpace2Dp = with(density) {24f.toDp()}
     val boxSpaceDp = with(density) {48f.toDp()}
     val blurRadiusPx = with(density) { 24.dp.toPx() }
@@ -147,7 +147,7 @@ fun FirstPickScreen(navController: NavController, cartViewModel: CartViewModel) 
             ){
                 Row(
                     modifier = Modifier.fillMaxSize()
-                        .padding(horizontal = 44.dp, vertical = 112.dp)
+                        .padding(horizontal = 44.dp, vertical = 100.dp)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.brand_pick),
