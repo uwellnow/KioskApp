@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.Density
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
+import com.app.stronglife.data.remote.KioskLogger
+import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.component.TopBar
 import com.app.stronglife.ui.theme.black
 import com.app.stronglife.viewmodel.ProductViewModel
@@ -120,6 +123,17 @@ fun PickPurposeScreen(
     val spaceSecondDp = with(density) {57f.toDp()}
     val spaceWidDp = with(density) {20f.toDp()}
 
+    val scope = rememberCoroutineScope()
+    val kioskLogger = remember(apiKey) {
+        KioskLogger(
+            apiKey = apiKey,
+            service = RetrofitClient.api,
+            externalScope = scope,
+            machineId = apiKey.toLongOrNull() ?: 0L,
+            storeName = "스트롱라이프 GFC점"
+        )
+    }
+
     val isLoading = productViewModel.isLoading
     val purposesResponse = productViewModel.productsByPurpose
 
@@ -181,6 +195,7 @@ fun PickPurposeScreen(
                                     desc = desc,
                                     image = imageRes,
                                     onClick = {
+                                        kioskLogger.logEvent("PickPurpose: $purposeName", false)
                                         val encodedPurpose = URLEncoder.encode(purposeName, StandardCharsets.UTF_8.toString())
                                         navController.navigate("pick_menu/$encodedPurpose")
                                     }
@@ -192,6 +207,7 @@ fun PickPurposeScreen(
                                 desc = desc,
                                 image = imageRes,
                                 onClick = {
+                                    kioskLogger.logEvent("PickPurpose: $purposeName", false)
                                     val encodedPurpose = URLEncoder.encode(purposeName, StandardCharsets.UTF_8.toString())
                                     navController.navigate("pick_menu/$encodedPurpose")
                                 }

@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun DrinkStageBarV2(
     modifier: Modifier = Modifier,
-    stepDurations: List<Int> = listOf(22, 13, 14, 15),
+    stepDurations: List<Int> = listOf(25, 25, 25, 15),
     activeColor: Color = mainRed,
     idleColor: Color = Color(0xFFAFAFAF),
     resetKey: Any? = null,
@@ -218,7 +218,7 @@ private fun StageCircle(
 @Composable
 fun DrinkStageBarV2Preview() {
     DrinkStageBarV2(
-        stepDurations = listOf(23, 13, 14, 15),
+        stepDurations = listOf(25, 25, 25, 15),
         resetKey = 3
     )
 }
