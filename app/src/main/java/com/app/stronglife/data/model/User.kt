@@ -15,9 +15,11 @@ data class Membership(
     val id: Int,
     val barcode: String,
     val membership_name: String,
-    val remain_count: Int,
+    val remain_count: Int?,          // 무제한 구독권일 경우 null
     val total_count: Int,
-    val status: String? = null  // "active", "expired", "no_remaining"
+    val status: String? = null,      // "active", "expired", "no_remaining"
+    val created_at: String? = null,  // "2026-02-25T12:34:56+00:00"
+    val expired_at: String? = null   // "2026-03-27T12:34:56+00:00"
 )
 
 data class LoginResponse(
