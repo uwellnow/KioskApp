@@ -23,6 +23,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import com.app.stronglife.R
 import com.app.stronglife.data.model.LoginResponse
 import com.app.stronglife.ui.theme.background
@@ -55,10 +58,37 @@ fun UserBox(
 
     // 장바구니 총 수량 계산
     val cartTotalQuantity = cartViewModel.cartItems.value.sumOf { it.quantity }
-    
-    // 차감 후 수량 계산
-    val remainingAfterDeduction = if (showInfo && loginResponse != null) {
-        loginResponse.membership.remain_count - cartTotalQuantity
+
+    // 멤버십/무제한 관련 계산
+    val membership = loginResponse?.membership
+    val isUnlimited = membership?.remain_count == null && (membership?.total_count == 0)
+
+    // 남은 일수 계산 (무제한 전용)
+    val daysLeft: Long? = if (isUnlimited && membership.expired_at != null) {
+        try {
+            val expiredDate = OffsetDateTime.parse(membership.expired_at).toLocalDate()
+            val today = LocalDate.now()
+            ChronoUnit.DAYS.between(today, expiredDate)
+        } catch (_: Exception) {
+            null
+        }
+    } else {
+        null
+    }
+
+    val unlimitedLabel: String? = if (isUnlimited) {
+        if (daysLeft != null && daysLeft > 0) {
+            "무제한(${daysLeft}일 남음)"
+        } else {
+            "무제한"
+        }
+    } else {
+        null
+    }
+
+    // 차감 후 수량 계산 (무제한이면 숫자 차감 대신 그대로 무제한 표기)
+    val remainingAfterDeduction = if (!isUnlimited && showInfo && loginResponse != null) {
+        (membership?.remain_count ?: 0) - cartTotalQuantity
     } else 0
 
     Column(
@@ -120,8 +150,9 @@ fun UserBox(
             )
 
             if (showInfo && loginResponse != null) {
+                val text = unlimitedLabel ?: "${loginResponse.membership.remain_count}잔"
                 Text(
-                    text = "${loginResponse.membership.remain_count}잔",
+                    text = text,
                     style = TextStyle(
                         fontSize = textBolSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
@@ -152,8 +183,9 @@ fun UserBox(
             )
 
             if (showInfo && loginResponse != null) {
+                val text = unlimitedLabel ?: "${remainingAfterDeduction}잔"
                 Text(
-                    text = "${remainingAfterDeduction}잔",
+                    text = text,
                     style = TextStyle(
                         fontSize = textBolSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
