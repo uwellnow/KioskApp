@@ -82,17 +82,8 @@ fun EndScreen(
     // isFirstOrder에 따라 설문 상태 설정 (false면 설문 안 보이게)
     var surveyState by remember { mutableStateOf(SurveyState.IN_PROGRESS) }
     
-    // 백엔드에서 받은 isFirstOrder 값이 변경될 때마다 surveyState 업데이트
-    LaunchedEffect(isFirstOrderValue) {
-        // 백엔드에서 받은 값을 그대로 사용 (null이 아닐 때만)
-        if (isFirstOrderValue != null) {
-            val newState = if (isFirstOrderValue == true) SurveyState.IN_PROGRESS else SurveyState.SUCCESS
-            Log.d("EndScreen", "백엔드 값 반영: isFirstOrderValue=$isFirstOrderValue -> surveyState=$newState")
-            surveyState = newState
-        } else {
-            Log.d("EndScreen", "아직 결제 응답이 오지 않음: isFirstOrderValue=null")
-        }
-    }
+    // 테스트용: 설문 상태를 항상 IN_PROGRESS로 고정
+    LaunchedEffect(Unit) { surveyState = SurveyState.IN_PROGRESS }
     
     // 초기화는 한 번만 실행
     LaunchedEffect(Unit) {
@@ -140,7 +131,7 @@ fun EndScreen(
         totalDrinkCount = totalJobs,
         isInProgress = isCurrentlyMaking,
         surveyState = surveyState,
-        isFirstOrder = isFirstOrderValue ?: false,  // 백엔드에서 받은 값을 사용, null이면 false (값이 설정되면 자동으로 업데이트됨)
+        isFirstOrder = isFirstOrderValue ?: false,
         onSurveyFinished = {
             surveyState = SurveyState.SUCCESS
         },
@@ -262,7 +253,11 @@ fun EndScreen(
 
         val serialOk = vm.startSerial()
         kioskLogger.logEvent("SerialStart", !serialOk, responseHex = if (serialOk) "OK" else null)
-        if (!serialOk) { lastError = "시리얼 연결 실패"; inProgress = false; return@LaunchedEffect }
+        if (!serialOk) {
+            lastError = "시리얼 연결 실패"
+            inProgress = false
+            return@LaunchedEffect
+        }
 
         delay(500)
 

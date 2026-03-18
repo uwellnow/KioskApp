@@ -55,6 +55,8 @@ import com.app.stronglife.data.remote.KioskLogger
 import com.app.stronglife.ui.theme.mainRed
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.TextStyle
 import com.airbnb.lottie.compose.LottieAnimation
@@ -62,6 +64,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import android.os.SystemClock
 
 private val VIDEO_RAW_IDS = listOf(R.raw.video1, R.raw.video2, R.raw.video3, R.raw.video4)
 
@@ -86,10 +89,14 @@ fun Finish(
         Uri.parse("android.resource://${context.packageName}/$randomRawId")
     }
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pay_finish))
+
     val progress by animateLottieCompositionAsState(
         composition = composition,
         iterations = LottieConstants.IterateForever
     )
+
+    // 설문 진행 -> 설문 완료 화면으로 넘어가도 동일 타이머를 유지하기 위해, 시작 시각을 1번만 고정
+    val drinkStageStartMs = remember { SystemClock.elapsedRealtime() }
     
     // 디버깅: isFirstOrder 값 확인
     Log.d("Finish", "isFirstOrder=$isFirstOrder, surveyState=$surveyState")
@@ -99,6 +106,7 @@ fun Finish(
     val space1Dp = with(density) {60f.toDp()}
     val space2Dp = with(density) {32f.toDp()}
     val space3Dp = with(density) {20f.toDp()}
+    val space4Dp = with(density) {50f.toDp()}
     val titleSp = with(density) {70f.toSp()}
     val descSp = with(density) {32f.toSp()}
     val imageDp = with(density) {80f.toDp()}
@@ -157,6 +165,7 @@ fun Finish(
                 ) {
                     QuestionFlow(
                         apiKey = apiKey,
+                        drinkStageStartElapsedRealtimeMs = drinkStageStartMs,
                         onFinished = { onSurveyFinished() },
                         onError = { onSurveyError() },
                         kioskLogger = kioskLogger
@@ -169,12 +178,19 @@ fun Finish(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ){
+                DrinkStageBarV2(
+                    modifier = Modifier
+                        .widthIn(min = 300.dp)
+                        .offset(x = 120.dp, y = (-30).dp),
+                    startElapsedRealtimeMs = drinkStageStartMs
+                )
+                Spacer(modifier = Modifier.height(space4Dp))
                 Row (
                     horizontalArrangement = Arrangement.spacedBy(space3Dp),
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "소중한 의견 감사드립니다 ",
+                        text = "소중한 의견 감사드립니다",
                         style = TextStyle(
                             fontSize = titleSp,
                             fontFamily = FontFamily(Font(R.font.pretendard_semibold)),

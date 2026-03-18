@@ -70,7 +70,7 @@ fun ProductDetail (
     val roundtoDp = with(density) {20f.toDp()}
     val imagetoTextDp = with(density) {49f.toDp()}
     val blurRadiusPx = with(density) { 24.dp.toPx() }
-    val spacertoDp = with(density) {30f.toDp()}
+    val spacertoDp = with(density) {40f.toDp()}
     val space2Dp = with(density) {43f.toDp()}
     val space3Dp = with(density) { 24f.toDp()}
     val smalltextSp = with(density) {20f.toSp()}

@@ -40,6 +40,7 @@ import com.app.stronglife.viewmodel.UserCodeViewModel
 fun QuestionFlow(
     apiKey: String,
     viewModel: SurveyViewModel = viewModel(factory = SurveyViewModelFactory(RetrofitClient.api)),
+    drinkStageStartElapsedRealtimeMs: Long? = null,
     onFinished: () -> Unit,
     onError: () -> Unit,
     kioskLogger: KioskLogger? = null
@@ -113,7 +114,8 @@ fun QuestionFlow(
             DrinkStageBarV2(
                 modifier = Modifier
                     .widthIn(min = 300.dp)
-                    .offset(x = 120.dp, y = (-30).dp)
+                    .offset(x = 120.dp, y = (-30).dp),
+                startElapsedRealtimeMs = drinkStageStartElapsedRealtimeMs
             )
         }
 

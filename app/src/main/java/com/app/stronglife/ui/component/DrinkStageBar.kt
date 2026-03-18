@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.app.stronglife.R
 import com.app.stronglife.ui.theme.mainRed
+import android.os.SystemClock
 import kotlinx.coroutines.delay
 
 @Composable
@@ -34,6 +35,7 @@ fun DrinkStageBarV2(
     activeColor: Color = mainRed,
     idleColor: Color = Color(0xFFAFAFAF),
     resetKey: Any? = null,
+    startElapsedRealtimeMs: Long? = null,
     onFinished: (() -> Unit)? = null,
     dotsNoRes: Int = R.drawable.dots_no,
     dotsYesRes: Int = R.drawable.dots_yes,
@@ -47,8 +49,39 @@ fun DrinkStageBarV2(
     )
 
     var stage by remember { mutableIntStateOf(1) }
-    LaunchedEffect(resetKey, stepDurations) {
+    LaunchedEffect(resetKey, stepDurations, startElapsedRealtimeMs) {
         stage = 1
+
+        // 시작 시각이 주어지면 "경과시간 기반"으로 stage 계산 (다른 화면으로 넘어가도 동일 타이머 유지)
+        if (startElapsedRealtimeMs != null) {
+            val d1 = (stepDurations.getOrNull(0) ?: 0) * 1000L
+            val d2 = (stepDurations.getOrNull(1) ?: 0) * 1000L
+            val d3 = (stepDurations.getOrNull(2) ?: 0) * 1000L
+            val t1 = d1
+            val t2 = d1 + d2
+            val t3 = d1 + d2 + d3
+
+            var finishedCalled = false
+            while (true) {
+                val elapsed = (SystemClock.elapsedRealtime() - startElapsedRealtimeMs).coerceAtLeast(0L)
+                stage = when {
+                    elapsed < t1 -> 1
+                    elapsed < t2 -> 2
+                    elapsed < t3 -> 3
+                    else -> 4
+                }
+
+                if (stage >= 4 && !finishedCalled) {
+                    finishedCalled = true
+                    onFinished?.invoke()
+                }
+                if (stage >= 4) break
+                delay(250L)
+            }
+            return@LaunchedEffect
+        }
+
+        // 기존 방식 (독립 타이머)
         stepDurations.forEachIndexed { index, duration ->
             if (index < stepDurations.size - 1) { // 마지막 단계는 delay 불필요
                 delay(duration * 1000L)
@@ -95,19 +128,19 @@ fun DrinkStageBarV2(
             .width(columnWidth)
             .height(containerHeight)
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.drink_stage_desc),
-                contentDescription = "음료 제조 과정 말풍선",
-                modifier = Modifier
-                    .height(descHeightDp)
-                    .offset(x = -(imageOffset))
-            )
-        }
-        Spacer(modifier = Modifier.height(descBottomSpace))
+//        Box(
+//            modifier = Modifier.fillMaxWidth(),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.drink_stage_desc),
+//                contentDescription = "음료 제조 과정 말풍선",
+//                modifier = Modifier
+//                    .height(descHeightDp)
+//                    .offset(x = -(imageOffset))
+//            )
+//        }
+//        Spacer(modifier = Modifier.height(descBottomSpace))
         Row(
             modifier = Modifier
                 .onSizeChanged { barSize = it },

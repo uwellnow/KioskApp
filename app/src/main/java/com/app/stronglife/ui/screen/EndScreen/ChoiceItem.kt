@@ -89,7 +89,7 @@ fun CheckItem(
     onClick: () -> Unit
 ) {
     val density = LocalDensity.current
-    val barWidth = with(density) {631f.toDp()}
+    val barWidth = with(density) {860f.toDp()}
     val barHeight = with(density) {125f.toDp()}
     val textSp = with(density) {30f.toSp()}
     val spaceDp = with(density) {24f.toDp()}
