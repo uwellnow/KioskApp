@@ -293,7 +293,7 @@ fun MenuScreen(
                 exit = slideOutHorizontally(targetOffsetX = { fullWidth -> fullWidth }) + fadeOut()
             ) {
                 ProductDetail(
-                    image = productDetail.productImagePath.ifBlank { "" },
+                    image = productDetail.companyImagePath.ifBlank { "" },
                     title = if (langTag == "ko") productDetail.name else (if (productDetail.nameEng.isNotBlank()) productDetail.nameEng else productDetail.name),
                     desc = if (langTag == "ko") productDetail.description else (if (productDetail.descriptionEng.isNotBlank()) productDetail.descriptionEng else productDetail.description),
                     nut = productDetail.nutritionInfo,

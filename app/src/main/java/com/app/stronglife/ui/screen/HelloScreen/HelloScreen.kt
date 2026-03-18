@@ -31,20 +31,29 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.app.stronglife.R
 import com.app.stronglife.data.remote.PrefsManager
 import com.app.stronglife.data.remote.RetrofitClient
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.util.LanguageManager
 import com.app.stronglife.viewmodel.UserCodeViewModel
+import com.app.stronglife.viewmodel.UserCodeViewModelFactory
 import com.app.stronglife.viewmodel.SurveyViewModelFactory
 
 @Composable
-fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
-                userViewModel: UserCodeViewModel, apiKey: String, languageManager: LanguageManager) {
+fun HelloScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel,
+    userViewModel: UserCodeViewModel,
+    apiKey: String,
+    languageManager: LanguageManager
+) {
     val context = LocalContext.current
     val prefsManager = remember { PrefsManager(context) }
 
@@ -82,57 +91,13 @@ fun HelloScreen(navController: NavController, cartViewModel: CartViewModel,
 
     Box (
         modifier = Modifier
-            .fillMaxSize().clickable {navController.navigate("first")},
+            .fillMaxSize().clickable {navController.navigate("menu")},
 
     ){
-
-        Row (
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(padDp),
-            horizontalArrangement = Arrangement.spacedBy(btnSpaceDp)
-        ){
-            LanguageBtn(
-                icon = R.drawable.korean,
-                lang = "한국어",
-                isClick = langTag == "ko",
-                onClick = { languageManager.setLanguage("ko", true) }
-            )
-
-            LanguageBtn(
-                icon = R.drawable.english,
-                lang = "English",
-                isClick = langTag == "en",
-                onClick = { languageManager.setLanguage("en", true) }
-            )
-        }
-
-
-        Column(
-            modifier = Modifier.align(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.hello),
-                contentDescription = "처음 보이는 화면",
-                modifier = Modifier
-                    .width(widDp)
-                    .height(heiDp)
-            )
-
-            Spacer(modifier = Modifier.height(spaceDp))
-
-            Text(
-                text = stringResource(R.string.hello),
-                style = TextStyle(
-                    fontSize = textSp,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontWeight = FontWeight.Medium,
-                    color = mainRed,
-                    textAlign = TextAlign.Center
-                )
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.draper_hello),
+            contentDescription = "드레이퍼용 첫 화면",
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }

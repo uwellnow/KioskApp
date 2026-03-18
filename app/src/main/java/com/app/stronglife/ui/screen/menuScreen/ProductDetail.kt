@@ -2,11 +2,13 @@ package com.app.stronglife.ui.screen.menuScreen
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -20,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
@@ -59,7 +62,7 @@ fun ProductDetail (
     languageManager: com.app.stronglife.util.LanguageManager
 ) {
     val density = LocalDensity.current
-    val widthtoDp = with(density) {1649f.toDp()}
+    val widthtoDp = with(density) {1610f.toDp()}
     val heighttoDp = with(density) {776.toDp()}
     val titletoSp = with(density) {40f.toSp()}
     val desctoSp = with(density) {28f.toSp()}
@@ -68,8 +71,8 @@ fun ProductDetail (
     val imagetoTextDp = with(density) {49f.toDp()}
     val blurRadiusPx = with(density) { 24.dp.toPx() }
     val spacertoDp = with(density) {30f.toDp()}
-    val space2Dp = with(density) {64f.toDp()}
-    val space3Dp = with(density) { 100f.toDp()}
+    val space2Dp = with(density) {43f.toDp()}
+    val space3Dp = with(density) { 24f.toDp()}
     val smalltextSp = with(density) {20f.toSp()}
 
     val allNutrientsKo = parseNutritionInfo(nut)
@@ -89,7 +92,7 @@ fun ProductDetail (
         return
     }
 
-    Column(
+    Row (
         modifier = Modifier
             .width(widthtoDp)
             .height(heighttoDp)
@@ -111,47 +114,10 @@ fun ProductDetail (
                 }
             }
             .background(Color.White, RoundedCornerShape(roundtoDp))
-            .padding(spacertoDp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.Top
-        ) {
-
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ){
-                AsyncImage(
-                    model = image.ifBlank { null },
-                    contentDescription = title,
-                    modifier = Modifier
-                        .width(imagetoDp)
-                        .height(imagetoDp)
-                        .padding(top = space3Dp)
-                )
-
-                Text(
-                    text = stringResource(R.string.nutrition_info),
-                    modifier = Modifier.clickable { showDialog = true },
-                    style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                        fontSize = smalltextSp,
-                        fontWeight = FontWeight.Bold,
-                        color = descGray,
-                        textDecoration = TextDecoration.Underline
-                    )
-                )
-
-                if (showDialog) {
-                    NutritionDialog(
-                        nutritions = parseNutritionInfo(nut),
-                        onDismiss = { showDialog = false }
-                    )
-                }
-
-
-
-            }
+    ){
+        Column (
+            modifier = Modifier.weight(1f).fillMaxHeight().padding(spacertoDp),
+        ){
 
             Column(
                 modifier = Modifier.padding(start = imagetoTextDp, top = imagetoTextDp * 2)
@@ -167,7 +133,7 @@ fun ProductDetail (
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
-                    text = desc.replace("\\n", " ").replace("\n", " "),
+                    text = desc.replace("\\n", "\n"),
                     style = TextStyle(
                         fontSize = desctoSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -178,27 +144,44 @@ fun ProductDetail (
 
                 Spacer(modifier = Modifier.height(space2Dp))
 
+                Text(
+                    text = "함유 성분",
+                    style = TextStyle(
+                        fontSize = desctoSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                        fontWeight = FontWeight.Normal,
+                        color = lightGray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(space3Dp))
+
                 NutritionCardRow(nutrientsToShow, lang = langTag)
             }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 하단 고정 버튼
+            MenuScreenBtn(
+                onBackClick = onClose,
+                onCartClick = {
+                    if (!isSoldOut) {
+                        onAddToCart()
+                        onClose()
+                        onGoCart()
+                    }
+                },
+                isCartEnabled = !isSoldOut
+            )
         }
 
-        // 남은 공간 차지해서 버튼을 아래로 밀기
-        Spacer(modifier = Modifier.weight(1f))
-
-        // 하단 고정 버튼
-        MenuScreenBtn(
-            onBackClick = onClose,
-            onCartClick = {
-                if (!isSoldOut) {
-                    onAddToCart()
-                    onClose()
-                    onGoCart()
-                }
-            },
-            isCartEnabled = !isSoldOut
+        AsyncImage(
+            model = image.ifBlank { null },
+            contentDescription = title,
+            modifier = Modifier.fillMaxHeight()
+                .clip(RoundedCornerShape(topEnd = roundtoDp, bottomEnd = roundtoDp))
         )
-}
 
-
+    }
 }
 

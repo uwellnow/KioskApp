@@ -3,7 +3,7 @@ package com.app.stronglife.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val black = Color(0xFF141414)
-val mainRed = Color(0xFFD3001A)
+val mainRed = Color(0xFF9F0014)
 val lightRed = Color(0xFFF9E0E3)
 val midGray = Color(0xFF313234)
 

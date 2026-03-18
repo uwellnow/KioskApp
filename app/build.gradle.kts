@@ -65,6 +65,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
     
     // Media3 ExoPlayer for video playback
     implementation("androidx.media3:media3-common:1.2.1")

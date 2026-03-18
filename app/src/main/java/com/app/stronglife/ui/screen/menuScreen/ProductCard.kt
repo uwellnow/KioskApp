@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,7 +53,7 @@ fun ProductCard(
     val density = LocalDensity.current
     val imagePadding = with(density) { 100f.toDp() }
     val horPadding = with(density) { 45.toDp() }
-    val widthtoDp = with(density) { 513f.toDp() }
+    val widthtoDp = with(density) { 557f.toDp() }
     val heighttoDp = with(density) { 787f.toDp() }
     val imageSize = with(density) { 440f.toDp() }
     val desfont = with(density) { 20f.toSp() }
@@ -93,7 +95,6 @@ fun ProductCard(
                             color = Color.White,
                             shape = RoundedCornerShape(roundDp)
                         )
-                        .padding(vertical = spaceDp)
                 ) {
                     // SoldOutBox 표시 (품절인 경우)
                     if (viewModel.isProductSoldOut(product.id)) {
@@ -106,80 +107,20 @@ fun ProductCard(
                         )
                     }
 
-                    TimeCategory(
-                        product.timing,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = spaceDp,end  = 40.dp)
-                    )
-
-
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxHeight()
                             .clickable(enabled = !viewModel.isProductSoldOut(product.id)) { 
                                 onProductClick(product) 
                             }
                     ) {
+
                         AsyncImage(
-                            model = product.companyImagePath.ifBlank { null },
+                            model = product.productImagePath.ifBlank { null },
                             contentDescription = product.name,
-                            modifier = Modifier
-                                .padding(start = horPadding)
-                                .width(imagePadding)
-                                .height(imagePadding)
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier.fillMaxHeight()
                         )
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            AsyncImage(
-                                model = product.productImagePath.ifBlank { null },
-                                contentDescription = product.name,
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .size(imageSize)
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(horPadding))
-
-                        Column (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = textdp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ){
-                            Text(
-                                text = if (langTag == "ko") product.description else (if (product.descriptionEng.isNotBlank()) product.descriptionEng else product.description),
-                                style = TextStyle(
-                                    fontSize = desfont,
-                                    textAlign = TextAlign.Center,
-                                    lineHeight = desfont * 1.3,
-                                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                                    fontWeight = FontWeight.Normal,
-                                    color = lightGray
-                                )
-                            )
-                            Text(
-                                text = (if (langTag == "ko") product.name else (if (product.nameEng.isNotBlank()) product.nameEng else product.name)).replace("\\n","\n"),
-                                modifier = Modifier
-                                    .padding(top = spaceDp),
-                                textAlign = TextAlign.Center,
-                                style = TextStyle(
-                                    fontSize = titlefont,
-                                    fontFamily = FontFamily(Font(R.font.pretendard_bold)),
-                                    fontWeight = FontWeight.Bold,
-                                    color = black
-                                )
-                            )
-                        }
-
-
                     }
                 }
             }

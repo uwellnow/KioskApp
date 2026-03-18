@@ -37,8 +37,8 @@ fun MenuScreenBtn(
     val roundtoDp = with(density) { 12f.toDp() }
     val texttoSp = with(density) {28f.toSp()}
     val heighttoDp = with(density) {105f.toDp()}
-    val backwidtoDp = with(density) {408f.toDp()}
-    val cartwidtoDp = with(density) {1161f.toDp()}
+    val backwidtoDp = with(density) {320f.toDp()}
+    val cartwidtoDp = with(density) {725f.toDp()}
     val btnSpacetoDp = with(density) {16f.toDp()}
     val cartDp = with(density) {42f.toDp()}
 

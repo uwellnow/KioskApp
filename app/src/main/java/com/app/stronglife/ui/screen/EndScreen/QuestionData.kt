@@ -49,30 +49,6 @@ val QuestionDatas = listOf(
     ),
     ChoiceQuestion(
         index = 2,
-        title = "운동을 하는 목표는 무엇인가요?",
-        choices = listOf(
-            "벌크업 (중량)",
-            "다이어트 (감량)",
-            "컨디션/체력 개선 (건강 개선)",
-            "유지/회복"
-        ),
-        choiceImages = listOf(
-            R.drawable.survey_burkup,
-            R.drawable.survey_diet,
-            R.drawable.survey_condition,
-            R.drawable.survey_condition
-        )
-    ),
-    CheckQuestion(
-        index = 3,
-        title = "PT 회원이신가요?",
-        choices = listOf(
-            "네, PT 회원이예요",
-            "아니요, 일반 회원이예요"
-        )
-    ),
-    ChoiceQuestion(
-        index = 4,
         title = "건강 목표는 무엇인가요?(최대 3개)",
         choices = listOf(
             "뼈 및 관절 건강",
@@ -94,10 +70,10 @@ val QuestionDatas = listOf(
             R.drawable.survey_glp,
             R.drawable.survey_beauty
         ),
-        isMultiple = true  // 복수 선택 가능
+        isMultiple = true
     ),
     CheckQuestion(
-        index = 5,
+        index = 3,
         title = "기능성 제품(영양제/보충제)은\n얼마나 자주 섭취하시나요?",
         choices = listOf(
             "주 5-7회",
@@ -108,7 +84,7 @@ val QuestionDatas = listOf(
         )
     ),
     CheckQuestion(
-        index = 6,
+        index = 4,
         title = "기능성 제품(영양제/보충제) 섭취 시\n가장 어려운 점은 무엇인가요?",
         choices = listOf(
             "어떤 것을 먹어야 할지 선택하기 어려움",
@@ -120,7 +96,7 @@ val QuestionDatas = listOf(
         )
     ),
     CheckQuestion(
-        index = 7,
+        index = 5,
         title = "오늘 유웰나우를 이용하게 된\n가장 큰 이유는 무엇인가요?",
         choices = listOf(
             "보충제를 들고다니기 귀찮아서",
@@ -131,27 +107,7 @@ val QuestionDatas = listOf(
         )
     ),
     CheckQuestion(
-        index = 8,
-        title = "유웰나우가 없었다면,\n어떤 걸 선택하실 예정인가요?",
-        choices = listOf(
-            "기존에 먹던 영양제/보충제",
-            "편의점 음료 또는 다른 대안 탐색",
-            "섭취하지 않음",
-        )
-    ),
-    CheckQuestion(
-        index = 9,
-        title = "평소 운동 전후로\n어떤 걸 섭취하고 계신가요?",
-        choices = listOf(
-            "파우더형 보충제",
-            "물",
-            "편의점에서 구매한 음료",
-            "커피",
-            "섭취하지 않음"
-        )
-    ),
-    CheckQuestion(
-        index = 10,
+        index = 6,
         title = "기능성 제품(영양제/보충제),\n선택 기준은 무엇인가요?",
         choices = listOf(
             "저렴한 가격 (가성비)",
