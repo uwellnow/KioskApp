@@ -210,7 +210,7 @@ fun MenuScreen(
                 ) {
                     ErrorBox("물 부족", "물이 부족합니다. 관리자에게 문의하세요.") {
                         machineError = null
-                        navController.navigate("hello") { popUpTo(0) }
+                        navController.navigate("menu") { popUpTo(0) }
                     }
                 }
             }
@@ -223,7 +223,7 @@ fun MenuScreen(
                 ) {
                     ErrorBox("컵 부족", "컵이 부족합니다. 관리자에게 문의하세요.") {
                         machineError = null
-                        navController.navigate("hello") { popUpTo(0) }
+                        navController.navigate("menu") { popUpTo(0) }
                     }
                 }
             }
@@ -236,7 +236,7 @@ fun MenuScreen(
                 ) {
                     ErrorBox("기기 오류", "기기 오류가 발생했습니다. (에러 코드: 0x${(machineError as MachineError.OtherError).code.toString(16)})") {
                         machineError = null
-                        navController.navigate("hello") { popUpTo(0) }
+                        navController.navigate("menu") { popUpTo(0) }
                     }
                 }
             }

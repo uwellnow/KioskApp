@@ -73,7 +73,9 @@ fun HelloScreen(
 
     // 입력 감지 타이머
     LaunchedEffect(Unit) {
-        userViewModel.sendApiKey(apiKey) // API Key 전송
+        if (apiKey.isNotBlank()) {
+            userViewModel.sendApiKey(apiKey) // API Key 전송
+        }
         UserCodeViewModel.getInstance(RetrofitClient.api).resetAll()
         cartViewModel.clearCart()
         surveyViewModel.reset()

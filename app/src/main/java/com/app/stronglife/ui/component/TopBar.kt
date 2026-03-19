@@ -109,7 +109,7 @@ fun TopBar(step:Int, pageNames:List<String>, navController: NavController, cartV
                                 popUpTo(0) { inclusive = true }
                             }
                         } else {
-                            navController.navigate("hello") {
+                            navController.navigate("menu") {
                                 popUpTo(0) { inclusive = true }
                             }
                         }

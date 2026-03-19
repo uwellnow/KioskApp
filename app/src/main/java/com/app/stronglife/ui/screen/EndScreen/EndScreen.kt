@@ -142,9 +142,10 @@ fun EndScreen(
         errorMessage = lastError,
         onErrorConfirm = {
             val isPickedNow = prefsManager.getIsPicked()
-            val dest = if (isPickedNow) "first_pick" else "hello"
+            val dest = if (isPickedNow) "first_pick" else "menu"
             // 에러 확인 후 다른 화면으로 이동할 때 clear
             userCodeViewModel.clearLastPurchaseIsFirstOrder()
+            if (dest == "menu") cartViewModel.clearCart()
             navController.navigate(dest) { popUpTo(0) }
         },
         onFinishDispose = null  // EndScreen의 DisposableEffect에서 직접 호출
@@ -221,7 +222,9 @@ fun EndScreen(
     }
 
     // 제조 오케스트레이션
-    LaunchedEffect(cartItems, products) {
+    // cartItems 변경(cartViewModel.clearCart 등)에 의해 제조 오케스트레이션이 중단되지 않도록
+    // effect 키를 Unit으로 고정한다.
+    LaunchedEffect(Unit) {
         if (runOnce.value) return@LaunchedEffect
         runOnce.value = true
         kioskLogger.logEvent("Cart=${cartItems.size}, Products=${products.size}", false)
@@ -240,12 +243,12 @@ fun EndScreen(
         totalJobs = queue.size
         currentIndex = 0
         lastError = null
-
         if (queue.isEmpty()) {
             val isPickedNow = prefsManager.getIsPicked()
-            val dest = if (isPickedNow) "first_pick" else "hello"
+            val dest = if (isPickedNow) "first_pick" else "menu"
             kioskLogger.logEvent("Queue empty -> $dest (isPicked=$isPickedNow)", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
+                if (dest == "menu") cartViewModel.clearCart()
             navController.navigate(dest) { popUpTo(0) }; return@LaunchedEffect
         }
 
@@ -253,11 +256,11 @@ fun EndScreen(
 
         val serialOk = vm.startSerial()
         kioskLogger.logEvent("SerialStart", !serialOk, responseHex = if (serialOk) "OK" else null)
-        if (!serialOk) {
-            lastError = "시리얼 연결 실패"
-            inProgress = false
-            return@LaunchedEffect
-        }
+//        if (!serialOk) {
+//            lastError = "시리얼 연결 실패"
+//            inProgress = false
+//            return@LaunchedEffect
+//        }
 
         delay(500)
 
@@ -341,11 +344,12 @@ fun EndScreen(
 
         if (currentIndex == totalJobs && lastError == null) {
             val isPickedNow = prefsManager.getIsPicked()
-            val dest = if (isPickedNow) "first_pick" else "hello"
+            val dest = if (isPickedNow) "first_pick" else "menu"
             kioskLogger.logEvent("All jobs completed -> $dest (isPicked=$isPickedNow)", false)
             runCatching { withTimeout(1000) { kioskLogger.flush() } } // 1s 한도 flush
             // EndScreen이 완전히 끝나고 다른 화면으로 이동할 때 clear
             userCodeViewModel.clearLastPurchaseIsFirstOrder()
+            if (dest == "menu") cartViewModel.clearCart()
             navController.navigate(dest) { popUpTo(0) }
 
         } else {

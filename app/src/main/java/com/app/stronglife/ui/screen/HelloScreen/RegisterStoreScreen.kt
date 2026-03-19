@@ -195,36 +195,41 @@ fun RegisterStoreScreen(
                 modifier = Modifier.background(if (isFilled) mainRed else background, shape = RoundedCornerShape(roundDp))
                     .size(boxWidDp, boxHeiDp)
                     .clickable(enabled = isFilled) {
-                        if (isFilled) {
-                            userCodeViewModel.sendApiKey(storeCode) { success, isPicked ->
-                                if (success) {
-                                    prefsManager.saveApiKey(storeCode)
-                                    // is_picked 값 저장
-                                    if (isPicked != null) {
-                                        prefsManager.saveIsPicked(isPicked)
+                    if (isFilled) {
+                        userCodeViewModel.sendApiKey(storeCode) { success, isPicked ->
+                            if (success) {
+                                prefsManager.saveApiKey(storeCode)
+                                // is_picked 값 저장
+                                if (isPicked != null) {
+                                    prefsManager.saveIsPicked(isPicked)
+                                }
+
+                                // NavGraph 쪽 apiKey 상태를 먼저 갱신
+                                onApiKeySet(storeCode)
+
+                                // 매장 코드가 20261414면 바로 menu로 이동
+                                if (storeCode == "20261414") {
+                                    navController.navigate("menu") {
+                                        popUpTo("register") { inclusive = true }
+                                        launchSingleTop = true
                                     }
+                                } else if (isPicked == true) {
                                     // is_picked 값에 따라 라우팅
-                                    if (isPicked == true) {
-                                        navController.navigate("first_pick") {
-                                            popUpTo("register") { inclusive = true }
-                                            launchSingleTop = true
-                                        }
-                                    } else {
-                                        navController.navigate("hello") {
-                                            popUpTo("register") { inclusive = true }
-                                            launchSingleTop = true
-                                        }
+                                    navController.navigate("first_pick") {
+                                        popUpTo("register") { inclusive = true }
+                                        launchSingleTop = true
                                     }
-                                    // 라우팅 완료 후 onApiKeySet 호출 (지연하여 NavGraph 재구성 방지)
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        delay(200) // 라우팅 완료 대기
-                                        onApiKeySet(storeCode)
+                                } else {
+                                    navController.navigate("menu") {
+                                        popUpTo("register") { inclusive = true }
+                                        launchSingleTop = true
                                     }
                                 }
-                                // 실패 시 에러는 errorState를 통해 처리됨
                             }
+                            // 실패 시 에러는 errorState를 통해 처리됨
                         }
                     }
+                }
                 ,
                 contentAlignment = Alignment.Center
             ) {

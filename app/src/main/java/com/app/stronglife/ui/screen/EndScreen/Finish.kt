@@ -178,37 +178,25 @@ fun Finish(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ){
-                DrinkStageBarV2(
-                    modifier = Modifier
-                        .widthIn(min = 300.dp)
-                        .offset(x = 120.dp, y = (-30).dp),
-                    startElapsedRealtimeMs = drinkStageStartMs
+                LottieAnimation(
+                    composition = composition,
+                    progress = { progress },
+                    modifier = Modifier.size(lottieDp)
                 )
-                Spacer(modifier = Modifier.height(space4Dp))
-                Row (
-                    horizontalArrangement = Arrangement.spacedBy(space3Dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Text(
-                        text = "소중한 의견 감사드립니다",
-                        style = TextStyle(
-                            fontSize = titleSp,
-                            fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
-                            color = Color(0xFF484848)
-                        )
+                Spacer(modifier = Modifier.height(space1Dp))
+                Text(
+                    text = "소중한 의견 감사드립니다",
+                    style = TextStyle(
+                        fontSize = titleSp,
+                        fontFamily = FontFamily(Font(R.font.pretendard_semibold)),
+                        color = Color(0xFF484848)
                     )
-                    Image(
-                        painter = painterResource(R.drawable.thankyou),
-                        contentDescription = "감사드립니다",
-                        modifier = Modifier.size(imageDp)
-                    )
-                }
-
+                )
 
                 Spacer(modifier = Modifier.height(space2Dp))
 
                 Text(
-                    text = "보충제 음료 제조가 시작되었습니다. 잠시만 기다려주세요.",
+                    text = "기호에 따라 얼음을 추가해드시면 더욱 맛있게 즐기실 수 있습니다.",
                     style = TextStyle(
                         fontSize = descSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
@@ -216,7 +204,6 @@ fun Finish(
                     )
                 )
             }
-
         } else {
             Column (
                 modifier = Modifier.fillMaxSize(),
@@ -241,7 +228,7 @@ fun Finish(
                 Spacer(modifier = Modifier.height(space2Dp))
 
                 Text(
-                    text = "보충제 음료 제조가 시작되었습니다. 잠시만 기다려주세요.",
+                    text = "기호에 따라 얼음을 추가해드시면 더욱 맛있게 즐기실 수 있습니다.",
                     style = TextStyle(
                         fontSize = descSp,
                         fontFamily = FontFamily(Font(R.font.pretendard_regular)),
