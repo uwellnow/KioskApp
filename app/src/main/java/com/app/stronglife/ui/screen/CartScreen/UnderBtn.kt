@@ -1,5 +1,11 @@
 package com.app.stronglife.ui.screen.CartScreen
 
+import android.widget.Toast
+import android.widget.TextView
+import android.util.TypedValue
+import android.graphics.Color as AndroidColor
+import android.view.Gravity
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,10 +40,16 @@ import com.app.stronglife.R
 import com.app.stronglife.ui.theme.lightGray
 import com.app.stronglife.ui.theme.mainRed
 import com.app.stronglife.ui.theme.superLightGray
+import com.app.stronglife.data.model.CartItem
 import com.app.stronglife.viewmodel.UserCodeViewModel
 
 @Composable
-fun UnderBtn(navController: NavController, userCodeViewModel: UserCodeViewModel) {
+fun UnderBtn(
+    navController: NavController,
+    userCodeViewModel: UserCodeViewModel,
+    cartItems: List<CartItem>,
+) {
+    val context = LocalContext.current
     val density = LocalDensity.current
     val couponWidDp = with(density) {770f.toDp()}
     val payWidDp = with(density) {840f.toDp()}
@@ -77,6 +90,24 @@ fun UnderBtn(navController: NavController, userCodeViewModel: UserCodeViewModel)
                 )
                 .border(2.dp, color = mainRed, shape = RoundedCornerShape(roundDp))
                 .clickable { 
+                    val totalCount = cartItems.sumOf { it.quantity }
+                    if (totalCount != 1) {
+                        val tv = TextView(context).apply {
+                            text = "쿠폰 구매는 음료 1잔만 구매가능합니다."
+                            setTextSize(TypedValue.COMPLEX_UNIT_SP, 42f)
+                            setTextColor(AndroidColor.WHITE)
+                            setBackgroundColor(0xCC000000.toInt())
+                            gravity = Gravity.CENTER
+                            setTextAlignment(View.TEXT_ALIGNMENT_CENTER)
+                            setPadding(32, 22, 32, 22)
+                        }
+                        Toast(context).apply {
+                            view = tv
+                            duration = Toast.LENGTH_SHORT
+                        }.show()
+                        return@clickable
+                    }
+
                     userCodeViewModel.setPaymentMethodId(1)
                     navController.navigate("pay_coupon")
                 },
